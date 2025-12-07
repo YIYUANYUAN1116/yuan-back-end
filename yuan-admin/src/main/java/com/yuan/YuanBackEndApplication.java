@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = {"com.yuan"})
 @EnableScheduling
 @EnableAsync
-public class YuanApplication {
+public class YuanBackEndApplication {
     public static void main(String[] args) {
-        SpringApplication.run(YuanApplication.class, args);
+        SpringApplication.run(YuanBackEndApplication.class, args);
 
     }
 }

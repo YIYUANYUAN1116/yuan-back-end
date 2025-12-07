@@ -36,12 +36,19 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.yuan</groupId>
-            <artifactId>yuan-common-core</artifactId>
+            <artifactId>yuan-common-json</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-redis</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -22,6 +22,13 @@
         <module>yuan-common-core</module>
         <module>yuan-common-mybatis</module>
         <module>yuan-common-web</module>
+        <module>yuan-common-tenant</module>
+        <module>yuan-common-satoken</module>
+        <module>yuan-common-redis</module>
+        <module>yuan-common-excel</module>
+        <module>yuan-common-json</module>
+        <module>yuan-common-log</module>
+        <module>yuan-common-idemponent</module>
     </modules>
 
 </project>

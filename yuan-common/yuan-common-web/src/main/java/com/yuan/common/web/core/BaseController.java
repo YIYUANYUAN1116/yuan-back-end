@@ -1,4 +1,4 @@
-package core;
+package com.yuan.common.web.core;
 
 
 import com.yuan.common.core.domain.R;
