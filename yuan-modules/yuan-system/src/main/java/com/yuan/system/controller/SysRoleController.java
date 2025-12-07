@@ -37,11 +37,11 @@ public class SysRoleController extends BaseController {
 
     private final SysRoleService sysRoleService;
 
-/**
- * 查询角色列表
- */
-@SaCheckPermission("system:sysRole:list")
-@GetMapping("/list")
+    /**
+     * 查询角色列表
+     */
+    @SaCheckPermission("system:sysRole:list")
+    @GetMapping("/list")
     public TableDataInfo<SysRoleVo> list(SysRoleBo bo, PageQuery pageQuery) {
         return sysRoleService.queryPageList(bo, pageQuery);
     }
@@ -65,7 +65,7 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:sysRole:query")
     @GetMapping("/{roleId}")
     public R<SysRoleVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long roleId) {
+                                @PathVariable Long roleId) {
         return R.ok(sysRoleService.queryById(roleId));
     }
 
@@ -76,8 +76,13 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleBo bo) {
-        return toAjax(sysRoleService.insertByBo(bo));
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleBo role) {
+        if (!sysRoleService.checkRoleNameUnique(role)) {
+            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
+        } else if (!sysRoleService.checkRoleKeyUnique(role)) {
+            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
+        }
+        return toAjax(sysRoleService.insertByBo(role));
     }
 
     /**
@@ -87,8 +92,13 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo bo) {
-        return toAjax(sysRoleService.updateByBo(bo));
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo role) {
+        if (!sysRoleService.checkRoleNameUnique(role)) {
+            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
+        } else if (!sysRoleService.checkRoleKeyUnique(role)) {
+            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
+        }
+        return toAjax(sysRoleService.updateByBo(role));
     }
 
     /**

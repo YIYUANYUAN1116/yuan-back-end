@@ -2,6 +2,7 @@ package com.yuan.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.excel.annotation.ExcelDictFormat;
 import com.yuan.common.excel.convert.ExcelDictConvert;
 import com.yuan.system.domain.SysRole;
@@ -103,4 +104,7 @@ public class SysRoleVo implements Serializable {
     @ExcelProperty(value = "备注")
     private String remark;
 
+    public boolean isSuperAdmin() {
+        return UserConstants.SUPER_ADMIN_ID.equals(this.roleId);
+    }
 }

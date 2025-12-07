@@ -45,4 +45,12 @@ public interface SysUserService {
      * 校验并批量删除用户信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    boolean checkUserNameUnique(SysUserBo user);
+
+    boolean checkPhoneUnique(SysUserBo user);
+
+    boolean checkEmailUnique(SysUserBo user);
+
+    void insertUserAuth(Long userId, Long[] roleIds);
 }

@@ -45,4 +45,10 @@ public interface SysRoleService {
      * 校验并批量删除角色信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    List<SysRoleVo> selectRoleAll();
+
+    boolean checkRoleNameUnique(SysRoleBo role);
+
+    boolean checkRoleKeyUnique(SysRoleBo role);
 }
