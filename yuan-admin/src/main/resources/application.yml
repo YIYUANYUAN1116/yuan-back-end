@@ -116,3 +116,8 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+logging:
+  level:
+    com.yuan.system.mapper: debug   # 替换为你的 Mapper 接口所在包路径
+  config: classpath:logback-plus.xml

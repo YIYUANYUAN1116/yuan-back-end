@@ -23,6 +23,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ import java.util.Map;
  */
 @Slf4j
 @Aspect
-@AutoConfiguration
+@Configuration
 public class LogAspect {
 
     /**

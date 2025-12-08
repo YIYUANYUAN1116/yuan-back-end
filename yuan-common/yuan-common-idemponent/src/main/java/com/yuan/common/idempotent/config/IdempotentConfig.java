@@ -2,16 +2,15 @@ package com.yuan.common.idempotent.config;
 
 
 import com.yuan.common.idempotent.aspectj.RepeatSubmitAspect;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.RedisConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 幂等功能配置
  *
  * @author Lion Li
  */
-@AutoConfiguration(after = RedisConfiguration.class)
+@Configuration
 public class IdempotentConfig {
 
     @Bean
