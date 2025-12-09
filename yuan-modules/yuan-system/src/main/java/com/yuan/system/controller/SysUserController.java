@@ -181,6 +181,6 @@ public class SysUserController extends BaseController {
         userInfoVo.setUser(sysUserVo);
         userInfoVo.setPermissions(loginUser.getMenuPermission());
         userInfoVo.setRoles(loginUser.getRolePermission());
-        return R.ok(userInfoVo);
+        return R.ok(null,userInfoVo);
     }
 }

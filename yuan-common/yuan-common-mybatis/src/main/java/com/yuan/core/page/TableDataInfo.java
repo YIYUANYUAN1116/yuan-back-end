@@ -51,7 +51,7 @@ public class TableDataInfo<T> implements Serializable {
         this.rows = list;
         this.total = total;
         this.code = HttpStatus.HTTP_OK;
-        this.msg = "查询成功";
+//        this.msg = "查询成功";
     }
 
     /**
@@ -60,7 +60,7 @@ public class TableDataInfo<T> implements Serializable {
     public static <T> TableDataInfo<T> build(IPage<T> page) {
         TableDataInfo<T> rspData = new TableDataInfo<>();
         rspData.setCode(HttpStatus.HTTP_OK);
-        rspData.setMsg("查询成功");
+//        rspData.setMsg("查询成功");
         rspData.setRows(page.getRecords());
         rspData.setTotal(page.getTotal());
         return rspData;
