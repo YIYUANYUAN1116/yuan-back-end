@@ -7,6 +7,7 @@
         <groupId>com.yuan</groupId>
         <artifactId>yuan-common</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>yuan-common-excel</artifactId>
