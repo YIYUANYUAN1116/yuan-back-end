@@ -183,4 +183,20 @@ public class SysUserController extends BaseController {
         userInfoVo.setRoles(loginUser.getRolePermission());
         return R.ok(null,userInfoVo);
     }
+
+    /**
+     * 根据用户编号获取授权角色
+     *
+     * @param userId 用户ID
+     */
+    @SaCheckPermission("system:user:query")
+    @GetMapping("/authRole/{userId}")
+    public R<SysUserInfoVo> authRole(@PathVariable Long userId) {
+        SysUserVo user = sysUserService.queryById(userId);
+        List<SysRoleVo> roles = sysRoleService.selectRolesByUserId(userId);
+        SysUserInfoVo userInfoVo = new SysUserInfoVo();
+        userInfoVo.setUser(user);
+        userInfoVo.setRoles(LoginHelper.isSuperAdmin(userId) ? roles : StreamUtils.filter(roles, r -> !r.isSuperAdmin()));
+        return R.ok(userInfoVo);
+    }
 }

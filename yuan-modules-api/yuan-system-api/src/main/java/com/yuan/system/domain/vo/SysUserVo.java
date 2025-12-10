@@ -175,4 +175,9 @@ public class SysUserVo implements Serializable {
      * 角色对象
      */
     private List<SysRoleVo> roles;
+
+    /**
+     * 部门对象
+     */
+    private SysDeptVo dept;
 }

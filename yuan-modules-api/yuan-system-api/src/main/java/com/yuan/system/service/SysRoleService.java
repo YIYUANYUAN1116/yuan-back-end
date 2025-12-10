@@ -51,4 +51,6 @@ public interface SysRoleService {
     boolean checkRoleNameUnique(SysRoleBo role);
 
     boolean checkRoleKeyUnique(SysRoleBo role);
+
+    List<SysRoleVo> selectRolesByUserId(Long userId);
 }

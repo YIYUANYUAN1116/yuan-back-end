@@ -141,6 +141,12 @@ public class SysRoleServiceImpl implements SysRoleService {
         return !exist;
     }
 
+    @Override
+    public List<SysRoleVo> selectRolesByUserId(Long userId) {
+        baseMapper.selectRolesByUserId(userId);
+        return List.of();
+    }
+
     private LambdaQueryWrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {
         LambdaQueryWrapper<SysRole> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getRoleId() != null, SysRole::getRoleId, bo.getRoleId());

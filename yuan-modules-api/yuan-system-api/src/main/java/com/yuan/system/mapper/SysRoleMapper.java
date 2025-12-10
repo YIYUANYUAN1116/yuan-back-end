@@ -15,4 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
 
+    void selectRolesByUserId(Long userId);
 }

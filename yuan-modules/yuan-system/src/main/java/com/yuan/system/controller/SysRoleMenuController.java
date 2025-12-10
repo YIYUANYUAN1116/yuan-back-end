@@ -1,0 +1,113 @@
+package com.yuan.system.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import com.yuan.common.core.domain.R;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.excel.utils.ExcelUtil;
+import com.yuan.common.idempotent.annotation.RepeatSubmit;
+import com.yuan.common.log.annotation.Log;
+import com.yuan.common.log.enums.BusinessType;
+import com.yuan.common.web.core.BaseController;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.domain.bo.SysRoleMenuBo;
+import com.yuan.system.domain.vo.SysRoleMenuVo;
+import com.yuan.system.service.SysRoleMenuService;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+/**
+ * 角色菜单
+ *
+ * @author ageerle
+ * @date Wed Dec 10 17:21:43 CST 2025
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/system/sysRoleMenu")
+public class SysRoleMenuController extends BaseController {
+
+    private final SysRoleMenuService sysRoleMenuService;
+
+/**
+ * 查询角色菜单列表
+ */
+@SaCheckPermission("system:sysRoleMenu:list")
+@GetMapping("/list")
+    public TableDataInfo<SysRoleMenuVo> list(SysRoleMenuBo bo, PageQuery pageQuery) {
+        return sysRoleMenuService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 导出角色菜单列表
+     */
+    @SaCheckPermission("system:sysRoleMenu:export")
+    @Log(title = "角色菜单", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(SysRoleMenuBo bo, HttpServletResponse response) {
+        List<SysRoleMenuVo> list = sysRoleMenuService.queryList(bo);
+        ExcelUtil.exportExcel(list, "角色菜单", SysRoleMenuVo.class, response);
+    }
+
+    /**
+     * 获取角色菜单详细信息
+     *
+     * @param menuId 主键
+     */
+    @SaCheckPermission("system:sysRoleMenu:query")
+    @GetMapping("/{menuId}")
+    public R<SysRoleMenuVo> getInfo(@NotNull(message = "主键不能为空")
+                                     @PathVariable Long menuId) {
+        return R.ok(sysRoleMenuService.queryById(menuId));
+    }
+
+    /**
+     * 新增角色菜单
+     */
+    @SaCheckPermission("system:sysRoleMenu:add")
+    @Log(title = "角色菜单", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping()
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleMenuBo bo) {
+        return toAjax(sysRoleMenuService.insertByBo(bo));
+    }
+
+    /**
+     * 修改角色菜单
+     */
+    @SaCheckPermission("system:sysRoleMenu:edit")
+    @Log(title = "角色菜单", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping()
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleMenuBo bo) {
+        return toAjax(sysRoleMenuService.updateByBo(bo));
+    }
+
+    /**
+     * 删除角色菜单
+     *
+     * @param menuIds 主键串
+     */
+    @SaCheckPermission("system:sysRoleMenu:remove")
+    @Log(title = "角色菜单", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{menuIds}")
+    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+                          @PathVariable Long[] menuIds) {
+        return toAjax(sysRoleMenuService.deleteWithValidByIds(List.of(menuIds), true));
+    }
+}
