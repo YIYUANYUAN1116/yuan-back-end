@@ -36,6 +36,8 @@ public class PageQuery implements Serializable {
      */
     private Integer pageNum;
 
+    private Integer current;
+
     /**
      * 排序列
      */
@@ -60,9 +62,9 @@ public class PageQuery implements Serializable {
      * 构建分页对象
      */
     public <T> Page<T> build() {
-        Integer pageNum = ObjectUtil.defaultIfNull(getPageNum(), DEFAULT_PAGE_NUM);
+        Integer pageNum = getPageNum()==null?getCurrent():getPageNum();
         Integer pageSize = ObjectUtil.defaultIfNull(getPageSize(), DEFAULT_PAGE_SIZE);
-        if (pageNum <= 0) {
+        if (pageNum == null || pageNum <= 0) {
             pageNum = DEFAULT_PAGE_NUM;
         }
         Page<T> page = new Page<>(pageNum, pageSize);
