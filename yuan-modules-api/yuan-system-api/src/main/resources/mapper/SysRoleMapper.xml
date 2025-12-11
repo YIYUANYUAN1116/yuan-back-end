@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.system.mapper.SysRoleMapper">
-    <resultMap type="org.ruoyi.system.domain.vo.SysRoleVo" id="SysRoleResult">
+    <resultMap type="com.yuan.system.domain.vo.SysRoleVo" id="SysRoleResult">
     </resultMap>
 
     <sql id="selectRoleVo">

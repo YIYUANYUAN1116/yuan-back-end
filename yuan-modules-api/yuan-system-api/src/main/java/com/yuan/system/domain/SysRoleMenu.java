@@ -21,13 +21,13 @@ public class SysRoleMenu implements Serializable {
     /**
      * 角色ID
      */
-        @TableId(value = "roleId", type = IdType.AUTO)
+    @TableId(type = IdType.INPUT)
     private Long roleId;
 
     /**
      * 菜单ID
      */
-        @TableId(value = "menuId", type = IdType.AUTO)
+
     private Long menuId;
 
 

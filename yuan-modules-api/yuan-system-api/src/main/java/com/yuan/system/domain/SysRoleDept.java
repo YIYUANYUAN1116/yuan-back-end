@@ -21,13 +21,10 @@ public class SysRoleDept implements Serializable {
     /**
      * 角色ID
      */
-        @TableId(value = "roleId", type = IdType.AUTO)
+    @TableId(type = IdType.INPUT)
     private Long roleId;
 
-    /**
-     * 部门ID
-     */
-        @TableId(value = "deptId", type = IdType.AUTO)
+
     private Long deptId;
 
 

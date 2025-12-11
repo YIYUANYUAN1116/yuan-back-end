@@ -1,6 +1,7 @@
 package com.yuan.common.web.config;
 
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -14,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 通用配置
  *
  */
-@Configuration
+@AutoConfiguration
 public class ResourcesConfig implements WebMvcConfigurer {
 
 
