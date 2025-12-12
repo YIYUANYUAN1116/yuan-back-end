@@ -1,6 +1,11 @@
 package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
+import com.yuan.common.core.constant.TenantConstants;
+import com.yuan.common.satoken.utils.LoginHelper;
+import com.yuan.system.domain.vo.MenuTreeSelectVo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -109,5 +114,35 @@ public class SysMenuController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] menuIds) {
         return toAjax(sysMenuService.deleteWithValidByIds(List.of(menuIds), true));
+    }
+
+    /**
+     * 获取菜单下拉树列表
+     */
+    @SaCheckRole(value = {
+            TenantConstants.SUPER_ADMIN_ROLE_KEY,
+            TenantConstants.TENANT_ADMIN_ROLE_KEY
+    }, mode = SaMode.OR)
+    @SaCheckPermission("system:menu:query")
+    @GetMapping("/treeselect")
+    public R<MenuTreeSelectVo> treeselect(SysMenuBo menu) {
+        List<SysMenuVo> menus = sysMenuService.selectMenuList(menu, LoginHelper.getUserId());
+        MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
+        selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
+        return R.ok(selectVo);
+    }
+
+    @SaCheckRole(value = {
+            TenantConstants.SUPER_ADMIN_ROLE_KEY,
+            TenantConstants.TENANT_ADMIN_ROLE_KEY
+    }, mode = SaMode.OR)
+    @SaCheckPermission("system:menu:query")
+    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
+    public R<MenuTreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
+        List<SysMenuVo> menus = sysMenuService.selectMenuList(LoginHelper.getUserId());
+        MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
+        selectVo.setCheckedKeys(sysMenuService.selectMenuListByRoleId(roleId));
+        selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
+        return R.ok(selectVo);
     }
 }

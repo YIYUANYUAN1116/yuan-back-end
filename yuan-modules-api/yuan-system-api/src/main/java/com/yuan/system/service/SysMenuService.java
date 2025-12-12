@@ -1,5 +1,6 @@
 package com.yuan.system.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysMenuBo;
@@ -45,4 +46,12 @@ public interface SysMenuService {
      * 校验并批量删除菜单信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    List<SysMenuVo> selectMenuList(SysMenuBo menu, Long userId);
+
+    List<SysMenuVo> selectMenuList(Long userId);
+
+    List<Tree<Long>> buildMenuTreeSelect(List<SysMenuVo> menus);
+
+    List<Long> selectMenuListByRoleId(Long roleId);
 }
