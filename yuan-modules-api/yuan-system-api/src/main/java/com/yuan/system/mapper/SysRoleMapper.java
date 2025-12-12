@@ -5,6 +5,8 @@ import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.vo.SysRoleVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 
 /**
  * 角色Mapper接口
@@ -15,5 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
 
-    void selectRolesByUserId(Long userId);
+    List<SysRoleVo> selectRolesByUserId(Long userId);
+
 }

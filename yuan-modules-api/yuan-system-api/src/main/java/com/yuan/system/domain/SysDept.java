@@ -23,7 +23,7 @@ public class SysDept implements Serializable {
     /**
      * 部门id
      */
-        @TableId(value = "deptId", type = IdType.AUTO)
+        @TableId(value = "dept_id", type = IdType.AUTO)
     private Long deptId;
 
     /**

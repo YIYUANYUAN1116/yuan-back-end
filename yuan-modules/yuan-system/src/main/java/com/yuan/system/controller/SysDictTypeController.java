@@ -11,6 +11,8 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDictTypeBo;
 import com.yuan.system.domain.vo.SysDictTypeVo;
 import com.yuan.system.service.ISysDictTypeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/dict/type")
+@Tag(name = "SysDictTypeController",description = "字典类型")
 public class SysDictTypeController extends BaseController {
 
     private final ISysDictTypeService dictTypeService;
@@ -43,6 +46,7 @@ public class SysDictTypeController extends BaseController {
      */
 
     @GetMapping("/all")
+    @Operation(summary = "查询所有字典类型列表",operationId = "dictType_all")
     public TableDataInfo<SysDictTypeVo> all(SysDictTypeBo dictType, PageQuery pageQuery) {
         return dictTypeService.selectAll(dictType);
     }
@@ -51,6 +55,7 @@ public class SysDictTypeController extends BaseController {
      */
     @SaCheckPermission("system:dict:list")
     @GetMapping("/list")
+    @Operation(summary = "查询字典类型列表",operationId = "dictType_list")
     public TableDataInfo<SysDictTypeVo> list(SysDictTypeBo dictType, PageQuery pageQuery) {
         return dictTypeService.selectPageDictTypeList(dictType, pageQuery);
     }
@@ -61,6 +66,7 @@ public class SysDictTypeController extends BaseController {
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
     @SaCheckPermission("system:dict:export")
     @PostMapping("/export")
+    @Operation(summary = "导出字典类型列表",operationId = "dictType_export")
     public void export(SysDictTypeBo dictType, HttpServletResponse response) {
         List<SysDictTypeVo> list = dictTypeService.selectDictTypeList(dictType);
         ExcelUtil.exportExcel(list, "字典类型", SysDictTypeVo.class, response);
@@ -73,6 +79,7 @@ public class SysDictTypeController extends BaseController {
      */
     @SaCheckPermission("system:dict:query")
     @GetMapping(value = "/{dictId}")
+    @Operation(summary = "查询字典类型详细",operationId = "dictType_getInfo")
     public R<SysDictTypeVo> getInfo(@PathVariable Long dictId) {
         return R.ok(dictTypeService.selectDictTypeById(dictId));
     }
@@ -83,6 +90,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:add")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增字典类型",operationId = "dictType_add")
     public R<Void> add(@Validated @RequestBody SysDictTypeBo dict) {
         if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
@@ -97,6 +105,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:edit")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改字典类型",operationId = "dictType_edit")
     public R<Void> edit(@Validated @RequestBody SysDictTypeBo dict) {
         if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
@@ -113,6 +122,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
+    @Operation(summary = "删除字典类型",operationId = "dictType_remove")
     public R<Void> remove(@PathVariable Long[] dictIds) {
         dictTypeService.deleteDictTypeByIds(dictIds);
         return R.ok();
@@ -124,6 +134,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
+    @Operation(summary = "刷新字典缓存",operationId = "dictType_refreshCache")
     public R<Void> refreshCache() {
         dictTypeService.resetDictCache();
         return R.ok();
@@ -133,6 +144,7 @@ public class SysDictTypeController extends BaseController {
      * 获取字典选择框列表
      */
     @GetMapping("/optionselect")
+    @Operation(summary = "获取字典选择框列表",operationId = "dictType_optionselect")
     public R<List<SysDictTypeVo>> optionselect() {
         List<SysDictTypeVo> dictTypes = dictTypeService.selectDictTypeAll();
         return R.ok(dictTypes);

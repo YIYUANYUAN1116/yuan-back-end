@@ -25,6 +25,8 @@ import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.domain.vo.UserInfoVo;
 import com.yuan.system.service.SysRoleService;
 import com.yuan.system.service.SysUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +46,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/sysUser")
+@Tag(name = "SysUserController",description = "用户")
 public class SysUserController extends BaseController {
 
     private final SysUserService sysUserService;
@@ -54,6 +57,7 @@ public class SysUserController extends BaseController {
      */
     @SaCheckPermission("system:sysUser:list")
     @GetMapping("/list")
+    @Operation(summary = "查询用户列表",operationId = "sysUser_list")
     public TableDataInfo<SysUserVo> list(SysUserBo bo, PageQuery pageQuery) {
         return sysUserService.queryPageList(bo, pageQuery);
     }
@@ -64,6 +68,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:sysUser:export")
     @Log(title = "用户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
+    @Operation(summary = "导出用户列表",operationId = "sysUser_export")
     public void export(SysUserBo bo, HttpServletResponse response) {
         List<SysUserVo> list = sysUserService.queryList(bo);
         ExcelUtil.exportExcel(list, "用户", SysUserVo.class, response);
@@ -76,6 +81,7 @@ public class SysUserController extends BaseController {
      */
     @SaCheckPermission("system:sysUser:query")
     @GetMapping("/{userId}")
+    @Operation(summary = "获取用户详细信息",operationId = "sysUser_getInfo")
     public R<SysUserInfoVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long userId) {
 
@@ -97,6 +103,7 @@ public class SysUserController extends BaseController {
     @Log(title = "用户", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
+    @Operation(summary = "新增用户",operationId = "sysUser_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysUserBo user) {
         if (!sysUserService.checkUserNameUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
@@ -128,6 +135,7 @@ public class SysUserController extends BaseController {
     @Log(title = "用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
+    @Operation(summary = "修改用户",operationId = "sysUser_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysUserBo user) {
         if (!sysUserService.checkUserNameUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
@@ -147,6 +155,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:sysUser:remove")
     @Log(title = "用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
+    @Operation(summary = "删除用户",operationId = "sysUser_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] userIds) {
         if (ArrayUtil.contains(userIds, LoginHelper.getUserId())) {
@@ -164,6 +173,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PutMapping("/authRole")
+    @Operation(summary = "用户授权角色",operationId = "sysUser_insertAuthRole")
     public R<Void> insertAuthRole(Long userId, Long[] roleIds) {
         sysUserService.insertUserAuth(userId, roleIds);
         return R.ok();
@@ -174,6 +184,7 @@ public class SysUserController extends BaseController {
      *
      */
     @GetMapping("/getInfo")
+    @Operation(summary = "获取用户详细信息",operationId = "sysUser_getCurrentInfo")
     public R<UserInfoVo> getCurrentInfo() {
         UserInfoVo userInfoVo = new UserInfoVo();
         LoginUser loginUser = LoginHelper.getLoginUser();
@@ -191,6 +202,7 @@ public class SysUserController extends BaseController {
      */
     @SaCheckPermission("system:user:query")
     @GetMapping("/authRole/{userId}")
+    @Operation(summary = "根据用户编号获取授权角色",operationId = "sysUser_getAuthRole")
     public R<SysUserInfoVo> authRole(@PathVariable Long userId) {
         SysUserVo user = sysUserService.queryById(userId);
         List<SysRoleVo> roles = sysRoleService.selectRolesByUserId(userId);

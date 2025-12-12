@@ -6,6 +6,7 @@ import cn.dev33.satoken.exception.NotRoleException;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.exception.AuthException;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.StreamUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * 权限码异常
+     */
+    @ExceptionHandler(AuthException.class)
+    public R<Void> handleAuthException(AuthException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',认证失败'{}'", requestURI, e.getMessage());
+        return R.fail(HttpStatus.HTTP_UNAUTHORIZED, e.getMessage());
+    }
+
 
     /**
      * 权限码异常
@@ -52,7 +64,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
-        return R.fail(HttpStatus.HTTP_UNAUTHORIZED, "认证失败，无法访问系统资源");
+        return R.fail(HttpStatus.HTTP_UNAUTHORIZED, "请登录");
     }
 
     /**
@@ -83,7 +95,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return R.fail(e.getMessage());
+        return R.fail("系统异常");
     }
 
     /**

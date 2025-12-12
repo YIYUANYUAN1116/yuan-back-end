@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "认证接口")
+@Tag(name = "AuthController",description = "认证接口")
 public class AuthController {
 
     private final SysLoginService loginService;
@@ -33,7 +33,7 @@ public class AuthController {
      * @return 结果
      */
     @PostMapping("/login")
-    @Operation(summary = "登录")
+    @Operation(summary = "登录",operationId = "login")
     public R<LoginVo> login(@Validated @RequestBody LoginBody body) {
         body.setTenantId(Constants.TENANT_ID);
         LoginVo loginVo = new LoginVo();

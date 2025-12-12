@@ -12,6 +12,7 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.bo.SysRoleBo;
+import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
@@ -143,8 +144,18 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysRoleVo> selectRolesByUserId(Long userId) {
-        baseMapper.selectRolesByUserId(userId);
-        return List.of();
+        return baseMapper.selectRolesByUserId(userId);
+    }
+
+    @Override
+    public SelectRolesVo selectSelectRolesVo(Long userId) {
+        SelectRolesVo selectRolesVo = new SelectRolesVo();
+        List<SysRoleVo> sysRoleVos = baseMapper.selectVoList();
+        selectRolesVo.setRoles(sysRoleVos);
+        if (userId != null) {
+            selectRolesVo.setCheckedKeys(sysUserRoleMapper.selectRoleIdsByUserId(userId));
+        }
+        return selectRolesVo;
     }
 
     private LambdaQueryWrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {

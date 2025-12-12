@@ -107,4 +107,6 @@ public class SysRoleVo implements Serializable {
     public boolean isSuperAdmin() {
         return UserConstants.SUPER_ADMIN_ID.equals(this.roleId);
     }
+
+    private Long[] checkedKeys;
 }

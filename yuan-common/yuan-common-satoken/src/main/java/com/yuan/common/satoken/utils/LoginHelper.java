@@ -1,7 +1,6 @@
 package com.yuan.common.satoken.utils;
 
 import cn.dev33.satoken.context.SaHolder;
-import cn.dev33.satoken.context.model.SaStorage;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
@@ -12,6 +11,7 @@ import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.domain.model.LoginUser;
 import com.yuan.common.core.enums.DeviceType;
 import com.yuan.common.core.enums.UserType;
+import com.yuan.common.core.exception.AuthException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,10 +53,6 @@ public class LoginHelper {
      * @param loginUser 登录用户信息
      */
     public static void loginByDevice(LoginUser loginUser, DeviceType deviceType) {
-        SaStorage storage = SaHolder.getStorage();
-        storage.set(LOGIN_USER_KEY, loginUser);
-        storage.set(TENANT_KEY, loginUser.getTenantId());
-        storage.set(USER_KEY, loginUser.getUserId());
         SaLoginModel model = new SaLoginModel();
         if (ObjectUtil.isNotNull(deviceType)) {
             model.setDevice(deviceType.getDevice());
@@ -64,7 +60,10 @@ public class LoginHelper {
         StpUtil.login(loginUser.getLoginId(),
             model.setExtra(TENANT_KEY, loginUser.getTenantId())
                 .setExtra(USER_KEY, loginUser.getUserId()));
-        StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginUser);
+        SaSession tokenSession = StpUtil.getTokenSession();
+        tokenSession.set(USER_KEY, loginUser.getUserId());
+        tokenSession.set(TENANT_KEY, loginUser.getTenantId());
+        tokenSession.set(LOGIN_USER_KEY, loginUser);
     }
 
     /**
@@ -80,6 +79,9 @@ public class LoginHelper {
             loginUser =  (LoginUser) tokenSession.get(LOGIN_USER_KEY);
             SaHolder.getStorage().set(LOGIN_USER_KEY, loginUser);
         };
+        if (loginUser == null) {
+            throw new AuthException("请登录");
+        }
         return loginUser;
     }
 
@@ -98,11 +100,7 @@ public class LoginHelper {
     public static Long getUserId() {
         Long userId;
         try {
-            userId = Convert.toLong(SaHolder.getStorage().get(USER_KEY));
-            if (ObjectUtil.isNull(userId)) {
-                userId = Convert.toLong(StpUtil.getExtra(USER_KEY));
-                SaHolder.getStorage().set(USER_KEY, userId);
-            }
+            userId = Convert.toLong(StpUtil.getTokenSession().get(USER_KEY));
         } catch (Exception e) {
             return null;
         }
@@ -115,11 +113,7 @@ public class LoginHelper {
     public static String getTenantId() {
         String tenantId;
         try {
-            tenantId = (String) SaHolder.getStorage().get(TENANT_KEY);
-            if (ObjectUtil.isNull(tenantId)) {
-                tenantId = (String) StpUtil.getExtra(TENANT_KEY);
-                SaHolder.getStorage().set(TENANT_KEY, tenantId);
-            }
+            tenantId = (String) StpUtil.getTokenSession().get(TENANT_KEY);
         } catch (Exception e) {
             return null;
         }

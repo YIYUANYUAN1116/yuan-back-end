@@ -12,8 +12,11 @@ import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysRoleBo;
+import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.service.SysRoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/sysRole")
+@Tag(name = "SysRoleController",description = "角色")
 public class SysRoleController extends BaseController {
 
     private final SysRoleService sysRoleService;
@@ -42,6 +46,7 @@ public class SysRoleController extends BaseController {
      */
     @SaCheckPermission("system:sysRole:list")
     @GetMapping("/list")
+    @Operation(summary = "查询角色列表",operationId = "sysRole_list")
     public TableDataInfo<SysRoleVo> list(SysRoleBo bo, PageQuery pageQuery) {
         return sysRoleService.queryPageList(bo, pageQuery);
     }
@@ -52,6 +57,7 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:sysRole:export")
     @Log(title = "角色", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
+    @Operation(summary = "导出角色列表",operationId = "sysRole_export")
     public void export(SysRoleBo bo, HttpServletResponse response) {
         List<SysRoleVo> list = sysRoleService.queryList(bo);
         ExcelUtil.exportExcel(list, "角色", SysRoleVo.class, response);
@@ -64,6 +70,7 @@ public class SysRoleController extends BaseController {
      */
     @SaCheckPermission("system:sysRole:query")
     @GetMapping("/{roleId}")
+    @Operation(summary = "获取角色详细信息",operationId = "sysRole_getInfo")
     public R<SysRoleVo> getInfo(@NotNull(message = "主键不能为空")
                                 @PathVariable Long roleId) {
         return R.ok(sysRoleService.queryById(roleId));
@@ -76,6 +83,7 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
+    @Operation(summary = "新增角色",operationId = "sysRole_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleBo role) {
         if (!sysRoleService.checkRoleNameUnique(role)) {
             return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
@@ -92,6 +100,7 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
+    @Operation(summary = "修改角色",operationId = "sysRole_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo role) {
         if (!sysRoleService.checkRoleNameUnique(role)) {
             return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
@@ -109,8 +118,20 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:sysRole:remove")
     @Log(title = "角色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{roleIds}")
+    @Operation(summary = "删除角色",operationId = "sysRole_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] roleIds) {
         return toAjax(sysRoleService.deleteWithValidByIds(List.of(roleIds), true));
     }
+
+    /**
+     * 获取角色选择框列表
+     */
+    @SaCheckPermission("system:role:query")
+    @GetMapping("/optionselect")
+    @Operation(summary = "获取角色选择框列表",operationId = "sysRoleOptionselect")
+    public R<SelectRolesVo> optionSelect(@RequestParam Long userId) {
+        return R.ok(sysRoleService.selectSelectRolesVo(userId));
+    }
+
 }

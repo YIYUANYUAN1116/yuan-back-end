@@ -21,7 +21,7 @@ public class SysRoleDept implements Serializable {
     /**
      * 角色ID
      */
-    @TableId(type = IdType.INPUT)
+    @TableId(value = "role_id",type = IdType.INPUT)
     private Long roleId;
 
 

@@ -14,6 +14,8 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDeptBo;
 import com.yuan.system.domain.vo.SysDeptVo;
 import com.yuan.system.service.SysDeptService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -41,15 +43,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/sysDept")
+@Tag(name = "SysDeptController",description = "部门")
 public class SysDeptController extends BaseController {
 
     private final SysDeptService sysDeptService;
 
-/**
- * 查询部门列表
- */
-@SaCheckPermission("system:sysDept:list")
-@GetMapping("/list")
+    /**
+     * 查询部门列表
+     */
+    @SaCheckPermission("system:sysDept:list")
+    @GetMapping("/list")
+    @Operation(summary = "查询部门列表",operationId = "sysDept_list")
     public TableDataInfo<SysDeptVo> list(SysDeptBo bo, PageQuery pageQuery) {
         return sysDeptService.queryPageList(bo, pageQuery);
     }
@@ -60,6 +64,7 @@ public class SysDeptController extends BaseController {
     @SaCheckPermission("system:sysDept:export")
     @Log(title = "部门", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
+    @Operation(summary = "导出部门列表",operationId = "sysDept_export")
     public void export(SysDeptBo bo, HttpServletResponse response) {
         List<SysDeptVo> list = sysDeptService.queryList(bo);
         ExcelUtil.exportExcel(list, "部门", SysDeptVo.class, response);
@@ -70,10 +75,11 @@ public class SysDeptController extends BaseController {
      *
      * @param deptId 主键
      */
+    @Operation(summary = "导出部门列表",operationId = "sysDept_getInfo")
     @SaCheckPermission("system:sysDept:query")
     @GetMapping("/{deptId}")
     public R<SysDeptVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long deptId) {
+                                @PathVariable Long deptId) {
         return R.ok(sysDeptService.queryById(deptId));
     }
 
@@ -84,6 +90,7 @@ public class SysDeptController extends BaseController {
     @Log(title = "部门", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
+    @Operation(summary = "新增部门",operationId = "sysDept_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysDeptBo bo) {
         return toAjax(sysDeptService.insertByBo(bo));
     }
@@ -91,6 +98,7 @@ public class SysDeptController extends BaseController {
     /**
      * 修改部门
      */
+    @Operation(summary = "修改部门",operationId = "sysDept_edit")
     @SaCheckPermission("system:sysDept:edit")
     @Log(title = "部门", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
@@ -104,6 +112,7 @@ public class SysDeptController extends BaseController {
      *
      * @param deptIds 主键串
      */
+    @Operation(summary = "删除部门",operationId = "sysDept_remove")
     @SaCheckPermission("system:sysDept:remove")
     @Log(title = "部门", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptIds}")

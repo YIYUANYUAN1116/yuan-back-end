@@ -1,6 +1,8 @@
 package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -40,6 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/sysRoleDept")
+@Tag(name = "sysRoleDeptService",description = "部门角色")
 public class SysRoleDeptController extends BaseController {
 
     private final SysRoleDeptService sysRoleDeptService;
@@ -49,6 +52,7 @@ public class SysRoleDeptController extends BaseController {
  */
 @SaCheckPermission("system:sysRoleDept:list")
 @GetMapping("/list")
+@Operation(summary = "查询部门角色列表",operationId = "sysRoleDept_list")
     public TableDataInfo<SysRoleDeptVo> list(SysRoleDeptBo bo, PageQuery pageQuery) {
         return sysRoleDeptService.queryPageList(bo, pageQuery);
     }
@@ -59,6 +63,7 @@ public class SysRoleDeptController extends BaseController {
     @SaCheckPermission("system:sysRoleDept:export")
     @Log(title = "部门角色", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
+    @Operation(summary = "导出部门角色列表",operationId = "sysRoleDept_export")
     public void export(SysRoleDeptBo bo, HttpServletResponse response) {
         List<SysRoleDeptVo> list = sysRoleDeptService.queryList(bo);
         ExcelUtil.exportExcel(list, "部门角色", SysRoleDeptVo.class, response);
@@ -71,6 +76,7 @@ public class SysRoleDeptController extends BaseController {
      */
     @SaCheckPermission("system:sysRoleDept:query")
     @GetMapping("/{deptId}")
+    @Operation(summary = "获取部门角色详细信息",operationId = "sysRoleDept_getInfo")
     public R<SysRoleDeptVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long deptId) {
         return R.ok(sysRoleDeptService.queryById(deptId));
@@ -83,6 +89,7 @@ public class SysRoleDeptController extends BaseController {
     @Log(title = "部门角色", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
+    @Operation(summary = "新增部门角色",operationId = "sysRoleDept_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleDeptBo bo) {
         return toAjax(sysRoleDeptService.insertByBo(bo));
     }
@@ -94,6 +101,7 @@ public class SysRoleDeptController extends BaseController {
     @Log(title = "部门角色", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
+    @Operation(summary = "修改部门角色",operationId = "sysRoleDept_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleDeptBo bo) {
         return toAjax(sysRoleDeptService.updateByBo(bo));
     }
@@ -106,6 +114,7 @@ public class SysRoleDeptController extends BaseController {
     @SaCheckPermission("system:sysRoleDept:remove")
     @Log(title = "部门角色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptIds}")
+    @Operation(summary = "删除部门角色",operationId = "sysRoleDept_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] deptIds) {
         return toAjax(sysRoleDeptService.deleteWithValidByIds(List.of(deptIds), true));

@@ -3,6 +3,7 @@ package com.yuan.system.service;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysRoleBo;
+import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 
 import java.util.Collection;
@@ -53,4 +54,6 @@ public interface SysRoleService {
     boolean checkRoleKeyUnique(SysRoleBo role);
 
     List<SysRoleVo> selectRolesByUserId(Long userId);
+
+    SelectRolesVo selectSelectRolesVo(Long userId);
 }

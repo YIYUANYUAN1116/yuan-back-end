@@ -54,4 +54,6 @@ public interface SysMenuService {
     List<Tree<Long>> buildMenuTreeSelect(List<SysMenuVo> menus);
 
     List<Long> selectMenuListByRoleId(Long roleId);
+
+    List<Long> selectMenuListByUserId(Long userId);
 }

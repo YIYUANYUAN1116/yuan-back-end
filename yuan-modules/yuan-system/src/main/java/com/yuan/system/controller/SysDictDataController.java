@@ -13,6 +13,8 @@ import com.yuan.system.domain.bo.SysDictDataBo;
 import com.yuan.system.domain.vo.SysDictDataVo;
 import com.yuan.system.service.ISysDictDataService;
 import com.yuan.system.service.ISysDictTypeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/dict/data")
+@Tag(name = "SysDictDataController",description = "数据字典信息")
 public class SysDictDataController extends BaseController {
 
     private final ISysDictDataService dictDataService;
@@ -47,6 +50,7 @@ public class SysDictDataController extends BaseController {
      */
     @SaCheckPermission("system:dict:list")
     @GetMapping("/list")
+    @Operation(summary = "查询字典数据列表",operationId = "dict_list")
     public TableDataInfo<SysDictDataVo> list(SysDictDataBo dictData, PageQuery pageQuery) {
         return dictDataService.selectPageDictDataList(dictData, pageQuery);
     }
@@ -57,6 +61,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.EXPORT)
     @SaCheckPermission("system:dict:export")
     @PostMapping("/export")
+    @Operation(summary = "查询字典数据列表",operationId = "dict_export")
     public void export(SysDictDataBo dictData, HttpServletResponse response) {
         List<SysDictDataVo> list = dictDataService.selectDictDataList(dictData);
         ExcelUtil.exportExcel(list, "字典数据", SysDictDataVo.class, response);
@@ -69,6 +74,7 @@ public class SysDictDataController extends BaseController {
      */
     @SaCheckPermission("system:dict:query")
     @GetMapping(value = "/{dictCode}")
+    @Operation(summary = "查询字典数据列表",operationId = "dict_getInfo")
     public R<SysDictDataVo> getInfo(@PathVariable Long dictCode) {
         return R.ok(dictDataService.selectDictDataById(dictCode));
     }
@@ -79,6 +85,7 @@ public class SysDictDataController extends BaseController {
      * @param dictType 字典类型
      */
     @GetMapping(value = "/type/{dictType}")
+    @Operation(summary = "根据字典类型查询字典数据信息",operationId = "dict_dictType")
     public R<List<SysDictDataVo>> dictType(@PathVariable String dictType) {
         List<SysDictDataVo> data = dictTypeService.selectDictDataByType(dictType);
         if (ObjectUtil.isNull(data)) {
@@ -93,6 +100,7 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:add")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增字典类型",operationId = "dict_add")
     public R<Void> add(@Validated @RequestBody SysDictDataBo dict) {
         dictDataService.insertDictData(dict);
         return R.ok();
@@ -104,6 +112,7 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:edit")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改保存字典类型",operationId = "dict_edit")
     public R<Void> edit(@Validated @RequestBody SysDictDataBo dict) {
         dictDataService.updateDictData(dict);
         return R.ok();
@@ -116,6 +125,7 @@ public class SysDictDataController extends BaseController {
      */
     @SaCheckPermission("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
+    @Operation(summary = "删除字典类型",operationId = "dict_remove")
     @DeleteMapping("/{dictCodes}")
     public R<Void> remove(@PathVariable Long[] dictCodes) {
         dictDataService.deleteDictDataByIds(dictCodes);
