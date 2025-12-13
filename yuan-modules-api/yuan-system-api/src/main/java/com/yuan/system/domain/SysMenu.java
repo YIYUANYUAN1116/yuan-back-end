@@ -3,10 +3,9 @@ package com.yuan.system.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * 菜单对象 sys_menu
@@ -14,9 +13,10 @@ import java.time.LocalDateTime;
  * @author ageerle
  * @date Wed Dec 10 17:20:04 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_menu")
-public class SysMenu implements Serializable {
+public class SysMenu extends BaseEntity {
 
 
     /**
@@ -89,31 +89,6 @@ public class SysMenu implements Serializable {
      * 菜单图标
      */
     private String icon;
-
-    /**
-     * 创建部门
-     */
-    private Long createDept;
-
-    /**
-     * 创建者
-     */
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
     /**
      * 备注

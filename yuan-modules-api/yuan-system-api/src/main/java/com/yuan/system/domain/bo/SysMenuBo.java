@@ -1,14 +1,12 @@
 package com.yuan.system.domain.bo;
 
-import io.github.linpeilie.annotations.AutoMapper;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 import com.yuan.system.domain.SysMenu;
+import io.github.linpeilie.annotations.AutoMapper;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 菜单业务对象 sys_menu
@@ -26,7 +24,7 @@ public class SysMenuBo implements Serializable {
     /**
      * 菜单名称
      */
-    @NotBlank(message = "菜单名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "菜单名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String menuName;
     /**
      * 父菜单ID
@@ -100,5 +98,7 @@ public class SysMenuBo implements Serializable {
      * 备注
      */
     private String remark;
+
+    private List<String> menuTypes;
 
 }

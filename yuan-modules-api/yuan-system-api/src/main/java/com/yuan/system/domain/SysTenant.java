@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,9 +16,10 @@ import java.time.LocalDateTime;
  * @author ageerle
  * @date Wed Dec 10 17:18:08 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_tenant")
-public class SysTenant implements Serializable {
+public class SysTenant extends BaseEntity {
 
 
     /**
@@ -97,30 +99,7 @@ public class SysTenant implements Serializable {
         @TableLogic
     private String delFlag;
 
-    /**
-     * 创建部门
-     */
-    private Long createDept;
 
-    /**
-     * 创建者
-     */
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
 
 }

@@ -40,17 +40,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/sysMenu")
-@Tag(name = "SysMenuController",description = "菜单")
+@Tag(name = "SysMenuController", description = "菜单")
 public class SysMenuController extends BaseController {
 
     private final SysMenuService sysMenuService;
 
-/**
- * 查询菜单列表
- */
-@SaCheckPermission("system:sysMenu:list")
-@GetMapping("/list")
-@Operation(summary = "查询菜单列表",operationId = "sysMenu_list")
+    /**
+     * 查询菜单列表
+     */
+    @SaCheckPermission("system:sysMenu:list")
+    @GetMapping("/list")
+    @Operation(summary = "查询菜单列表", operationId = "sysMenu_list")
     public TableDataInfo<SysMenuVo> list(SysMenuBo bo, PageQuery pageQuery) {
         return sysMenuService.queryPageList(bo, pageQuery);
     }
@@ -61,7 +61,7 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:sysMenu:export")
     @Log(title = "菜单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    @Operation(summary = "导出菜单列表",operationId = "sysMenu_export")
+    @Operation(summary = "导出菜单列表", operationId = "sysMenu_export")
     public void export(SysMenuBo bo, HttpServletResponse response) {
         List<SysMenuVo> list = sysMenuService.queryList(bo);
         ExcelUtil.exportExcel(list, "菜单", SysMenuVo.class, response);
@@ -74,9 +74,9 @@ public class SysMenuController extends BaseController {
      */
     @SaCheckPermission("system:sysMenu:query")
     @GetMapping("/{menuId}")
-    @Operation(summary = "获取菜单详细信息",operationId = "sysMenu_getInfo")
+    @Operation(summary = "获取菜单详细信息", operationId = "sysMenu_getInfo")
     public R<SysMenuVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long menuId) {
+                                @PathVariable Long menuId) {
         return R.ok(sysMenuService.queryById(menuId));
     }
 
@@ -87,7 +87,7 @@ public class SysMenuController extends BaseController {
     @Log(title = "菜单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    @Operation(summary = "新增菜单",operationId = "sysMenu_add")
+    @Operation(summary = "新增菜单", operationId = "sysMenu_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysMenuBo bo) {
         return toAjax(sysMenuService.insertByBo(bo));
     }
@@ -99,7 +99,7 @@ public class SysMenuController extends BaseController {
     @Log(title = "菜单", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    @Operation(summary = "修改菜单",operationId = "sysMenu_edit")
+    @Operation(summary = "修改菜单", operationId = "sysMenu_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysMenuBo bo) {
         return toAjax(sysMenuService.updateByBo(bo));
     }
@@ -112,7 +112,7 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:sysMenu:remove")
     @Log(title = "菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{menuIds}")
-    @Operation(summary = "删除菜单",operationId = "sysMenu_remove")
+    @Operation(summary = "删除菜单", operationId = "sysMenu_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] menuIds) {
         return toAjax(sysMenuService.deleteWithValidByIds(List.of(menuIds), true));
@@ -127,8 +127,8 @@ public class SysMenuController extends BaseController {
     }, mode = SaMode.OR)
     @SaCheckPermission("system:menu:query")
     @GetMapping("/treeselect")
-    @Operation(summary = "获取菜单下拉树列表",operationId = "sysMenu_treeselect")
-    public R<MenuTreeSelectVo> treeselect(SysMenuBo menu,Long roleId) {
+    @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
+    public R<MenuTreeSelectVo> treeselect(SysMenuBo menu, Long roleId) {
         List<SysMenuVo> menus = sysMenuService.selectMenuList(menu, LoginHelper.getUserId());
         MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
         selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
@@ -142,12 +142,23 @@ public class SysMenuController extends BaseController {
     }, mode = SaMode.OR)
     @SaCheckPermission("system:menu:query")
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
-    @Operation(summary = "获取角色菜单树",operationId = "sysMenu_roleMenuTreeselect")
+    @Operation(summary = "获取角色菜单树", operationId = "sysMenu_roleMenuTreeselect")
     public R<MenuTreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
         List<SysMenuVo> menus = sysMenuService.selectMenuList(LoginHelper.getUserId());
         MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
         selectVo.setCheckedKeys(sysMenuService.selectMenuListByRoleId(roleId));
         selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
         return R.ok(selectVo);
+    }
+
+    /**
+     * 查询树型菜单列表
+     */
+    @SaCheckPermission("system:sysMenu:list")
+    @GetMapping("/listTree")
+    @Operation(summary = "查询树型菜单列表", operationId = "sysMenu_listTree")
+    public R<List<SysMenuVo>> listTree(SysMenuBo bo) {
+        List<SysMenuVo> sysMenuVos = sysMenuService.listTree(bo);
+        return R.ok(sysMenuVos);
     }
 }

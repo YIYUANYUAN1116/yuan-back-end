@@ -18,6 +18,7 @@
     </description>
     <modules>
         <module>yuan-system</module>
+        <module>yuan-generator</module>
     </modules>
 
     <properties>
