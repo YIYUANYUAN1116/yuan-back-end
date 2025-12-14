@@ -187,7 +187,7 @@ public class SysUserServiceImpl implements SysUserService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysUser::getTenantId, bo.getTenantId());
         lqw.eq(bo.getDeptId() != null, SysUser::getDeptId, bo.getDeptId());
         lqw.eq(StringUtils.isNotBlank(bo.getUserName()), SysUser::getUserName, bo.getUserName());
-        lqw.eq(StringUtils.isNotBlank(bo.getNickName()), SysUser::getNickName, bo.getNickName());
+        lqw.like(StringUtils.isNotBlank(bo.getNickName()), SysUser::getNickName, bo.getNickName());
         lqw.eq(StringUtils.isNotBlank(bo.getUserType()), SysUser::getUserType, bo.getUserType());
         lqw.eq(StringUtils.isNotBlank(bo.getUserPlan()), SysUser::getUserPlan, bo.getUserPlan());
         lqw.eq(StringUtils.isNotBlank(bo.getEmail()), SysUser::getEmail, bo.getEmail());
