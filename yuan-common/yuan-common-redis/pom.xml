@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <!--redisson-->

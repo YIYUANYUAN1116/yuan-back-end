@@ -22,7 +22,6 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-mybatis</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

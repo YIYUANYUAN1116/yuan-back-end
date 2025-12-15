@@ -16,13 +16,11 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-redis</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->

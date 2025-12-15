@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.yuan</groupId>
         <artifactId>yuan-common</artifactId>
-        <version>${revision}</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>${revision}</version>
         </dependency>
 
         <!-- dynamic-datasource 多数据源-->
@@ -28,7 +27,6 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-satoken</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
@@ -39,6 +37,11 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
     </dependencies>
 

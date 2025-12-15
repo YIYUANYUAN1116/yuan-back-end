@@ -3,7 +3,6 @@ package com.yuan.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
@@ -12,6 +11,7 @@ import com.yuan.system.domain.bo.SysRoleMenuBo;
 import com.yuan.system.domain.vo.SysRoleMenuVo;
 import com.yuan.system.mapper.SysRoleMenuMapper;
 import com.yuan.system.service.SysRoleMenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Service
-public class SysRoleMenuServiceImpl implements SysRoleMenuService {
+public class  SysRoleMenuServiceImpl implements SysRoleMenuService {
 
     private final SysRoleMenuMapper baseMapper;
 

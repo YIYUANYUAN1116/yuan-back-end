@@ -6,13 +6,11 @@
     <parent>
         <groupId>com.yuan</groupId>
         <artifactId>yuan-modules</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>yuan-generator</artifactId>
-
-
 
     <dependencies>
         <!-- 通用工具-->
@@ -20,25 +18,21 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-mybatis</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-web</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-log</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <!--velocity代码生成使用模板 -->

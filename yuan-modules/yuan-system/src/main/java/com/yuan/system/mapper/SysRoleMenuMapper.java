@@ -1,8 +1,8 @@
 package com.yuan.system.mapper;
 
+import com.yuan.system.domain.SysRoleMenu;
 import org.apache.ibatis.annotations.Mapper;
 import com.yuan.core.mapper.BaseMapperPlus;
-import com.yuan.system.domain.SysRoleMenu;
 import com.yuan.system.domain.vo.SysRoleMenuVo;
 
 /**

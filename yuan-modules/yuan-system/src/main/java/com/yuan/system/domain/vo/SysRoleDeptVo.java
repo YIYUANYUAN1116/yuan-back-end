@@ -1,25 +1,25 @@
 package com.yuan.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.yuan.system.domain.SysRoleDept;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import com.yuan.system.domain.SysUserRole;
 
 import java.io.Serializable;
 
 
 /**
- * 用户角色视图对象 sys_user_role
+ * 部门角色视图对象 sys_role_dept
  *
  * @author ageerle
- * @date Sun Dec 07 17:25:51 CST 2025
+ * @date Wed Dec 10 17:21:37 CST 2025
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = SysUserRole.class)
-public class SysUserRoleVo implements Serializable {
+@AutoMapper(target = SysRoleDept.class)
+public class SysRoleDeptVo implements Serializable {
 
-    private Long userId;
     private Long roleId;
+    private Long deptId;
 
 }

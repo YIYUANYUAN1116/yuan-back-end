@@ -57,9 +57,22 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- ===== Spring Boot BOM ===== -->
+            <!-- SpringBoot的依赖配置-->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <!-- ===== 第三方依赖 ===== -->
+            <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
 
@@ -79,15 +92,6 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.version}</version>
-            </dependency>
-
-            <!-- SpringBoot的依赖配置-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
 
             <!-- hutool 的依赖配置-->
@@ -223,6 +227,71 @@
                         <artifactId>poi-ooxml-schemas</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+
+            <!-- ===== 自己的模块（关键！） ===== -->
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-excel</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-idemponent</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-json</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-log</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-mybatis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-satoken</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-system</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-system-api</artifactId>
+                <version>${revision}</version>
             </dependency>
 
         </dependencies>

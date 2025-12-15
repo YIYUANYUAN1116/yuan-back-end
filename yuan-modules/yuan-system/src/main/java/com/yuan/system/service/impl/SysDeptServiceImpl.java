@@ -3,7 +3,6 @@ package com.yuan.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
@@ -13,6 +12,7 @@ import com.yuan.system.domain.bo.SysDeptBo;
 import com.yuan.system.domain.vo.SysDeptVo;
 import com.yuan.system.mapper.SysDeptMapper;
 import com.yuan.system.service.SysDeptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;

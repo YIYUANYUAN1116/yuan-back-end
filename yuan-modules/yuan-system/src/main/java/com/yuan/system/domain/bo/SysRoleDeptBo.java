@@ -1,8 +1,8 @@
 package com.yuan.system.domain.bo;
 
+import com.yuan.system.domain.SysRoleDept;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import com.yuan.system.domain.SysRoleDept;
 
 import java.io.Serializable;
 

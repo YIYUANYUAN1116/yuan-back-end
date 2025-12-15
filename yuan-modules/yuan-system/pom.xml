@@ -6,33 +6,50 @@
     <parent>
         <groupId>com.yuan</groupId>
         <artifactId>yuan-modules</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>yuan-system</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-system-api</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-excel</artifactId>
-            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-idemponent</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-tenant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-log</artifactId>
         </dependency>
     </dependencies>
 

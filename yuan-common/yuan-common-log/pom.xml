@@ -17,19 +17,16 @@
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-satoken</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-json</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>

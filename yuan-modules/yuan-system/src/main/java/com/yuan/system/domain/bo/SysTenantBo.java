@@ -1,11 +1,11 @@
 package com.yuan.system.domain.bo;
 
-import io.github.linpeilie.annotations.AutoMapper;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.system.domain.SysTenant;
+import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
