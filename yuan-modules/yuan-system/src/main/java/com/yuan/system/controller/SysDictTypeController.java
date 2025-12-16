@@ -47,8 +47,8 @@ public class SysDictTypeController extends BaseController {
 
     @GetMapping("/all")
     @Operation(summary = "查询所有字典类型列表",operationId = "dictType_all")
-    public TableDataInfo<SysDictTypeVo> all(SysDictTypeBo dictType, PageQuery pageQuery) {
-        return dictTypeService.selectAll(dictType);
+    public TableDataInfo<SysDictTypeVo> all(SysDictTypeBo bo, PageQuery pageQuery) {
+        return dictTypeService.selectAll(bo);
     }
     /**
      * 查询字典类型列表
@@ -56,8 +56,8 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:list")
     @GetMapping("/list")
     @Operation(summary = "查询字典类型列表",operationId = "dictType_list")
-    public TableDataInfo<SysDictTypeVo> list(SysDictTypeBo dictType, PageQuery pageQuery) {
-        return dictTypeService.selectPageDictTypeList(dictType, pageQuery);
+    public TableDataInfo<SysDictTypeVo> list(SysDictTypeBo bo, PageQuery pageQuery) {
+        return dictTypeService.selectPageDictTypeList(bo, pageQuery);
     }
 
     /**
@@ -67,8 +67,8 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:export")
     @PostMapping("/export")
     @Operation(summary = "导出字典类型列表",operationId = "dictType_export")
-    public void export(SysDictTypeBo dictType, HttpServletResponse response) {
-        List<SysDictTypeVo> list = dictTypeService.selectDictTypeList(dictType);
+    public void export(SysDictTypeBo bo, HttpServletResponse response) {
+        List<SysDictTypeVo> list = dictTypeService.selectDictTypeList(bo);
         ExcelUtil.exportExcel(list, "字典类型", SysDictTypeVo.class, response);
     }
 
@@ -91,11 +91,11 @@ public class SysDictTypeController extends BaseController {
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
     @Operation(summary = "新增字典类型",operationId = "dictType_add")
-    public R<Void> add(@Validated @RequestBody SysDictTypeBo dict) {
-        if (!dictTypeService.checkDictTypeUnique(dict)) {
-            return R.fail("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
+    public R<Void> add(@Validated @RequestBody SysDictTypeBo bo) {
+        if (!dictTypeService.checkDictTypeUnique(bo)) {
+            return R.fail("新增字典'" + bo.getDictName() + "'失败，字典类型已存在");
         }
-        dictTypeService.insertDictType(dict);
+        dictTypeService.insertDictType(bo);
         return R.ok();
     }
 
@@ -106,11 +106,11 @@ public class SysDictTypeController extends BaseController {
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
     @Operation(summary = "修改字典类型",operationId = "dictType_edit")
-    public R<Void> edit(@Validated @RequestBody SysDictTypeBo dict) {
-        if (!dictTypeService.checkDictTypeUnique(dict)) {
-            return R.fail("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
+    public R<Void> edit(@Validated @RequestBody SysDictTypeBo bo) {
+        if (!dictTypeService.checkDictTypeUnique(bo)) {
+            return R.fail("修改字典'" + bo.getDictName() + "'失败，字典类型已存在");
         }
-        dictTypeService.updateDictType(dict);
+        dictTypeService.updateDictType(bo);
         return R.ok();
     }
 

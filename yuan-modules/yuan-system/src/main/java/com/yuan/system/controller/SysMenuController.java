@@ -128,8 +128,8 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:menu:query")
     @GetMapping("/treeselect")
     @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
-    public R<MenuTreeSelectVo> treeselect(SysMenuBo menu, Long roleId) {
-        List<SysMenuVo> menus = sysMenuService.selectMenuList(menu, LoginHelper.getUserId());
+    public R<MenuTreeSelectVo> treeselect(SysMenuBo bo, Long roleId) {
+        List<SysMenuVo> menus = sysMenuService.selectMenuList(bo, LoginHelper.getUserId());
         MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
         selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
         selectVo.setCheckedKeys(sysMenuService.selectMenuListByRoleId(roleId));

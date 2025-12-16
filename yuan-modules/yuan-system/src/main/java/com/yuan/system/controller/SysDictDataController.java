@@ -51,8 +51,8 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:list")
     @GetMapping("/list")
     @Operation(summary = "查询字典数据列表",operationId = "dict_list")
-    public TableDataInfo<SysDictDataVo> list(SysDictDataBo dictData, PageQuery pageQuery) {
-        return dictDataService.selectPageDictDataList(dictData, pageQuery);
+    public TableDataInfo<SysDictDataVo> list(SysDictDataBo bo, PageQuery pageQuery) {
+        return dictDataService.selectPageDictDataList(bo, pageQuery);
     }
 
     /**
@@ -62,8 +62,8 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:export")
     @PostMapping("/export")
     @Operation(summary = "查询字典数据列表",operationId = "dict_export")
-    public void export(SysDictDataBo dictData, HttpServletResponse response) {
-        List<SysDictDataVo> list = dictDataService.selectDictDataList(dictData);
+    public void export(SysDictDataBo bo, HttpServletResponse response) {
+        List<SysDictDataVo> list = dictDataService.selectDictDataList(bo);
         ExcelUtil.exportExcel(list, "字典数据", SysDictDataVo.class, response);
     }
 
@@ -101,8 +101,8 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
     @Operation(summary = "新增字典类型",operationId = "dict_add")
-    public R<Void> add(@Validated @RequestBody SysDictDataBo dict) {
-        dictDataService.insertDictData(dict);
+    public R<Void> add(@Validated @RequestBody SysDictDataBo bo) {
+        dictDataService.insertDictData(bo);
         return R.ok();
     }
 
@@ -113,8 +113,8 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
     @Operation(summary = "修改保存字典类型",operationId = "dict_edit")
-    public R<Void> edit(@Validated @RequestBody SysDictDataBo dict) {
-        dictDataService.updateDictData(dict);
+    public R<Void> edit(@Validated @RequestBody SysDictDataBo bo) {
+        dictDataService.updateDictData(bo);
         return R.ok();
     }
 
