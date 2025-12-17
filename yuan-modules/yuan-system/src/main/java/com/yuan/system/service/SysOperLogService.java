@@ -1,5 +1,6 @@
 package com.yuan.system.service;
 
+import com.yuan.common.log.event.OperLogEvent;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysOperLogBo;
@@ -45,4 +46,6 @@ public interface SysOperLogService {
      * 校验并批量删除oprelog信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    void recordOper(OperLogEvent operLogEvent);
 }

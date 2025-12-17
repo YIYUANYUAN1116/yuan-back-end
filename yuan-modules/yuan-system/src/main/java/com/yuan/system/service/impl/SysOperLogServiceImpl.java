@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.core.utils.ip.AddressUtils;
+import com.yuan.common.log.event.OperLogEvent;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysOperLog;
@@ -13,6 +15,8 @@ import com.yuan.system.domain.vo.SysOperLogVo;
 import com.yuan.system.mapper.SysOperLogMapper;
 import com.yuan.system.service.SysOperLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -29,6 +33,22 @@ import java.util.List;
 public class SysOperLogServiceImpl implements SysOperLogService {
 
     private final SysOperLogMapper baseMapper;
+
+
+    /**
+     * 操作日志记录
+     *
+     * @param operLogEvent 操作日志事件
+     */
+    @Async
+    @EventListener
+    @Override
+    public void recordOper(OperLogEvent operLogEvent) {
+        SysOperLogBo operLog = MapstructUtils.convert(operLogEvent, SysOperLogBo.class);
+        // 远程查询操作地点
+        operLog.setOperLocation(AddressUtils.getRealAddressByIP(operLog.getOperIp()));
+        insertByBo(operLog);
+    }
 
     /**
      * 查询oprelog
