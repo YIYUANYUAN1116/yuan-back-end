@@ -1,161 +1,116 @@
 package com.yuan.system.service.impl;
 
-import cn.hutool.http.useragent.UserAgent;
-import cn.hutool.http.useragent.UserAgentUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yuan.common.core.constant.Constants;
 import com.yuan.common.core.utils.MapstructUtils;
-import com.yuan.common.core.utils.ServletUtils;
 import com.yuan.common.core.utils.StringUtils;
-import com.yuan.common.core.utils.ip.AddressUtils;
-import com.yuan.common.log.event.LogininforEvent;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysLogininfor;
 import com.yuan.system.domain.bo.SysLogininforBo;
 import com.yuan.system.domain.vo.SysLogininforVo;
 import com.yuan.system.mapper.SysLogininforMapper;
-import com.yuan.system.service.ISysLogininforService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.yuan.system.service.SysLogininforService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 系统访问日志情况信息 服务层处理
+ * loginlogService业务层处理
  *
- * @author Lion Li
+ * @author ageerle
+ * @date Wed Dec 17 21:48:44 CST 2025
  */
 @RequiredArgsConstructor
-@Slf4j
 @Service
-public class SysLogininforServiceImpl implements ISysLogininforService {
+public class SysLogininforServiceImpl implements SysLogininforService {
 
     private final SysLogininforMapper baseMapper;
 
     /**
-     * 记录登录信息
-     *
-     * @param logininforEvent 登录事件
+     * 查询loginlog
      */
-    @Async
-    @EventListener
     @Override
-    public void recordLogininfor(LogininforEvent logininforEvent) {
-        HttpServletRequest request = logininforEvent.getRequest();
-        final UserAgent userAgent = UserAgentUtil.parse(request.getHeader("User-Agent"));
-        final String ip = ServletUtils.getClientIP(request);
+    public SysLogininforVo queryById(Long infoId) {
+        return baseMapper.selectVoById(infoId);
+    }
 
-        String address = AddressUtils.getRealAddressByIP(ip);
-        StringBuilder s = new StringBuilder();
-        s.append(getBlock(ip));
-        s.append(address);
-        s.append(getBlock(logininforEvent.getUsername()));
-        s.append(getBlock(logininforEvent.getStatus()));
-        s.append(getBlock(logininforEvent.getMessage()));
-        // 打印信息到日志
-        log.info(s.toString(), logininforEvent.getArgs());
-        // 获取客户端操作系统
-        String os = userAgent.getOs().getName();
-        // 获取客户端浏览器
-        String browser = userAgent.getBrowser().getName();
-        // 封装对象
-        SysLogininforBo logininfor = new SysLogininforBo();
-        logininfor.setTenantId(logininforEvent.getTenantId());
-        logininfor.setUserName(logininforEvent.getUsername());
-        logininfor.setIpaddr(ip);
-        logininfor.setLoginLocation(address);
-        logininfor.setBrowser(browser);
-        logininfor.setOs(os);
-        logininfor.setMsg(logininforEvent.getMessage());
-        // 日志状态
-        if (StringUtils.equalsAny(logininforEvent.getStatus(), Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {
-            logininfor.setStatus(Constants.SUCCESS);
-        } else if (Constants.LOGIN_FAIL.equals(logininforEvent.getStatus())) {
-            logininfor.setStatus(Constants.FAIL);
+        /**
+         * 查询loginlog列表
+         */
+        @Override
+        public TableDataInfo<SysLogininforVo> queryPageList(SysLogininforBo bo, PageQuery pageQuery) {
+            LambdaQueryWrapper<SysLogininfor> lqw = buildQueryWrapper(bo);
+            Page<SysLogininforVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            return TableDataInfo.build(result);
         }
-        // 插入数据
-        insertLogininfor(logininfor);
+
+    /**
+     * 查询loginlog列表
+     */
+    @Override
+    public List<SysLogininforVo> queryList(SysLogininforBo bo) {
+        LambdaQueryWrapper<SysLogininfor> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectVoList(lqw);
     }
 
-    private String getBlock(Object msg) {
-        if (msg == null) {
-            msg = "";
+    private LambdaQueryWrapper<SysLogininfor> buildQueryWrapper(SysLogininforBo bo) {
+        LambdaQueryWrapper<SysLogininfor> lqw = Wrappers.lambdaQuery();
+                    lqw.eq(bo.getInfoId() != null, SysLogininfor::getInfoId, bo.getInfoId());
+                    lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysLogininfor::getTenantId, bo.getTenantId());
+                    lqw.eq(StringUtils.isNotBlank(bo.getUserName()), SysLogininfor::getUserName, bo.getUserName());
+                    lqw.eq(StringUtils.isNotBlank(bo.getIpaddr()), SysLogininfor::getIpaddr, bo.getIpaddr());
+                    lqw.eq(StringUtils.isNotBlank(bo.getLoginLocation()), SysLogininfor::getLoginLocation, bo.getLoginLocation());
+                    lqw.eq(StringUtils.isNotBlank(bo.getBrowser()), SysLogininfor::getBrowser, bo.getBrowser());
+                    lqw.eq(StringUtils.isNotBlank(bo.getOs()), SysLogininfor::getOs, bo.getOs());
+                    lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysLogininfor::getStatus, bo.getStatus());
+                    lqw.eq(StringUtils.isNotBlank(bo.getMsg()), SysLogininfor::getMsg, bo.getMsg());
+                    lqw.eq(bo.getLoginTime() != null, SysLogininfor::getLoginTime, bo.getLoginTime());
+        return lqw;
+    }
+
+    /**
+     * 新增loginlog
+     */
+    @Override
+    public Boolean insertByBo(SysLogininforBo bo) {
+        SysLogininfor add = MapstructUtils.convert(bo, SysLogininfor. class);
+        validEntityBeforeSave(add);
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setInfoId(add.getInfoId());
         }
-        return "[" + msg.toString() + "]";
+        return flag;
     }
 
+    /**
+     * 修改loginlog
+     */
     @Override
-    public TableDataInfo<SysLogininforVo> selectPageLogininforList(SysLogininforBo logininfor, PageQuery pageQuery) {
-        Map<String, Object> params = logininfor.getParams();
-        LambdaQueryWrapper<SysLogininfor> lqw = new LambdaQueryWrapper<SysLogininfor>()
-            .like(StringUtils.isNotBlank(logininfor.getIpaddr()), SysLogininfor::getIpaddr, logininfor.getIpaddr())
-            .eq(StringUtils.isNotBlank(logininfor.getStatus()), SysLogininfor::getStatus, logininfor.getStatus())
-            .like(StringUtils.isNotBlank(logininfor.getUserName()), SysLogininfor::getUserName, logininfor.getUserName())
-            .between(params.get("beginTime") != null && params.get("endTime") != null,
-                SysLogininfor::getLoginTime, params.get("beginTime"), params.get("endTime"));
-        if (StringUtils.isBlank(pageQuery.getOrderByColumn())) {
-            pageQuery.setOrderByColumn("info_id");
-            pageQuery.setIsAsc("desc");
+    public Boolean updateByBo(SysLogininforBo bo) {
+        SysLogininfor update = MapstructUtils.convert(bo, SysLogininfor. class);
+        validEntityBeforeSave(update);
+        return baseMapper.updateById(update) > 0;
+    }
+
+    /**
+     * 保存前的数据校验
+     */
+    private void validEntityBeforeSave(SysLogininfor entity) {
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    /**
+     * 批量删除loginlog
+     */
+    @Override
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if (isValid) {
+            //TODO 做一些业务上的校验,判断是否需要校验
         }
-        Page<SysLogininforVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(page);
-    }
-
-    /**
-     * 新增系统登录日志
-     *
-     * @param bo 访问日志对象
-     */
-    @Override
-    public void insertLogininfor(SysLogininforBo bo) {
-        SysLogininfor logininfor = MapstructUtils.convert(bo, SysLogininfor.class);
-        logininfor.setLoginTime(new Date());
-        baseMapper.insert(logininfor);
-    }
-
-    /**
-     * 查询系统登录日志集合
-     *
-     * @param logininfor 访问日志对象
-     * @return 登录记录集合
-     */
-    @Override
-    public List<SysLogininforVo> selectLogininforList(SysLogininforBo logininfor) {
-        Map<String, Object> params = logininfor.getParams();
-        return baseMapper.selectVoList(new LambdaQueryWrapper<SysLogininfor>()
-            .like(StringUtils.isNotBlank(logininfor.getIpaddr()), SysLogininfor::getIpaddr, logininfor.getIpaddr())
-            .eq(StringUtils.isNotBlank(logininfor.getStatus()), SysLogininfor::getStatus, logininfor.getStatus())
-            .like(StringUtils.isNotBlank(logininfor.getUserName()), SysLogininfor::getUserName, logininfor.getUserName())
-            .between(params.get("beginTime") != null && params.get("endTime") != null,
-                SysLogininfor::getLoginTime, params.get("beginTime"), params.get("endTime"))
-            .orderByDesc(SysLogininfor::getInfoId));
-    }
-
-    /**
-     * 批量删除系统登录日志
-     *
-     * @param infoIds 需要删除的登录日志ID
-     * @return 结果
-     */
-    @Override
-    public int deleteLogininforByIds(Long[] infoIds) {
-        return baseMapper.deleteBatchIds(Arrays.asList(infoIds));
-    }
-
-    /**
-     * 清空系统登录日志
-     */
-    @Override
-    public void cleanLogininfor() {
-        baseMapper.delete(new LambdaQueryWrapper<>());
+        return baseMapper.deleteBatchIds(ids) > 0;
     }
 }

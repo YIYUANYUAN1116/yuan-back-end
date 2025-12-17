@@ -7,9 +7,10 @@ import org.apache.ibatis.annotations.Mapper;
 
 
 /**
- * 系统访问日志情况信息 数据层
+ * loginlogMapper接口
  *
- * @author Lion Li
+ * @author ageerle
+ * @date Wed Dec 17 21:48:44 CST 2025
  */
 @Mapper
 public interface SysLogininforMapper extends BaseMapperPlus<SysLogininfor, SysLogininforVo> {
