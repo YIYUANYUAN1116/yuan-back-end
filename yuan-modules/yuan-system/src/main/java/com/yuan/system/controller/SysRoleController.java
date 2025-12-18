@@ -103,9 +103,9 @@ public class SysRoleController extends BaseController {
     @Operation(summary = "修改角色",operationId = "sysRole_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo role) {
         if (!sysRoleService.checkRoleNameUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
+            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色名称已存在");
         } else if (!sysRoleService.checkRoleKeyUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
+            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
         return toAjax(sysRoleService.updateByBo(role));
     }

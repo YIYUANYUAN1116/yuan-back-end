@@ -89,4 +89,8 @@ public class SysRoleBo implements Serializable {
      */
     private String remark;
 
+    /**
+     * 菜单组
+     */
+    private Long[] menuIds;
 }

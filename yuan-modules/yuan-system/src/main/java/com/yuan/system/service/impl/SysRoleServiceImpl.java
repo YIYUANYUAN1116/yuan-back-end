@@ -10,17 +10,20 @@ import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysRole;
+import com.yuan.system.domain.SysRoleMenu;
 import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.bo.SysRoleBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.mapper.SysRoleMapper;
+import com.yuan.system.mapper.SysRoleMenuMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
 import com.yuan.system.service.SysRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     private final SysRoleMapper baseMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
+    private final SysRoleMenuMapper sysRoleMenuMapper;
 
     /**
      * 查询角色
@@ -77,6 +81,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setRoleId(add.getRoleId());
+            insertRoleMenu(bo);
         }
         return flag;
     }
@@ -89,7 +94,12 @@ public class SysRoleServiceImpl implements SysRoleService {
     public Boolean updateByBo(SysRoleBo bo) {
         SysRole update = MapstructUtils.convert(bo, SysRole.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        boolean flag = baseMapper.updateById(update) > 0;
+        if (flag) {
+            sysRoleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, bo.getRoleId()));
+            insertRoleMenu(bo);
+        }
+        return flag;
     }
 
     /**
@@ -156,6 +166,21 @@ public class SysRoleServiceImpl implements SysRoleService {
             selectRolesVo.setCheckedKeys(sysUserRoleMapper.selectRoleIdsByUserId(userId));
         }
         return selectRolesVo;
+    }
+
+    private void insertRoleMenu(SysRoleBo role) {
+        if (ObjectUtil.isNull(role) || role.getMenuIds() == null)return;
+        // 新增用户与角色管理
+        List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
+        for (Long menuId : role.getMenuIds()) {
+            SysRoleMenu rm = new SysRoleMenu();
+            rm.setRoleId(role.getRoleId());
+            rm.setMenuId(menuId);
+            list.add(rm);
+        }
+        if (!list.isEmpty()) {
+            sysRoleMenuMapper.insertBatch(list);
+        }
     }
 
     private LambdaQueryWrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {
