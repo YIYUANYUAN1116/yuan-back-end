@@ -54,7 +54,7 @@ public class SysLogininforController extends BaseController {
      * 导出loginlog列表
      */
     @SaCheckPermission("system:sysLogininfor:export")
-    @Log(title = "loginlog", businessType = BusinessType.EXPORT)
+    @Log(title = "登录日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出loginlog列表",operationId = "SysLogininfor_export")
     public void export(SysLogininforBo bo, HttpServletResponse response) {
@@ -79,7 +79,7 @@ public class SysLogininforController extends BaseController {
      * 新增loginlog
      */
     @SaCheckPermission("system:sysLogininfor:add")
-    @Log(title = "loginlog", businessType = BusinessType.INSERT)
+    @Log(title = "登录日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增loginlog",operationId = "SysLogininfor_add")
@@ -91,7 +91,7 @@ public class SysLogininforController extends BaseController {
      * 修改loginlog
      */
     @SaCheckPermission("system:sysLogininfor:edit")
-    @Log(title = "loginlog", businessType = BusinessType.UPDATE)
+    @Log(title = "登录日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改loginlog",operationId = "SysLogininfor_edit")
@@ -105,7 +105,7 @@ public class SysLogininforController extends BaseController {
      * @param infoIds 主键串
      */
     @SaCheckPermission("system:sysLogininfor:remove")
-    @Log(title = "loginlog", businessType = BusinessType.DELETE)
+    @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
     @Operation(summary = "删除loginlog",operationId = "SysLogininfor_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

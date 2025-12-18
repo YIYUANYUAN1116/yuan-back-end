@@ -1,6 +1,8 @@
 package com.yuan.system.domain.bo;
 
+import com.yuan.common.log.event.LogininforEvent;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.github.linpeilie.annotations.AutoMappers;
 import lombok.Data;
 import com.yuan.system.domain.SysLogininfor;
 
@@ -14,8 +16,11 @@ import java.time.LocalDateTime;
  * @date Wed Dec 17 21:48:44 CST 2025
  */
 @Data
+@AutoMappers({
+        @AutoMapper(target = SysLogininfor.class, reverseConvertGenerate = false),
+        @AutoMapper(target = LogininforEvent.class)
+})
 
-@AutoMapper(target = SysLogininfor.class, reverseConvertGenerate = false)
 public class SysLogininforBo implements Serializable {
 
     private Long infoId;

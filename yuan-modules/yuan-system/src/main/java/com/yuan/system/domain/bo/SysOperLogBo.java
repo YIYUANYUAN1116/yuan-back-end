@@ -1,8 +1,10 @@
 package com.yuan.system.domain.bo;
 
-import io.github.linpeilie.annotations.AutoMapper;
-import lombok.Data;
+import com.yuan.common.log.event.OperLogEvent;
 import com.yuan.system.domain.SysOperLog;
+import io.github.linpeilie.annotations.AutoMapper;
+import io.github.linpeilie.annotations.AutoMappers;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,8 +16,10 @@ import java.time.LocalDateTime;
  * @date Wed Dec 17 21:48:33 CST 2025
  */
 @Data
-
-@AutoMapper(target = SysOperLog.class, reverseConvertGenerate = false)
+@AutoMappers({
+        @AutoMapper(target = SysOperLog.class, reverseConvertGenerate = false),
+        @AutoMapper(target = OperLogEvent.class)
+})
 public class SysOperLogBo implements Serializable {
 
     private Long operId;

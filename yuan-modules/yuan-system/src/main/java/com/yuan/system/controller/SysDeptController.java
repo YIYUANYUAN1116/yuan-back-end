@@ -62,7 +62,7 @@ public class SysDeptController extends BaseController {
      * 导出部门列表
      */
     @SaCheckPermission("system:sysDept:export")
-    @Log(title = "部门", businessType = BusinessType.EXPORT)
+    @Log(title = "部门管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出部门列表",operationId = "sysDept_export")
     public void export(SysDeptBo bo, HttpServletResponse response) {
@@ -87,7 +87,7 @@ public class SysDeptController extends BaseController {
      * 新增部门
      */
     @SaCheckPermission("system:sysDept:add")
-    @Log(title = "部门", businessType = BusinessType.INSERT)
+    @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增部门",operationId = "sysDept_add")
@@ -100,7 +100,7 @@ public class SysDeptController extends BaseController {
      */
     @Operation(summary = "修改部门",operationId = "sysDept_edit")
     @SaCheckPermission("system:sysDept:edit")
-    @Log(title = "部门", businessType = BusinessType.UPDATE)
+    @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysDeptBo bo) {
@@ -114,7 +114,7 @@ public class SysDeptController extends BaseController {
      */
     @Operation(summary = "删除部门",operationId = "sysDept_remove")
     @SaCheckPermission("system:sysDept:remove")
-    @Log(title = "部门", businessType = BusinessType.DELETE)
+    @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] deptIds) {

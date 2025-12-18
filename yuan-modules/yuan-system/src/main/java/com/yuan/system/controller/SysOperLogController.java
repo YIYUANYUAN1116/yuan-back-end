@@ -54,7 +54,7 @@ public class SysOperLogController extends BaseController {
      * 导出oprelog列表
      */
     @SaCheckPermission("system:sysOperLog:export")
-    @Log(title = "oprelog", businessType = BusinessType.EXPORT)
+    @Log(title = "操作日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出oprelog列表",operationId = "SysOperLog_export")
     public void export(SysOperLogBo bo, HttpServletResponse response) {
@@ -79,7 +79,7 @@ public class SysOperLogController extends BaseController {
      * 新增oprelog
      */
     @SaCheckPermission("system:sysOperLog:add")
-    @Log(title = "oprelog", businessType = BusinessType.INSERT)
+    @Log(title = "操作日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增oprelog",operationId = "SysOperLog_add")
@@ -91,7 +91,7 @@ public class SysOperLogController extends BaseController {
      * 修改oprelog
      */
     @SaCheckPermission("system:sysOperLog:edit")
-    @Log(title = "oprelog", businessType = BusinessType.UPDATE)
+    @Log(title = "操作日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改oprelog",operationId = "SysOperLog_edit")
@@ -105,7 +105,7 @@ public class SysOperLogController extends BaseController {
      * @param operIds 主键串
      */
     @SaCheckPermission("system:sysOperLog:remove")
-    @Log(title = "oprelog", businessType = BusinessType.DELETE)
+    @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{operIds}")
     @Operation(summary = "删除oprelog",operationId = "SysOperLog_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

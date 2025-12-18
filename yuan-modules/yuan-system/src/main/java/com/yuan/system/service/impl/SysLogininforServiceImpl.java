@@ -1,10 +1,16 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.constant.Constants;
 import com.yuan.common.core.utils.MapstructUtils;
+import com.yuan.common.core.utils.ServletUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.core.utils.ip.AddressUtils;
+import com.yuan.common.log.event.LogininforEvent;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysLogininfor;
@@ -12,7 +18,11 @@ import com.yuan.system.domain.bo.SysLogininforBo;
 import com.yuan.system.domain.vo.SysLogininforVo;
 import com.yuan.system.mapper.SysLogininforMapper;
 import com.yuan.system.service.SysLogininforService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -26,6 +36,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SysLogininforServiceImpl implements SysLogininforService {
 
     private final SysLogininforMapper baseMapper;
@@ -112,5 +123,57 @@ public class SysLogininforServiceImpl implements SysLogininforService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    /**
+     * 记录登录信息
+     *
+     * @param logininforEvent 登录事件
+     */
+    @Async
+    @EventListener
+    @Override
+    public void recordLogininfor(LogininforEvent logininforEvent) {
+        HttpServletRequest request = logininforEvent.getRequest();
+        final UserAgent userAgent = UserAgentUtil.parse(request.getHeader("User-Agent"));
+        final String ip = ServletUtils.getClientIP(request);
+
+        String address = AddressUtils.getRealAddressByIP(ip);
+        StringBuilder s = new StringBuilder();
+        s.append(getBlock(ip));
+        s.append(address);
+        s.append(getBlock(logininforEvent.getUsername()));
+        s.append(getBlock(logininforEvent.getStatus()));
+        s.append(getBlock(logininforEvent.getMessage()));
+        // 打印信息到日志
+        log.info(s.toString(), logininforEvent.getArgs());
+        // 获取客户端操作系统
+        String os = userAgent.getOs().getName();
+        // 获取客户端浏览器
+        String browser = userAgent.getBrowser().getName();
+        // 封装对象
+        SysLogininforBo logininfor = new SysLogininforBo();
+        logininfor.setTenantId(logininforEvent.getTenantId());
+        logininfor.setUserName(logininforEvent.getUsername());
+        logininfor.setIpaddr(ip);
+        logininfor.setLoginLocation(address);
+        logininfor.setBrowser(browser);
+        logininfor.setOs(os);
+        logininfor.setMsg(logininforEvent.getMessage());
+        // 日志状态
+        if (StringUtils.equalsAny(logininforEvent.getStatus(), Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {
+            logininfor.setStatus(Constants.SUCCESS);
+        } else if (Constants.LOGIN_FAIL.equals(logininforEvent.getStatus())) {
+            logininfor.setStatus(Constants.FAIL);
+        }
+        // 插入数据
+        insertByBo(logininfor);
+    }
+
+    private String getBlock(Object msg) {
+        if (msg == null) {
+            msg = "";
+        }
+        return "[" + msg.toString() + "]";
     }
 }
