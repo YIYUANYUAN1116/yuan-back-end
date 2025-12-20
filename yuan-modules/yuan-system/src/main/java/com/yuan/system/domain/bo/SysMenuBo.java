@@ -26,6 +26,8 @@ public class SysMenuBo implements Serializable {
      */
 //    @NotBlank(message = "菜单名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String menuName;
+
+    private String routeName;
     /**
      * 父菜单ID
      */

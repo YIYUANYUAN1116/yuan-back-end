@@ -25,6 +25,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -166,6 +167,7 @@ public class SysLogininforServiceImpl implements SysLogininforService {
         } else if (Constants.LOGIN_FAIL.equals(logininforEvent.getStatus())) {
             logininfor.setStatus(Constants.FAIL);
         }
+        logininfor.setLoginTime(LocalDateTime.now());
         // 插入数据
         insertByBo(logininfor);
     }

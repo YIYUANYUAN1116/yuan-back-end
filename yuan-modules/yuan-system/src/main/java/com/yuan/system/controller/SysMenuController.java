@@ -15,8 +15,10 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.bo.SysMenuBo;
 import com.yuan.system.domain.vo.MenuTreeSelectVo;
+import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
 import com.yuan.system.service.SysMenuService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +45,7 @@ import java.util.List;
 @Tag(name = "SysMenuController", description = "菜单")
 public class SysMenuController extends BaseController {
 
-    private final SysMenuService sysMenuService;
+    private final SysMenuService menuService;
 
     /**
      * 查询菜单列表
@@ -52,7 +54,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("/list")
     @Operation(summary = "查询菜单列表", operationId = "sysMenu_list")
     public TableDataInfo<SysMenuVo> list(SysMenuBo bo, PageQuery pageQuery) {
-        return sysMenuService.queryPageList(bo, pageQuery);
+        return menuService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -63,7 +65,7 @@ public class SysMenuController extends BaseController {
     @PostMapping("/export")
     @Operation(summary = "导出菜单列表", operationId = "sysMenu_export")
     public void export(SysMenuBo bo, HttpServletResponse response) {
-        List<SysMenuVo> list = sysMenuService.queryList(bo);
+        List<SysMenuVo> list = menuService.queryList(bo);
         ExcelUtil.exportExcel(list, "菜单", SysMenuVo.class, response);
     }
 
@@ -77,7 +79,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "获取菜单详细信息", operationId = "sysMenu_getInfo")
     public R<SysMenuVo> getInfo(@NotNull(message = "主键不能为空")
                                 @PathVariable Long menuId) {
-        return R.ok(sysMenuService.queryById(menuId));
+        return R.ok(menuService.queryById(menuId));
     }
 
     /**
@@ -89,7 +91,7 @@ public class SysMenuController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增菜单", operationId = "sysMenu_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysMenuBo bo) {
-        return toAjax(sysMenuService.insertByBo(bo));
+        return toAjax(menuService.insertByBo(bo));
     }
 
     /**
@@ -101,7 +103,7 @@ public class SysMenuController extends BaseController {
     @PutMapping()
     @Operation(summary = "修改菜单", operationId = "sysMenu_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysMenuBo bo) {
-        return toAjax(sysMenuService.updateByBo(bo));
+        return toAjax(menuService.updateByBo(bo));
     }
 
     /**
@@ -115,7 +117,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "删除菜单", operationId = "sysMenu_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] menuIds) {
-        return toAjax(sysMenuService.deleteWithValidByIds(List.of(menuIds), true));
+        return toAjax(menuService.deleteWithValidByIds(List.of(menuIds), true));
     }
 
     /**
@@ -129,10 +131,10 @@ public class SysMenuController extends BaseController {
     @GetMapping("/treeselect")
     @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
     public R<MenuTreeSelectVo> treeselect(SysMenuBo bo, Long roleId) {
-        List<SysMenuVo> menus = sysMenuService.selectMenuList(bo, LoginHelper.getUserId());
+        List<SysMenuVo> menus = menuService.selectMenuList(bo, LoginHelper.getUserId());
         MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
-        selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
-        selectVo.setCheckedKeys(sysMenuService.selectMenuListByRoleId(roleId));
+        selectVo.setMenus(menuService.buildMenuTreeSelect(menus));
+        selectVo.setCheckedKeys(menuService.selectMenuListByRoleId(roleId));
         return R.ok(selectVo);
     }
 
@@ -144,10 +146,10 @@ public class SysMenuController extends BaseController {
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     @Operation(summary = "获取角色菜单树", operationId = "sysMenu_roleMenuTreeselect")
     public R<MenuTreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
-        List<SysMenuVo> menus = sysMenuService.selectMenuList(LoginHelper.getUserId());
+        List<SysMenuVo> menus = menuService.selectMenuList(LoginHelper.getUserId());
         MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
-        selectVo.setCheckedKeys(sysMenuService.selectMenuListByRoleId(roleId));
-        selectVo.setMenus(sysMenuService.buildMenuTreeSelect(menus));
+        selectVo.setCheckedKeys(menuService.selectMenuListByRoleId(roleId));
+        selectVo.setMenus(menuService.buildMenuTreeSelect(menus));
         return R.ok(selectVo);
     }
 
@@ -158,7 +160,19 @@ public class SysMenuController extends BaseController {
     @GetMapping("/listTree")
     @Operation(summary = "查询树型菜单列表", operationId = "sysMenu_listTree")
     public R<List<SysMenuVo>> listTree(SysMenuBo bo) {
-        List<SysMenuVo> sysMenuVos = sysMenuService.listTree(bo);
+        List<SysMenuVo> sysMenuVos = menuService.listTree(bo);
         return R.ok(sysMenuVos);
+    }
+
+    /**
+     * 获取路由信息
+     *
+     * @return 路由信息
+     */
+    @GetMapping("/menuRouters")
+    @Operation(summary = "获取菜单路由", operationId = "menuRouters")
+    public R<List<ReactRouterVo>> menuRouters() {
+        List<SysMenu> menus = menuService.selectMenuTreeByUserId(LoginHelper.getUserId());
+        return R.ok(menuService.buildRouterVos(menus));
     }
 }

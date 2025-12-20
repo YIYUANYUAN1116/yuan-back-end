@@ -28,4 +28,6 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page,@Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
 
     Page<SysUserVo> selectUnallocatedUserList(@Param("page") Page<SysUser> page,@Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
+
+    List<SysRoleVo> selectRolePermissionByUserId(Long userId);
 }

@@ -10,6 +10,7 @@ import com.yuan.system.domain.vo.SysUserVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色Service接口
@@ -68,4 +69,6 @@ public interface SysRoleService {
     void checkRoleDataScope(Long roleId);
 
     int insertAuthUsers(Long roleId, Long[] userIds);
+
+    Set<String> selectRolePermissionByUserId(Long userId);
 }

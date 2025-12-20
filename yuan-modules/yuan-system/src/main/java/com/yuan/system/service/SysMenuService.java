@@ -3,11 +3,14 @@ package com.yuan.system.service;
 import cn.hutool.core.lang.tree.Tree;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.bo.SysMenuBo;
+import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单Service接口
@@ -58,4 +61,17 @@ public interface SysMenuService {
     List<Long> selectMenuListByUserId(Long userId);
 
     List<SysMenuVo> listTree(SysMenuBo bo);
+
+    List<SysMenu> selectMenuTreeByUserId(Long userId);
+
+    /**
+     * 构建前端路由
+     * @param menus
+     * @return
+     */
+    List<ReactRouterVo> buildRouterVos(List<SysMenu> menus);
+
+    Set<String> selectMenuPermsByUserId(Long userId);
+
+    Set<Long> addParentIds(Long[] menuIds);
 }

@@ -1,5 +1,6 @@
 package com.yuan.system.service;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -33,6 +34,7 @@ import java.util.function.Supplier;
 @Service
 public class SysLoginService {
     private final SysUserMapper userMapper;
+    private final ISysPermissionService permissionService;
 
     /**
      * 登录验证
@@ -98,6 +100,8 @@ public class SysLoginService {
         loginUser.setUserType(user.getUserType());
         loginUser.setKroleGroupIds(user.getKroleGroupIds());
         loginUser.setKroleGroupType(user.getKroleGroupType());
+        loginUser.setMenuPermission(permissionService.getMenuPermission(user.getUserId()));
+        loginUser.setRolePermission(permissionService.getRolePermission(user.getUserId()));
         List<RoleDTO> roles = BeanUtil.copyToList(user.getRoles(), RoleDTO.class);
         loginUser.setRoles(roles);
         return loginUser;
@@ -123,5 +127,20 @@ public class SysLoginService {
         logininforEvent.setMessage(message);
         logininforEvent.setRequest(ServletUtils.getRequest());
         SpringUtils.context().publishEvent(logininforEvent);
+    }
+
+    public void logout() {
+        try {
+            LoginUser loginUser = LoginHelper.getLoginUser();
+//            if (TenantHelper.isEnable() && LoginHelper.isSuperAdmin()) {
+//                // 超级管理员 登出清除动态租户
+//                TenantHelper.clearDynamic();
+//            }
+            StpUtil.logout();
+            if (loginUser != null) {
+                recordLogininfor(loginUser.getTenantId(), loginUser.getUsername(), Constants.LOGOUT, MessageUtils.message("user.logout.success"));
+            }
+        } catch (NotLoginException ignored) {
+        }
     }
 }

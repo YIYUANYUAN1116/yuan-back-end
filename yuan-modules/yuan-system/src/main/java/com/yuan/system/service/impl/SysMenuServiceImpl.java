@@ -6,16 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yuan.common.core.utils.CommonTreeUtils;
-import com.yuan.common.core.utils.MapstructUtils;
-import com.yuan.common.core.utils.StringUtils;
-import com.yuan.common.core.utils.TreeBuildUtils;
+import com.yuan.common.core.utils.*;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.bo.SysMenuBo;
+import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
 import com.yuan.system.mapper.SysMenuMapper;
 import com.yuan.system.mapper.SysRoleMapper;
@@ -24,12 +22,7 @@ import com.yuan.system.service.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,6 +90,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         lqw.eq(bo.getUpdateBy() != null, SysMenu::getUpdateBy, bo.getUpdateBy());
         lqw.eq(bo.getUpdateTime() != null, SysMenu::getUpdateTime, bo.getUpdateTime());
         lqw.eq(StringUtils.isNotBlank(bo.getRemark()), SysMenu::getRemark, bo.getRemark());
+        lqw.orderByAsc(SysMenu::getOrderNum);
         return lqw;
     }
 
@@ -240,6 +234,89 @@ public class SysMenuServiceImpl implements SysMenuService {
                 SysMenuVo::setChildren,    // children 设置器
                 0L                       // 根节点 parentId = 0
         );
+    }
+
+    @Override
+    public List<SysMenu> selectMenuTreeByUserId(Long userId) {
+        List<SysMenu> menus;
+        if (LoginHelper.isSuperAdmin(userId)) {
+            menus = baseMapper.selectMenuTreeAll();
+        } else {
+            menus = baseMapper.selectMenuTreeByUserId(userId);
+        }
+        return getChildPerms(menus, 0);
+    }
+
+    @Override
+    public List<ReactRouterVo> buildRouterVos(List<SysMenu> menus) {
+        List<ReactRouterVo> routers = new LinkedList<>();
+        for (SysMenu menu : menus) {
+            ReactRouterVo router = new ReactRouterVo();
+            router.setName(menu.getRouteName());
+            router.setIcon(menu.getIcon());
+            router.setHideInMenu(menu.getVisible().equals("1"));
+            router.setPath(menu.getPath());
+            router.setAccess(menu.getPerms());
+            if (menu.getChildren() != null && !menu.getChildren().isEmpty()) {
+                router.setRoutes(buildRouterVos(menu.getChildren()));
+            }else {
+                router.setComponent(menu.getComponent());
+            }
+
+            routers.add(router);
+        }
+        return routers;
+    }
+
+    @Override
+    public Set<String> selectMenuPermsByUserId(Long userId) {
+        List<String> perms = baseMapper.selectMenuPermsByUserId(userId);
+        Set<String> permsSet = new HashSet<>();
+        for (String perm : perms) {
+            if (StringUtils.isNotEmpty(perm)) {
+                permsSet.addAll(StringUtils.splitList(perm.trim()));
+            }
+        }
+        return permsSet;
+    }
+
+    @Override
+    public Set<Long> addParentIds(Long[] menuIds) {
+        Set<Long> res = new HashSet<>();
+        if (menuIds != null && menuIds.length > 0) {
+            List<Long> list = Arrays.asList(menuIds);
+            List<SysMenuVo> sysMenuVos = baseMapper.selectVoByIds(list);
+            res = sysMenuVos.stream().map(SysMenuVo::getParentId).filter(item->!item.equals(0L)).collect(Collectors.toSet());
+            res.addAll(list);
+        }
+        return res;
+    }
+
+    /**
+     * 根据传入的某个父节点ID,遍历该父节点的所有子节点
+     * @param menus
+     * @param parentId
+     * @return
+     */
+    private List<SysMenu> getChildPerms(List<SysMenu> menus, int parentId) {
+        List<SysMenu> result = new ArrayList<>();
+        for (SysMenu menu : menus) {
+            if (menu.getParentId() == parentId) {
+                 menuDfs(menus,menu);
+                 result.add(menu);
+            }
+        }
+        return result;
+    }
+
+    private void menuDfs(List<SysMenu> menus, SysMenu menu) {
+        List<SysMenu> childList = StreamUtils.filter(menus, n -> n.getParentId().equals(menu.getMenuId()));
+        menu.setChildren(childList);
+        for (SysMenu sysMenu : childList) {
+            if (menus.stream().anyMatch(n -> n.getParentId().equals(sysMenu.getMenuId()))) {
+                menuDfs(menus, sysMenu);
+            }
+        }
     }
 
     // 递归收集子菜单

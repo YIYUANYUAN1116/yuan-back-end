@@ -1,11 +1,14 @@
 package com.yuan.system.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * 菜单对象 sys_menu
@@ -29,6 +32,12 @@ public class SysMenu extends BaseEntity {
      * 菜单名称
      */
     private String menuName;
+
+
+    /**
+     * 菜单名称
+     */
+    private String routeName;
 
     /**
      * 父菜单ID
@@ -95,5 +104,7 @@ public class SysMenu extends BaseEntity {
      */
     private String remark;
 
+    @TableField(exist = false)
+    private List<SysMenu> children;
 
 }

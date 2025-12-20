@@ -1,7 +1,9 @@
 package com.yuan.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.core.mapper.BaseMapperPlus;
 import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.vo.SysMenuVo;
@@ -24,4 +26,29 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
     List<Long> selectMenuListByRoleId(Long roleId, Boolean menuCheckStrictly);
 
     List<Long> selectMenuListByRoleIds(Long[] roleIds);
+
+    /**
+     * 根据用户ID查询菜单
+     *
+     * @return 菜单列表
+     */
+    default List<SysMenu> selectMenuTreeAll() {
+        LambdaQueryWrapper<SysMenu> lqw = new LambdaQueryWrapper<SysMenu>()
+                .in(SysMenu::getMenuType, UserConstants.TYPE_DIR, UserConstants.TYPE_MENU)
+                .eq(SysMenu::getStatus, UserConstants.MENU_NORMAL)
+                .orderByAsc(SysMenu::getParentId)
+                .orderByAsc(SysMenu::getOrderNum);
+        return this.selectList(lqw);
+    }
+
+    /**
+     * 根据用户ID查询菜单
+     *
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    List<SysMenu> selectMenuTreeByUserId(Long userId);
+
+    List<String> selectMenuPermsByUserId(Long userId);
+
 }

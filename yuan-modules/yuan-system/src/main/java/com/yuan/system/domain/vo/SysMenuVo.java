@@ -30,6 +30,12 @@ public class SysMenuVo implements Serializable {
      */
     @ExcelProperty(value = "菜单名称")
     private String menuName;
+
+    /**
+     * 菜单名称
+     */
+    @ExcelProperty(value = "路由名称")
+    private String routeName;
     /**
      * 父菜单ID
      */

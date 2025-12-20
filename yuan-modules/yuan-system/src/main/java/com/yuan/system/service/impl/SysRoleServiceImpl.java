@@ -25,15 +25,13 @@ import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysRoleMenuMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
+import com.yuan.system.service.SysMenuService;
 import com.yuan.system.service.SysRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * 角色Service业务层处理
@@ -48,6 +46,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysRoleMapper baseMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMenuMapper roleMenuMapper;
+    private final SysMenuService menuService;
 
     /**
      * 查询角色
@@ -238,11 +237,24 @@ public class SysRoleServiceImpl implements SysRoleService {
         return rows;
     }
 
+    @Override
+    public Set<String> selectRolePermissionByUserId(Long userId) {
+        List<SysRoleVo> perms = baseMapper.selectRolePermissionByUserId(userId);
+        Set<String> permsSet = new HashSet<>();
+        for (SysRoleVo perm : perms) {
+            if (ObjectUtil.isNotNull(perm)) {
+                permsSet.addAll(StringUtils.splitList(perm.getRoleKey().trim()));
+            }
+        }
+        return permsSet;
+    }
+
     private void insertRoleMenu(SysRoleBo role) {
         if (ObjectUtil.isNull(role) || role.getMenuIds() == null)return;
         // 新增用户与角色管理
+        Set<Long> menus = menuService.addParentIds(role.getMenuIds());
         List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
-        for (Long menuId : role.getMenuIds()) {
+        for (Long menuId : menus) {
             SysRoleMenu rm = new SysRoleMenu();
             rm.setRoleId(role.getRoleId());
             rm.setMenuId(menuId);

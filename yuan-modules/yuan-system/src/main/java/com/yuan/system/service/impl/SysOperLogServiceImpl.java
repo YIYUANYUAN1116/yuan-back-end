@@ -99,8 +99,6 @@ public class SysOperLogServiceImpl implements SysOperLogService {
                     lqw.eq(StringUtils.isNotBlank(bo.getErrorMsg()), SysOperLog::getErrorMsg, bo.getErrorMsg());
                     lqw.eq(bo.getOperTime() != null, SysOperLog::getOperTime, bo.getOperTime());
                     lqw.eq(bo.getCostTime() != null, SysOperLog::getCostTime, bo.getCostTime());
-
-        lqw.orderByDesc(SysOperLog::getOperTime);
         return lqw;
     }
 

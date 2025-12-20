@@ -49,4 +49,14 @@ public class AuthController {
         return R.ok(loginVo);
     }
 
+    /**
+     * 退出登录
+     */
+    @PostMapping("/logout")
+    @Operation(summary = "退出登录",operationId = "logout")
+    public R<Void> logout() {
+        loginService.logout();
+        return R.ok("退出成功");
+    }
+
 }
