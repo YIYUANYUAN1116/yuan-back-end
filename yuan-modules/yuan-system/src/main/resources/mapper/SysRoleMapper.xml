@@ -25,4 +25,34 @@
         <include refid="selectRoleVo"/>
         WHERE r.del_flag = '0' and sur.user_id = #{userId}
     </select>
+    <select id="selectAllocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select distinct u.user_id,
+                        u.dept_id,
+                        u.user_name,
+                        u.nick_name,
+                        u.email,
+                        u.phonenumber,
+                        u.status,
+                        u.create_time
+        from sys_user u
+                 left join sys_dept d on u.dept_id = d.dept_id
+                 left join sys_user_role sur on u.user_id = sur.user_id
+                 left join sys_role r on r.role_id = sur.role_id
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="selectUnallocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select distinct u.user_id,
+                        u.dept_id,
+                        u.user_name,
+                        u.nick_name,
+                        u.email,
+                        u.phonenumber,
+                        u.status,
+                        u.create_time
+        from sys_user u
+                 left join sys_dept d on u.dept_id = d.dept_id
+                 left join sys_user_role sur on u.user_id = sur.user_id
+                 left join sys_role r on r.role_id = sur.role_id
+            ${ew.getCustomSqlSegment}
+    </select>
 </mapper>

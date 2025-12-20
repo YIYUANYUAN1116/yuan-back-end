@@ -5,6 +5,8 @@ import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.vo.SysUserRoleVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 
 /**
  * 用户角色Mapper接口
@@ -17,5 +19,5 @@ public interface SysUserRoleMapper extends BaseMapperPlus<SysUserRole, SysUserRo
 
     Long[] selectRoleIdsByUserId(Long userId);
 
-    Long[] selectUserIdsByRoleId(Long roleId);
+    List<Long> selectUserIdsByRoleId(Long roleId);
 }

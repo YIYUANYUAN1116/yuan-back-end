@@ -3,8 +3,10 @@ package com.yuan.system.service;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysRoleBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
+import com.yuan.system.domain.vo.SysUserVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -56,4 +58,14 @@ public interface SysRoleService {
     List<SysRoleVo> selectRolesByUserId(Long userId);
 
     SelectRolesVo selectSelectRolesVo(Long userId);
+
+    TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery);
+
+    TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery);
+
+    int deleteAuthUsers(Long roleId, Long[] userIds);
+
+    void checkRoleDataScope(Long roleId);
+
+    int insertAuthUsers(Long roleId, Long[] userIds);
 }

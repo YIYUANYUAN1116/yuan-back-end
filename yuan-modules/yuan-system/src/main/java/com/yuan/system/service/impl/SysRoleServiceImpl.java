@@ -1,20 +1,27 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.MapstructUtils;
+import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.SysRoleMenu;
+import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.bo.SysRoleBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
+import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysRoleMenuMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
@@ -24,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,8 +46,8 @@ import java.util.List;
 public class SysRoleServiceImpl implements SysRoleService {
 
     private final SysRoleMapper baseMapper;
-    private final SysUserRoleMapper sysUserRoleMapper;
-    private final SysRoleMenuMapper sysRoleMenuMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysRoleMenuMapper roleMenuMapper;
 
     /**
      * 查询角色
@@ -96,7 +104,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         validEntityBeforeSave(update);
         boolean flag = baseMapper.updateById(update) > 0;
         if (flag) {
-            sysRoleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, bo.getRoleId()));
+            roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, bo.getRoleId()));
             insertRoleMenu(bo);
         }
         return flag;
@@ -128,7 +136,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     private Long countUserRoleByRoleId(Long roleId) {
-        return sysUserRoleMapper.selectCount(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getRoleId, roleId));
+        return userRoleMapper.selectCount(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getRoleId, roleId));
     }
 
     @Override
@@ -163,9 +171,71 @@ public class SysRoleServiceImpl implements SysRoleService {
         List<SysRoleVo> sysRoleVos = baseMapper.selectVoList();
         selectRolesVo.setRoles(sysRoleVos);
         if (userId != null) {
-            selectRolesVo.setCheckedKeys(sysUserRoleMapper.selectRoleIdsByUserId(userId));
+            selectRolesVo.setCheckedKeys(userRoleMapper.selectRoleIdsByUserId(userId));
         }
         return selectRolesVo;
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        QueryWrapper<SysUser> wrapper = Wrappers.query();
+        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+                .eq(ObjectUtil.isNotNull(user.getRoleId()), "r.role_id", user.getRoleId())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = baseMapper.selectAllocatedUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(user.getRoleId());
+        QueryWrapper<SysUser> wrapper = Wrappers.query();
+        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+                .and(w -> w.ne("r.role_id", user.getRoleId()).or().isNull("r.role_id"))
+                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = baseMapper.selectUnallocatedUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public int deleteAuthUsers(Long roleId, Long[] userIds) {
+        int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
+                .eq(SysUserRole::getRoleId, roleId)
+                .in(SysUserRole::getUserId, Arrays.asList(userIds)));
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows;
+    }
+
+    @Override
+    public void checkRoleDataScope(Long roleId) {
+        //todo
+    }
+
+    @Override
+    public int insertAuthUsers(Long roleId, Long[] userIds) {
+        // 新增用户与角色管理
+        int rows = 1;
+        List<SysUserRole> list = StreamUtils.toList(List.of(userIds), userId -> {
+            SysUserRole ur = new SysUserRole();
+            ur.setUserId(userId);
+            ur.setRoleId(roleId);
+            return ur;
+        });
+        if (CollUtil.isNotEmpty(list)) {
+            rows = userRoleMapper.insertBatch(list) ? list.size() : 0;
+        }
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows;
     }
 
     private void insertRoleMenu(SysRoleBo role) {
@@ -179,7 +249,7 @@ public class SysRoleServiceImpl implements SysRoleService {
             list.add(rm);
         }
         if (!list.isEmpty()) {
-            sysRoleMenuMapper.insertBatch(list);
+            roleMenuMapper.insertBatch(list);
         }
     }
 

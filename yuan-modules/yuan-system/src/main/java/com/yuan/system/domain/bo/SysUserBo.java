@@ -140,4 +140,5 @@ public class SysUserBo implements Serializable {
      */
     private String kroleGroupIds;
 
+    private Long roleId;
 }
