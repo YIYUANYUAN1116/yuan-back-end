@@ -1,5 +1,7 @@
 package com.yuan.system.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.core.constant.UserConstants;
@@ -52,6 +54,7 @@ public class SysDictData extends TenantEntity {
     /**
      * 表格字典样式
      */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String listClass;
 
     /**

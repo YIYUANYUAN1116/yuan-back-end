@@ -86,13 +86,13 @@ public class SysRoleController extends BaseController {
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增角色",operationId = "sysRole_add")
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleBo role) {
-        if (!sysRoleService.checkRoleNameUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
-        } else if (!sysRoleService.checkRoleKeyUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysRoleBo bo) {
+        if (!sysRoleService.checkRoleNameUnique(bo)) {
+            return R.fail("新增角色'" + bo.getRoleName() + "'失败，角色名称已存在");
+        } else if (!sysRoleService.checkRoleKeyUnique(bo)) {
+            return R.fail("新增角色'" + bo.getRoleName() + "'失败，角色权限已存在");
         }
-        return toAjax(sysRoleService.insertByBo(role));
+        return toAjax(sysRoleService.insertByBo(bo));
     }
 
     /**
@@ -103,13 +103,13 @@ public class SysRoleController extends BaseController {
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改角色",operationId = "sysRole_edit")
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo role) {
-        if (!sysRoleService.checkRoleNameUnique(role)) {
-            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色名称已存在");
-        } else if (!sysRoleService.checkRoleKeyUnique(role)) {
-            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysRoleBo bo) {
+        if (!sysRoleService.checkRoleNameUnique(bo)) {
+            return R.fail("修改角色'" + bo.getRoleName() + "'失败，角色名称已存在");
+        } else if (!sysRoleService.checkRoleKeyUnique(bo)) {
+            return R.fail("修改角色'" + bo.getRoleName() + "'失败，角色权限已存在");
         }
-        return toAjax(sysRoleService.updateByBo(role));
+        return toAjax(sysRoleService.updateByBo(bo));
     }
 
     /**
@@ -142,8 +142,8 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:role:list")
     @GetMapping("/authUser/allocatedList")
     @Operation(summary = "获取角色已分配用户列表",operationId = "allocatedUserList")
-    public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo user, PageQuery pageQuery) {
-        return sysRoleService.selectAllocatedUserList(user, pageQuery);
+    public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
+        return sysRoleService.selectAllocatedUserList(bo, pageQuery);
     }
 
     /**
@@ -152,8 +152,8 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:role:list")
     @GetMapping("/authUser/unallocatedList")
     @Operation(summary = "获取角色未分配用户列表",operationId = "unallocatedUserList")
-    public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo user, PageQuery pageQuery) {
-        return sysRoleService.selectUnallocatedUserList(user, pageQuery);
+    public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
+        return sysRoleService.selectUnallocatedUserList(bo, pageQuery);
     }
 
     /**
