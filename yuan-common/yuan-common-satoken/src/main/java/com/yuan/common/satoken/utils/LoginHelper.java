@@ -1,6 +1,7 @@
 package com.yuan.common.satoken.utils;
 
 import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.context.model.SaStorage;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
@@ -11,7 +12,6 @@ import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.domain.model.LoginUser;
 import com.yuan.common.core.enums.DeviceType;
 import com.yuan.common.core.enums.UserType;
-import com.yuan.common.core.exception.AuthException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ import java.util.Set;
  * 多用户体系 针对 多种用户类型 但权限控制不一致
  * 可以组成 多用户类型表与多设备类型 分别控制权限
  *
+ * @author Lion Li
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -53,17 +54,18 @@ public class LoginHelper {
      * @param loginUser 登录用户信息
      */
     public static void loginByDevice(LoginUser loginUser, DeviceType deviceType) {
+        SaStorage storage = SaHolder.getStorage();
+        storage.set(LOGIN_USER_KEY, loginUser);
+        storage.set(TENANT_KEY, loginUser.getTenantId());
+        storage.set(USER_KEY, loginUser.getUserId());
         SaLoginModel model = new SaLoginModel();
         if (ObjectUtil.isNotNull(deviceType)) {
             model.setDevice(deviceType.getDevice());
         }
         StpUtil.login(loginUser.getLoginId(),
-            model.setExtra(TENANT_KEY, loginUser.getTenantId())
-                .setExtra(USER_KEY, loginUser.getUserId()));
-        SaSession tokenSession = StpUtil.getTokenSession();
-        tokenSession.set(USER_KEY, loginUser.getUserId());
-        tokenSession.set(TENANT_KEY, loginUser.getTenantId());
-        tokenSession.set(LOGIN_USER_KEY, loginUser);
+                model.setExtra(TENANT_KEY, loginUser.getTenantId())
+                        .setExtra(USER_KEY, loginUser.getUserId()));
+        StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginUser);
     }
 
     /**
@@ -79,9 +81,6 @@ public class LoginHelper {
             loginUser =  (LoginUser) tokenSession.get(LOGIN_USER_KEY);
             SaHolder.getStorage().set(LOGIN_USER_KEY, loginUser);
         };
-        if (loginUser == null) {
-            throw new AuthException("请登录");
-        }
         return loginUser;
     }
 
@@ -100,7 +99,11 @@ public class LoginHelper {
     public static Long getUserId() {
         Long userId;
         try {
-            userId = Convert.toLong(StpUtil.getTokenSession().get(USER_KEY));
+            userId = Convert.toLong(SaHolder.getStorage().get(USER_KEY));
+            if (ObjectUtil.isNull(userId)) {
+                userId = Convert.toLong(StpUtil.getExtra(USER_KEY));
+                SaHolder.getStorage().set(USER_KEY, userId);
+            }
         } catch (Exception e) {
             return null;
         }
@@ -113,7 +116,11 @@ public class LoginHelper {
     public static String getTenantId() {
         String tenantId;
         try {
-            tenantId = (String) StpUtil.getTokenSession().get(TENANT_KEY);
+            tenantId = (String) SaHolder.getStorage().get(TENANT_KEY);
+            if (ObjectUtil.isNull(tenantId)) {
+                tenantId = (String) StpUtil.getExtra(TENANT_KEY);
+                SaHolder.getStorage().set(TENANT_KEY, tenantId);
+            }
         } catch (Exception e) {
             return null;
         }
