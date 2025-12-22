@@ -4,12 +4,13 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.common.excel.annotation.ExcelDictFormat;
 import com.yuan.common.excel.convert.ExcelDictConvert;
+import com.yuan.system.domain.SysDept;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import com.yuan.system.domain.SysDept;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -101,5 +102,7 @@ public class SysDeptVo implements Serializable {
      */
     @ExcelProperty(value = "更新时间")
     private LocalDateTime updateTime;
+
+    private List<SysDeptVo> children;
 
 }

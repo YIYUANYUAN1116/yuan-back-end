@@ -1,8 +1,11 @@
 package com.yuan.system.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-import java.time.LocalDateTime;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("sys_post")
-public class SysPost implements Serializable {
+public class SysPost extends BaseEntity implements Serializable {
 
 
     /**
@@ -46,31 +49,6 @@ public class SysPost implements Serializable {
      * 状态（0正常 1停用）
      */
     private String status;
-
-    /**
-     * 创建部门
-     */
-    private Long createDept;
-
-    /**
-     * 创建者
-     */
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
     /**
      * 备注

@@ -1,7 +1,7 @@
 package com.yuan.system.service;
 
 
-
+import cn.hutool.core.lang.tree.Tree;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDeptBo;
@@ -47,4 +47,10 @@ public interface SysDeptService {
      * 校验并批量删除部门信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    List<SysDeptVo> listTree(SysDeptBo bo);
+
+    List<SysDeptVo> selectDeptList(SysDeptBo bo, Long userId);
+
+    List<Tree<Long>> buildDeptTreeSelect(List<SysDeptVo> deptVos);
 }

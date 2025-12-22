@@ -17,7 +17,7 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.bo.SysMenuBo;
-import com.yuan.system.domain.vo.MenuTreeSelectVo;
+import com.yuan.system.domain.vo.TreeSelectVo;
 import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
 import com.yuan.system.service.SysMenuService;
@@ -130,10 +130,10 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:menu:query")
     @GetMapping("/treeselect")
     @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
-    public R<MenuTreeSelectVo> treeselect(SysMenuBo bo, Long roleId) {
+    public R<TreeSelectVo> treeselect(SysMenuBo bo, Long roleId) {
         List<SysMenuVo> menus = menuService.selectMenuList(bo, LoginHelper.getUserId());
-        MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
-        selectVo.setMenus(menuService.buildMenuTreeSelect(menus));
+        TreeSelectVo selectVo = new TreeSelectVo();
+        selectVo.setTreeList(menuService.buildMenuTreeSelect(menus));
         selectVo.setCheckedKeys(menuService.selectMenuListByRoleId(roleId));
         return R.ok(selectVo);
     }
@@ -145,11 +145,11 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:menu:query")
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     @Operation(summary = "获取角色菜单树", operationId = "sysMenu_roleMenuTreeselect")
-    public R<MenuTreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
+    public R<TreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
         List<SysMenuVo> menus = menuService.selectMenuList(LoginHelper.getUserId());
-        MenuTreeSelectVo selectVo = new MenuTreeSelectVo();
+        TreeSelectVo selectVo = new TreeSelectVo();
         selectVo.setCheckedKeys(menuService.selectMenuListByRoleId(roleId));
-        selectVo.setMenus(menuService.buildMenuTreeSelect(menus));
+        selectVo.setTreeList(menuService.buildMenuTreeSelect(menus));
         return R.ok(selectVo);
     }
 

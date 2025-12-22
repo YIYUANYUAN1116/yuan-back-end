@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MenuTreeSelectVo {
+public class TreeSelectVo {
 
     /**
      * 选中菜单列表
@@ -16,6 +16,6 @@ public class MenuTreeSelectVo {
     /**
      * 菜单下拉树结构列表
      */
-    private List<Tree<Long>> menus;
+    private List<Tree<Long>> treeList;
 
 }

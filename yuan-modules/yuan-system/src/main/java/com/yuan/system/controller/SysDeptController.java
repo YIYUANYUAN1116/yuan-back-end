@@ -8,11 +8,13 @@ import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
 import com.yuan.common.log.enums.BusinessType;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDeptBo;
 import com.yuan.system.domain.vo.SysDeptVo;
+import com.yuan.system.domain.vo.TreeSelectVo;
 import com.yuan.system.service.SysDeptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,16 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -119,5 +113,29 @@ public class SysDeptController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] deptIds) {
         return toAjax(sysDeptService.deleteWithValidByIds(List.of(deptIds), true));
+    }
+
+    /**
+     * 查询树型菜单列表
+     */
+    @SaCheckPermission("system:dept:query")
+    @GetMapping("/listTree")
+    @Operation(summary = "查询树型菜单列表", operationId = "sysDept_listTree")
+    public R<List<SysDeptVo>> listTree(SysDeptBo bo) {
+        List<SysDeptVo> sysDeptVos = sysDeptService.listTree(bo);
+        return R.ok(sysDeptVos);
+    }
+
+    /**
+     * 获取菜单下拉树列表
+     */
+    @SaCheckPermission("system:dept:query")
+    @GetMapping("/treeselect")
+    @Operation(summary = "获取菜单下拉树列表", operationId = "sysDept_treeselect")
+    public R<TreeSelectVo> treeselect(SysDeptBo bo) {
+        List<SysDeptVo> deptVos = sysDeptService.selectDeptList(bo, LoginHelper.getUserId());
+        TreeSelectVo selectVo = new TreeSelectVo();
+        selectVo.setTreeList(sysDeptService.buildDeptTreeSelect(deptVos));
+        return R.ok(selectVo);
     }
 }

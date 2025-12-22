@@ -71,7 +71,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     private LambdaQueryWrapper<SysMenu> buildQueryWrapper(SysMenuBo bo) {
         LambdaQueryWrapper<SysMenu> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getMenuId() != null, SysMenu::getMenuId, bo.getMenuId());
-        lqw.eq(StringUtils.isNotBlank(bo.getMenuName()), SysMenu::getMenuName, bo.getMenuName());
+        lqw.like(StringUtils.isNotBlank(bo.getMenuName()), SysMenu::getMenuName, bo.getMenuName());
         lqw.eq(bo.getParentId() != null, SysMenu::getParentId, bo.getParentId());
         lqw.eq(bo.getOrderNum() != null, SysMenu::getOrderNum, bo.getOrderNum());
         lqw.eq(StringUtils.isNotBlank(bo.getPath()), SysMenu::getPath, bo.getPath());

@@ -1,11 +1,14 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.RequiredArgsConstructor;
+import com.yuan.common.core.utils.CommonTreeUtils;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.core.utils.TreeBuildUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysDept;
@@ -13,10 +16,11 @@ import com.yuan.system.domain.bo.SysDeptBo;
 import com.yuan.system.domain.vo.SysDeptVo;
 import com.yuan.system.mapper.SysDeptMapper;
 import com.yuan.system.service.SysDeptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * deptService业务层处理
@@ -63,7 +67,7 @@ public class SysDeptServiceImpl implements SysDeptService {
                     lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysDept::getTenantId, bo.getTenantId());
                     lqw.eq(bo.getParentId() != null, SysDept::getParentId, bo.getParentId());
                     lqw.eq(StringUtils.isNotBlank(bo.getAncestors()), SysDept::getAncestors, bo.getAncestors());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDeptName()), SysDept::getDeptName, bo.getDeptName());
+                    lqw.like(StringUtils.isNotBlank(bo.getDeptName()), SysDept::getDeptName, bo.getDeptName());
                     lqw.eq(bo.getOrderNum() != null, SysDept::getOrderNum, bo.getOrderNum());
                     lqw.eq(StringUtils.isNotBlank(bo.getLeader()), SysDept::getLeader, bo.getLeader());
                     lqw.eq(StringUtils.isNotBlank(bo.getPhone()), SysDept::getPhone, bo.getPhone());
@@ -75,6 +79,7 @@ public class SysDeptServiceImpl implements SysDeptService {
                     lqw.eq(bo.getCreateTime() != null, SysDept::getCreateTime, bo.getCreateTime());
                     lqw.eq(bo.getUpdateBy() != null, SysDept::getUpdateBy, bo.getUpdateBy());
                     lqw.eq(bo.getUpdateTime() != null, SysDept::getUpdateTime, bo.getUpdateTime());
+                    lqw.orderByAsc(SysDept::getOrderNum);
         return lqw;
     }
 
@@ -118,5 +123,72 @@ public class SysDeptServiceImpl implements SysDeptService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public List<SysDeptVo> listTree(SysDeptBo bo) {
+        // 1. 查询匹配的菜单（根据menuName）
+        LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(bo);
+        List<SysDeptVo> matchedDepts = baseMapper.selectVoList(lqw);
+
+        if (matchedDepts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 2. 查询所有菜单
+        List<SysDeptVo> allDepts = baseMapper.selectVoList(new LambdaQueryWrapper<>());
+
+
+        List<SysDeptVo> resultDept = null;
+        if (!Objects.equals(allDepts.size(),matchedDepts.size())) {
+            // 3. 构建子菜单集合（只保留匹配的菜单及其子菜单）
+            Set<Long> includedIds = new HashSet<>();
+            for (SysDeptVo sysDept : matchedDepts) {
+                collectChildren(sysDept.getDeptId(), allDepts, includedIds);
+            }
+
+            resultDept = allDepts.stream()
+                    .filter(m -> includedIds.contains(m.getDeptId()))
+                    .collect(Collectors.toList());
+        }
+
+        resultDept = resultDept==null?matchedDepts:resultDept;
+        // 构建树
+        return CommonTreeUtils.buildTree(
+                resultDept,
+                SysDeptVo::getDeptId,      // id 获取器
+                SysDeptVo::getParentId,    // parentId 获取器
+                SysDeptVo::setChildren,    // children 设置器
+                0L                       // 根节点 parentId = 0
+        );
+    }
+
+    @Override
+    public List<SysDeptVo> selectDeptList(SysDeptBo bo, Long userId) {
+        // 1. 查询匹配的菜单（根据menuName）
+        LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectVoList(lqw);
+    }
+
+    @Override
+    public List<Tree<Long>> buildDeptTreeSelect(List<SysDeptVo> deptVos) {
+        if (CollUtil.isEmpty(deptVos)) {
+            return CollUtil.newArrayList();
+        }
+        return TreeBuildUtils.build(deptVos, (deptVo, tree) ->
+                tree.setId(deptVo.getDeptId())
+                        .setParentId(deptVo.getParentId())
+                        .setName(deptVo.getDeptName())
+                        .setWeight(deptVo.getOrderNum()));
+    }
+
+    // 递归收集子菜单
+    private void collectChildren(Long parentId, List<SysDeptVo> allDepts, Set<Long> includedIds) {
+        includedIds.add(parentId);
+        for (SysDeptVo sysDeptVo : allDepts) {
+            if (parentId.equals(sysDeptVo.getParentId()) && !includedIds.contains(sysDeptVo.getDeptId())) {
+                collectChildren(sysDeptVo.getDeptId(), allDepts, includedIds);
+            }
+        }
     }
 }
