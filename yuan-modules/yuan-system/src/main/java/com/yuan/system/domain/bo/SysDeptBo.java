@@ -1,17 +1,17 @@
 package com.yuan.system.domain.bo;
 
-import com.yuan.system.domain.SysDept;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import com.yuan.system.domain.SysDept;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 部门业务对象 sys_dept
+ * dept业务对象 sys_dept
  *
  * @author ageerle
- * @date Wed Dec 10 17:08:31 CST 2025
+ * @date Mon Dec 22 15:20:54 CST 2025
  */
 @Data
 

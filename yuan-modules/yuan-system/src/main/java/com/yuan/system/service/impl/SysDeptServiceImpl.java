@@ -3,6 +3,7 @@ package com.yuan.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
@@ -12,17 +13,16 @@ import com.yuan.system.domain.bo.SysDeptBo;
 import com.yuan.system.domain.vo.SysDeptVo;
 import com.yuan.system.mapper.SysDeptMapper;
 import com.yuan.system.service.SysDeptService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * 部门Service业务层处理
+ * deptService业务层处理
  *
  * @author ageerle
- * @date Wed Dec 10 17:08:31 CST 2025
+ * @date Mon Dec 22 15:20:54 CST 2025
  */
 @RequiredArgsConstructor
 @Service
@@ -31,7 +31,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     private final SysDeptMapper baseMapper;
 
     /**
-     * 查询部门
+     * 查询dept
      */
     @Override
     public SysDeptVo queryById(Long deptId) {
@@ -39,7 +39,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     }
 
         /**
-         * 查询部门列表
+         * 查询dept列表
          */
         @Override
         public TableDataInfo<SysDeptVo> queryPageList(SysDeptBo bo, PageQuery pageQuery) {
@@ -49,7 +49,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         }
 
     /**
-     * 查询部门列表
+     * 查询dept列表
      */
     @Override
     public List<SysDeptVo> queryList(SysDeptBo bo) {
@@ -79,7 +79,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     }
 
     /**
-     * 新增部门
+     * 新增dept
      */
     @Override
     public Boolean insertByBo(SysDeptBo bo) {
@@ -93,7 +93,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     }
 
     /**
-     * 修改部门
+     * 修改dept
      */
     @Override
     public Boolean updateByBo(SysDeptBo bo) {
@@ -110,7 +110,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     }
 
     /**
-     * 批量删除部门
+     * 批量删除dept
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {

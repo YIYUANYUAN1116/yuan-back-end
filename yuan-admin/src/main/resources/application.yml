@@ -107,7 +107,7 @@ springdoc:
     # 描述
     description: ''
     # 版本
-    version: '版本号: ${revision}'
+    version: '版本号: 1.0.0'
     # 作者信息
     contact:
       name: yuan
