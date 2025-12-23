@@ -250,7 +250,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     private void insertRoleMenu(SysRoleBo role) {
-        if (ObjectUtil.isNull(role) || role.getMenuIds() == null)return;
+        if (ObjectUtil.isNull(role) || role.getMenuIds() == null || role.getMenuIds().length == 0)return;
         // 新增用户与角色管理
         Set<Long> menus = menuService.addParentIds(role.getMenuIds());
         List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
