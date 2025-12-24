@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -21,14 +23,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -78,7 +73,7 @@ public class SysPostController extends BaseController {
     @GetMapping("/{postId}")
     @Operation(summary = "获取post详细信息",operationId = "SysPost_getInfo")
     public R<SysPostVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long postId) {
+                                     @PathVariable @PathId Long postId) {
         return R.ok(sysPostService.queryById(postId));
     }
 
@@ -116,7 +111,7 @@ public class SysPostController extends BaseController {
     @DeleteMapping("/{postIds}")
     @Operation(summary = "删除post",operationId = "SysPost_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] postIds) {
+                          @PathVariable @PathIds Long[] postIds) {
         return toAjax(sysPostService.deleteWithValidByIds(List.of(postIds), true));
     }
 }

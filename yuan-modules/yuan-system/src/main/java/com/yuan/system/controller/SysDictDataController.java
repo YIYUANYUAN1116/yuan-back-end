@@ -3,6 +3,8 @@ package com.yuan.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.ObjectUtil;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.log.annotation.Log;
 import com.yuan.common.log.enums.BusinessType;
@@ -18,14 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +70,7 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:query")
     @GetMapping(value = "/{dictCode}")
     @Operation(summary = "查询字典数据列表",operationId = "dict_getInfo")
-    public R<SysDictDataVo> getInfo(@PathVariable Long dictCode) {
+    public R<SysDictDataVo> getInfo(@PathVariable @PathId Long dictCode) {
         return R.ok(dictDataService.selectDictDataById(dictCode));
     }
 
@@ -127,7 +122,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @Operation(summary = "删除字典类型",operationId = "dict_remove")
     @DeleteMapping("/{dictCodes}")
-    public R<Void> remove(@PathVariable Long[] dictCodes) {
+    public R<Void> remove(@PathVariable @PathIds Long[] dictCodes) {
         dictDataService.deleteDictDataByIds(dictCodes);
         return R.ok();
     }

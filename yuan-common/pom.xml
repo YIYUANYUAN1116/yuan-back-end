@@ -28,6 +28,7 @@
         <module>yuan-common-json</module>
         <module>yuan-common-log</module>
         <module>yuan-common-idemponent</module>
+        <module>yuan-common-doc</module>
     </modules>
 
 </project>

@@ -24,6 +24,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 
 import java.util.List;
 
@@ -73,7 +75,7 @@ public class SysDeptController extends BaseController {
     @SaCheckPermission("system:sysDept:query")
     @GetMapping("/{deptId}")
     public R<SysDeptVo> getInfo(@NotNull(message = "主键不能为空")
-                                @PathVariable Long deptId) {
+                                @PathId @PathVariable Long deptId) {
         return R.ok(sysDeptService.queryById(deptId));
     }
 
@@ -111,7 +113,7 @@ public class SysDeptController extends BaseController {
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] deptIds) {
+                          @PathVariable @PathIds Long[] deptIds) {
         return toAjax(sysDeptService.deleteWithValidByIds(List.of(deptIds), true));
     }
 
@@ -121,9 +123,9 @@ public class SysDeptController extends BaseController {
     @SaCheckPermission("system:dept:query")
     @GetMapping("/listTree")
     @Operation(summary = "查询树型菜单列表", operationId = "sysDept_listTree")
-    public R<List<SysDeptVo>> listTree(SysDeptBo bo) {
+    public TableDataInfo<SysDeptVo> listTree(SysDeptBo bo) {
         List<SysDeptVo> sysDeptVos = sysDeptService.listTree(bo);
-        return R.ok(sysDeptVos);
+        return TableDataInfo.build(sysDeptVos);
     }
 
     /**

@@ -72,7 +72,7 @@ public class TableDataInfo<T> implements Serializable {
     public static <T> TableDataInfo<T> build(List<T> list) {
         TableDataInfo<T> rspData = new TableDataInfo<>();
         rspData.setCode(HttpStatus.HTTP_OK);
-        rspData.setMsg("查询成功");
+//        rspData.setMsg("查询成功");
         rspData.setRows(list);
         rspData.setTotal(list.size());
         return rspData;
@@ -84,7 +84,7 @@ public class TableDataInfo<T> implements Serializable {
     public static <T> TableDataInfo<T> build() {
         TableDataInfo<T> rspData = new TableDataInfo<>();
         rspData.setCode(HttpStatus.HTTP_OK);
-        rspData.setMsg("查询成功");
+//        rspData.setMsg("查询成功");
         return rspData;
     }
 

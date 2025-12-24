@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -71,7 +73,7 @@ public class SysOperLogController extends BaseController {
     @GetMapping("/{operId}")
     @Operation(summary = "获取oprelog详细信息",operationId = "SysOperLog_getInfo")
     public R<SysOperLogVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long operId) {
+                                     @PathVariable @PathId Long operId) {
         return R.ok(sysOperLogService.queryById(operId));
     }
 
@@ -109,7 +111,7 @@ public class SysOperLogController extends BaseController {
     @DeleteMapping("/{operIds}")
     @Operation(summary = "删除oprelog",operationId = "SysOperLog_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] operIds) {
+                          @PathVariable @PathIds Long[] operIds) {
         return toAjax(sysOperLogService.deleteWithValidByIds(List.of(operIds), true));
     }
 }

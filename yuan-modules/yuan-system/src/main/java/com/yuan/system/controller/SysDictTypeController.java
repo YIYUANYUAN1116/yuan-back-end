@@ -2,6 +2,8 @@ package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.log.annotation.Log;
 import com.yuan.common.log.enums.BusinessType;
@@ -16,14 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -80,7 +75,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("system:dict:query")
     @GetMapping(value = "/{dictId}")
     @Operation(summary = "查询字典类型详细",operationId = "dictType_getInfo")
-    public R<SysDictTypeVo> getInfo(@PathVariable Long dictId) {
+    public R<SysDictTypeVo> getInfo(@PathVariable @PathId Long dictId) {
         return R.ok(dictTypeService.selectDictTypeById(dictId));
     }
 
@@ -123,7 +118,7 @@ public class SysDictTypeController extends BaseController {
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
     @Operation(summary = "删除字典类型",operationId = "dictType_remove")
-    public R<Void> remove(@PathVariable Long[] dictIds) {
+    public R<Void> remove(@PathVariable @PathIds Long[] dictIds) {
         dictTypeService.deleteDictTypeByIds(dictIds);
         return R.ok();
     }

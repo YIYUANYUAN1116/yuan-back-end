@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -78,7 +79,7 @@ public class SysUserPostController extends BaseController {
     @GetMapping("/{postId}")
     @Operation(summary = "获取post-user详细信息",operationId = "SysUserPost_getInfo")
     public R<SysUserPostVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long postId) {
+                                     @PathVariable @PathId Long postId) {
         return R.ok(sysUserPostService.queryById(postId));
     }
 
@@ -116,7 +117,7 @@ public class SysUserPostController extends BaseController {
     @DeleteMapping("/{postIds}")
     @Operation(summary = "删除post-user",operationId = "SysUserPost_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] postIds) {
+                          @PathVariable @PathId Long[] postIds) {
         return toAjax(sysUserPostService.deleteWithValidByIds(List.of(postIds), true));
     }
 }

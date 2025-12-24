@@ -1,15 +1,11 @@
 package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -20,15 +16,14 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysRoleDeptBo;
 import com.yuan.system.domain.vo.SysRoleDeptVo;
 import com.yuan.system.service.SysRoleDeptService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -78,7 +73,7 @@ public class SysRoleDeptController extends BaseController {
     @GetMapping("/{deptId}")
     @Operation(summary = "获取部门角色详细信息",operationId = "sysRoleDept_getInfo")
     public R<SysRoleDeptVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long deptId) {
+                                     @PathVariable @PathId Long deptId) {
         return R.ok(sysRoleDeptService.queryById(deptId));
     }
 
@@ -116,7 +111,7 @@ public class SysRoleDeptController extends BaseController {
     @DeleteMapping("/{deptIds}")
     @Operation(summary = "删除部门角色",operationId = "sysRoleDept_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] deptIds) {
+                          @PathVariable @PathIds Long[] deptIds) {
         return toAjax(sysRoleDeptService.deleteWithValidByIds(List.of(deptIds), true));
     }
 }

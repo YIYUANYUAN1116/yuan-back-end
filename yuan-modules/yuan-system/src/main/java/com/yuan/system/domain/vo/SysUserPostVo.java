@@ -1,13 +1,12 @@
 package com.yuan.system.domain.vo;
 
-    import java.io.Serializable;
-import com.yuan.system.domain.SysUserPost;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.system.domain.SysUserPost;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
 
 
 /**
@@ -20,8 +19,9 @@ import java.util.Date;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = SysUserPost.class)
 public class SysUserPostVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long userId;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long postId;
 
 }

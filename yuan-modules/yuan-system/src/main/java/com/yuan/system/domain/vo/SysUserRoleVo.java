@@ -3,6 +3,7 @@ package com.yuan.system.domain.vo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.yuan.system.domain.SysUserRole;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -18,8 +19,9 @@ import java.io.Serializable;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = SysUserRole.class)
 public class SysUserRoleVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long userId;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long roleId;
 
 }

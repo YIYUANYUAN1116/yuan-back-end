@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 角色业务对象 sys_role
@@ -93,4 +95,7 @@ public class SysRoleBo implements Serializable {
      * 菜单组
      */
     private Long[] menuIds;
+    private List<Long> menuIdList;
+    private String[] menuNames;
+    private BigDecimal amount;
 }

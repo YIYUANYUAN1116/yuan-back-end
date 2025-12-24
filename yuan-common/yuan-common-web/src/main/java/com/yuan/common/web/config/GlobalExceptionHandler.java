@@ -1,4 +1,4 @@
-package com.yuan.config;
+package com.yuan.common.web.config;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;

@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -71,7 +73,7 @@ public class SysLogininforController extends BaseController {
     @GetMapping("/{infoId}")
     @Operation(summary = "获取loginlog详细信息",operationId = "SysLogininfor_getInfo")
     public R<SysLogininforVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long infoId) {
+                                     @PathVariable @PathId Long infoId) {
         return R.ok(sysLogininforService.queryById(infoId));
     }
 
@@ -109,7 +111,7 @@ public class SysLogininforController extends BaseController {
     @DeleteMapping("/{infoIds}")
     @Operation(summary = "删除loginlog",operationId = "SysLogininfor_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] infoIds) {
+                          @PathVariable @PathIds Long[] infoIds) {
         return toAjax(sysLogininforService.deleteWithValidByIds(List.of(infoIds), true));
     }
 }

@@ -7,6 +7,8 @@ import com.yuan.common.core.constant.TenantConstants;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -17,9 +19,9 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysMenu;
 import com.yuan.system.domain.bo.SysMenuBo;
-import com.yuan.system.domain.vo.TreeSelectVo;
 import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
+import com.yuan.system.domain.vo.TreeSelectVo;
 import com.yuan.system.service.SysMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,7 +80,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("/{menuId}")
     @Operation(summary = "获取菜单详细信息", operationId = "sysMenu_getInfo")
     public R<SysMenuVo> getInfo(@NotNull(message = "主键不能为空")
-                                @PathVariable Long menuId) {
+                                @PathVariable @PathId Long menuId) {
         return R.ok(menuService.queryById(menuId));
     }
 
@@ -116,7 +118,7 @@ public class SysMenuController extends BaseController {
     @DeleteMapping("/{menuIds}")
     @Operation(summary = "删除菜单", operationId = "sysMenu_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] menuIds) {
+                          @PathVariable @PathIds Long[] menuIds) {
         return toAjax(menuService.deleteWithValidByIds(List.of(menuIds), true));
     }
 
@@ -130,7 +132,7 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:menu:query")
     @GetMapping("/treeselect")
     @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
-    public R<TreeSelectVo> treeselect(SysMenuBo bo, Long roleId) {
+    public R<TreeSelectVo> treeselect(SysMenuBo bo, @PathId Long roleId) {
         List<SysMenuVo> menus = menuService.selectMenuList(bo, LoginHelper.getUserId());
         TreeSelectVo selectVo = new TreeSelectVo();
         selectVo.setTreeList(menuService.buildMenuTreeSelect(menus));
@@ -145,7 +147,7 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:menu:query")
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     @Operation(summary = "获取角色菜单树", operationId = "sysMenu_roleMenuTreeselect")
-    public R<TreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
+    public R<TreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") @PathId Long roleId) {
         List<SysMenuVo> menus = menuService.selectMenuList(LoginHelper.getUserId());
         TreeSelectVo selectVo = new TreeSelectVo();
         selectVo.setCheckedKeys(menuService.selectMenuListByRoleId(roleId));
@@ -159,9 +161,9 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("system:sysMenu:list")
     @GetMapping("/listTree")
     @Operation(summary = "查询树型菜单列表", operationId = "sysMenu_listTree")
-    public R<List<SysMenuVo>> listTree(SysMenuBo bo) {
+    public TableDataInfo<SysMenuVo> listTree(SysMenuBo bo) {
         List<SysMenuVo> sysMenuVos = menuService.listTree(bo);
-        return R.ok(sysMenuVos);
+        return TableDataInfo.build(sysMenuVos);
     }
 
     /**

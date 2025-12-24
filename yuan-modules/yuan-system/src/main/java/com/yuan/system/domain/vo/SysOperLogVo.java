@@ -5,6 +5,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.common.excel.annotation.ExcelDictFormat;
 import com.yuan.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import com.yuan.system.domain.SysOperLog;
 
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = SysOperLog.class)
 public class SysOperLogVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long operId;
     /**
      * 租户编号

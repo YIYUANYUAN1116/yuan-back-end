@@ -6,6 +6,7 @@ import com.yuan.common.excel.annotation.ExcelDictFormat;
 import com.yuan.common.excel.convert.ExcelDictConvert;
 import com.yuan.system.domain.SysPost;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = SysPost.class)
 public class SysPostVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long postId;
     /**
      * 租户编号

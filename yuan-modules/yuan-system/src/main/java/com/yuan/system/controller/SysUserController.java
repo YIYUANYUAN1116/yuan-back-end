@@ -10,6 +10,8 @@ import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -83,7 +85,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/{userId}")
     @Operation(summary = "获取用户详细信息",operationId = "sysUser_getInfo")
     public R<SysUserInfoVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long userId) {
+                                     @PathVariable @PathId Long userId) {
 
         SysUserInfoVo userInfoVo = new SysUserInfoVo();
         List<SysRoleVo> roles = sysRoleService.selectRoleAll();
@@ -157,7 +159,7 @@ public class SysUserController extends BaseController {
     @DeleteMapping("/{userIds}")
     @Operation(summary = "删除用户",operationId = "sysUser_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] userIds) {
+                          @PathVariable @PathIds Long[] userIds) {
         if (ArrayUtil.contains(userIds, LoginHelper.getUserId())) {
             return R.fail("当前用户不能删除");
         }
@@ -174,7 +176,7 @@ public class SysUserController extends BaseController {
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PutMapping("/authRole")
     @Operation(summary = "用户授权角色",operationId = "sysUser_insertAuthRole")
-    public R<Void> insertAuthRole(Long userId, Long[] roleIds) {
+    public R<Void> insertAuthRole(@PathId Long userId,@PathIds Long[] roleIds) {
         sysUserService.insertUserAuth(userId, roleIds);
         return R.ok();
     }
@@ -203,7 +205,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:user:query")
     @GetMapping("/authRole/{userId}")
     @Operation(summary = "根据用户编号获取授权角色",operationId = "sysUser_getAuthRole")
-    public R<SysUserInfoVo> authRole(@PathVariable Long userId) {
+    public R<SysUserInfoVo> authRole(@PathVariable @PathId Long userId) {
         SysUserVo user = sysUserService.queryById(userId);
         List<SysRoleVo> roles = sysRoleService.selectRolesByUserId(userId);
         SysUserInfoVo userInfoVo = new SysUserInfoVo();

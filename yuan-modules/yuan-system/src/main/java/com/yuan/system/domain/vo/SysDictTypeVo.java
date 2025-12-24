@@ -6,6 +6,7 @@ import com.yuan.common.excel.annotation.ExcelDictFormat;
 import com.yuan.common.excel.convert.ExcelDictConvert;
 import com.yuan.system.domain.SysDictType;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serial;
@@ -29,6 +30,7 @@ public class SysDictTypeVo implements Serializable {
     /**
      * 字典主键
      */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty(value = "字典主键")
     private Long dictId;
 

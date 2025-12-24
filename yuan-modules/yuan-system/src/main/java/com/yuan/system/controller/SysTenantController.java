@@ -1,15 +1,11 @@
 package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -20,15 +16,14 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysTenantBo;
 import com.yuan.system.domain.vo.SysTenantVo;
 import com.yuan.system.service.SysTenantService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -78,7 +73,7 @@ public class SysTenantController extends BaseController {
     @GetMapping("/{id}")
     @Operation(summary = "获取多租户详细信息",operationId = "sysTenant_getInfo")
     public R<SysTenantVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                     @PathVariable @PathId Long id) {
         return R.ok(sysTenantService.queryById(id));
     }
 
@@ -116,7 +111,7 @@ public class SysTenantController extends BaseController {
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除多租户",operationId = "sysTenant_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] ids) {
+                          @PathVariable @PathIds Long[] ids) {
         return toAjax(sysTenantService.deleteWithValidByIds(List.of(ids), true));
     }
 }

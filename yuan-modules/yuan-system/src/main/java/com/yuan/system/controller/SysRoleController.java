@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -74,7 +76,7 @@ public class SysRoleController extends BaseController {
     @GetMapping("/{roleId}")
     @Operation(summary = "获取角色详细信息",operationId = "sysRole_getInfo")
     public R<SysRoleVo> getInfo(@NotNull(message = "主键不能为空")
-                                @PathVariable Long roleId) {
+                                @PathVariable @PathId Long roleId) {
         return R.ok(sysRoleService.queryById(roleId));
     }
 
@@ -122,7 +124,7 @@ public class SysRoleController extends BaseController {
     @DeleteMapping("/{roleIds}")
     @Operation(summary = "删除角色",operationId = "sysRole_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] roleIds) {
+                          @PathVariable @PathIds Long[] roleIds) {
         return toAjax(sysRoleService.deleteWithValidByIds(List.of(roleIds), true));
     }
 
@@ -132,7 +134,7 @@ public class SysRoleController extends BaseController {
     @SaCheckPermission("system:role:query")
     @GetMapping("/optionselect")
     @Operation(summary = "获取角色选择框列表",operationId = "sysRoleOptionselect")
-    public R<SelectRolesVo> optionSelect(@RequestParam Long userId) {
+    public R<SelectRolesVo> optionSelect(@RequestParam @PathId Long userId) {
         return R.ok(sysRoleService.selectSelectRolesVo(userId));
     }
 
@@ -166,7 +168,7 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
     @PutMapping("/authUser/cancelAll")
     @Operation(summary = "批量取消授权用户",operationId = "cancelAuthUserAll")
-    public R<Void> cancelAuthUserAll(Long roleId, Long[] userIds) {
+    public R<Void> cancelAuthUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
         return toAjax(sysRoleService.deleteAuthUsers(roleId, userIds));
     }
 
@@ -180,7 +182,7 @@ public class SysRoleController extends BaseController {
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
     @PutMapping("/authUser/selectAll")
     @Operation(summary = "批量选择用户授权",operationId = "selectAuthUserAll")
-    public R<Void> selectAuthUserAll(Long roleId, Long[] userIds) {
+    public R<Void> selectAuthUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
         sysRoleService.checkRoleDataScope(roleId);
         return toAjax(sysRoleService.insertAuthUsers(roleId, userIds));
     }
