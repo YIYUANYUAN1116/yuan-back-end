@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单Mapper接口
@@ -51,4 +52,9 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
 
     List<String> selectMenuPermsByUserId(Long userId);
 
+    List<SysMenu> selectMenuTreeByScope(@Param("scope") String scope);
+
+    Set<Long> selectMenuIdsByUserId(Long userId);
+
+    List<String> selectScopesBymenuIds(Set<Long> menuIds);
 }

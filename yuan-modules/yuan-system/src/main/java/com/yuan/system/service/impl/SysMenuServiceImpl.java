@@ -241,7 +241,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         List<SysMenu> menus;
         if (LoginHelper.isSuperAdmin(userId)) {
             menus = baseMapper.selectMenuTreeAll();
-        } else {
+        }else {
             menus = baseMapper.selectMenuTreeByUserId(userId);
         }
         return getChildPerms(menus, 0);

@@ -19,7 +19,7 @@ import lombok.Getter;
  * 如需扩展服务，可以通过 ISysDataScopeService 自行编写
  * </p>
  *
- * @author Lion Li
+ * 
  * @version 3.5.0
  */
 @Getter

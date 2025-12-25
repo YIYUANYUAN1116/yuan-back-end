@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 /**
  * 字典数据表 sys_dict_data
  *
- * @author Lion Li
+ * 
  */
 
 @Data

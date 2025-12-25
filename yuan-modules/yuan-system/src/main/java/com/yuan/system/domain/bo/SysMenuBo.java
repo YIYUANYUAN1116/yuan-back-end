@@ -101,6 +101,8 @@ public class SysMenuBo implements Serializable {
      */
     private String remark;
 
+    private String scope;
+
     private List<String> menuTypes;
 
 }

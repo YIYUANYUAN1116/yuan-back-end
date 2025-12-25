@@ -5,8 +5,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.BCrypt;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yuan.common.core.constant.Constants;
+import com.yuan.common.core.constant.GlobalConstants;
 import com.yuan.common.core.domain.dto.RoleDTO;
 import com.yuan.common.core.domain.model.LoginUser;
 import com.yuan.common.core.enums.DeviceType;
@@ -17,14 +17,17 @@ import com.yuan.common.core.utils.MessageUtils;
 import com.yuan.common.core.utils.ServletUtils;
 import com.yuan.common.core.utils.SpringUtils;
 import com.yuan.common.log.event.LogininforEvent;
+import com.yuan.common.redis.utils.RedisUtils;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
@@ -36,6 +39,11 @@ public class SysLoginService {
     private final SysUserMapper userMapper;
     private final ISysPermissionService permissionService;
 
+    @Value("${user.password.maxRetryCount}")
+    private Integer maxRetryCount;
+    @Value("${user.password.lockTime}")
+    private Integer lockTime;
+
     /**
      * 登录验证
      *
@@ -45,9 +53,9 @@ public class SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String tenantId, String username, String password, String code, String uuid) {
-        SysUserVo user = loadUserByUsername(tenantId, username);
-        checkLogin(LoginType.PASSWORD, tenantId, username, () -> !BCrypt.checkpw(password, user.getPassword()));
+    public String login(String username, String password, String code, String uuid) {
+        SysUserVo user = loadUserByUsername(username);
+        checkLogin(LoginType.PASSWORD, user.getTenantId(), username, () -> !BCrypt.checkpw(password, user.getPassword()));
         // 此处可根据登录用户的数据不同 自行创建 loginUser
         LoginUser loginUser = buildLoginUser(user);
         // 生成token
@@ -72,11 +80,8 @@ public class SysLoginService {
         userMapper.updateById(sysUser);
     }
 
-    private SysUserVo loadUserByUsername(String tenantId, String username) {
-        SysUser user = userMapper.selectOne(new LambdaQueryWrapper<SysUser>()
-                .select(SysUser::getUserName, SysUser::getStatus)
-//                .eq(TenantHelper.isEnable(), SysUser::getTenantId, tenantId)
-                .eq(SysUser::getUserName, username));
+    private SysUserVo loadUserByUsername(String username) {
+        SysUserVo user = userMapper.selectUserByUsernameByLogin(username);
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在.", username);
             throw new UserException("user.not.exists", username);
@@ -87,7 +92,7 @@ public class SysLoginService {
 //        if (TenantHelper.isEnable()) {
 //            return userMapper.selectTenantUserByUserName(username, tenantId);
 //        }
-        return userMapper.selectUserByUserName(username);
+        return user;
     }
 
     private LoginUser buildLoginUser(SysUserVo user) {
@@ -108,7 +113,35 @@ public class SysLoginService {
     }
 
     private void checkLogin(LoginType loginType, String tenantId, String username, Supplier<Boolean> supplier) {
+        String errorKey = GlobalConstants.PWD_ERR_CNT_KEY + username;
+        String loginFail = Constants.LOGIN_FAIL;
 
+        // 获取用户登录错误次数(可自定义限制策略 例如: key + username + ip)
+        Integer errorNumber = RedisUtils.getCacheObject(errorKey);
+        // 锁定时间内登录 则踢出
+        if (ObjectUtil.isNotNull(errorNumber) && errorNumber.equals(maxRetryCount)) {
+            recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
+            throw new UserException(loginType.getRetryLimitExceed(), maxRetryCount, lockTime);
+        }
+
+        if (supplier.get()) {
+            // 是否第一次
+            errorNumber = ObjectUtil.isNull(errorNumber) ? 1 : errorNumber + 1;
+            // 达到规定错误次数 则锁定登录
+            if (errorNumber.equals(maxRetryCount)) {
+                RedisUtils.setCacheObject(errorKey, errorNumber, Duration.ofMinutes(lockTime));
+                recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
+                throw new UserException(loginType.getRetryLimitExceed(), maxRetryCount, lockTime);
+            } else {
+                // 未达到规定错误次数 则递增
+                RedisUtils.setCacheObject(errorKey, errorNumber);
+                recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitCount(), errorNumber));
+                throw new UserException(loginType.getRetryLimitCount(), errorNumber);
+            }
+        }
+
+        // 登录成功 清空错误次数
+        RedisUtils.deleteObject(errorKey);
     }
 
     /**

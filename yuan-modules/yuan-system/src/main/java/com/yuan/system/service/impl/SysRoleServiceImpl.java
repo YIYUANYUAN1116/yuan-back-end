@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
+import com.yuan.common.core.exception.GlobalException;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysRole;
@@ -22,6 +24,8 @@ import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
+import com.yuan.system.helper.MenuScopHelper;
+import com.yuan.system.mapper.SysMenuMapper;
 import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysRoleMenuMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
@@ -47,6 +51,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMenuMapper roleMenuMapper;
     private final SysMenuService menuService;
+    private final SysMenuMapper sysMenuMapper;
 
     /**
      * 查询角色
@@ -215,7 +220,16 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public void checkRoleDataScope(Long roleId) {
-        //todo
+        if (ObjectUtil.isNull(roleId)) {
+            return;
+        }
+        if (LoginHelper.isSuperAdmin()) {
+            return;
+        }
+        List<SysRoleVo> roles = this.selectRoleList(new SysRoleBo(roleId));
+        if (CollUtil.isEmpty(roles)) {
+            throw new ServiceException("没有权限访问角色数据！");
+        }
     }
 
     @Override
@@ -249,10 +263,16 @@ public class SysRoleServiceImpl implements SysRoleService {
         return permsSet;
     }
 
+    @Override
+    public List<SysRoleVo> selectRoleList(SysRoleBo role) {
+        return baseMapper.selectRoleList(this.buildQueryWrapper(role));
+    }
+
     private void insertRoleMenu(SysRoleBo role) {
         if (ObjectUtil.isNull(role) || role.getMenuIds() == null || role.getMenuIds().length == 0)return;
         // 新增用户与角色管理
         Set<Long> menus = menuService.addParentIds(role.getMenuIds());
+        checkMenuScop(role.getRoleId(),menus);
         List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
         for (Long menuId : menus) {
             SysRoleMenu rm = new SysRoleMenu();
@@ -262,6 +282,27 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         if (!list.isEmpty()) {
             roleMenuMapper.insertBatch(list);
+        }
+    }
+
+    private void checkMenuScop(Long roleId, Set<Long> menuIds) {
+        //todo 返回信息告诉用户 哪些是不能分配的
+
+        // 1. scope 校验（平台 / 租户）
+        List<String> allowedScopes = MenuScopHelper.getAssignableMenuScopes();
+        List<String> menuScopes = sysMenuMapper.selectScopesBymenuIds(menuIds);
+        if (!new HashSet<>(allowedScopes).containsAll(menuScopes)) {
+            throw new GlobalException("包含无权分配的菜单");
+        }
+
+        // 2. 如果不是平台级操作者，必须做“权限子集校验”
+        if (!LoginHelper.isPlatAdmin() && !LoginHelper.isSuperAdmin()) {
+
+            Set<Long> myMenuIds = sysMenuMapper.selectMenuIdsByUserId(LoginHelper.getUserId());
+
+            if (!myMenuIds.containsAll(menuIds)) {
+                throw new GlobalException("不能分配超过自身权限范围的菜单");
+            }
         }
     }
 

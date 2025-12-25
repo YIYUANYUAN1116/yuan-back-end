@@ -7,7 +7,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.exception.AuthException;
+import com.yuan.common.core.exception.GlobalException;
 import com.yuan.common.core.exception.ServiceException;
+import com.yuan.common.core.exception.user.UserException;
 import com.yuan.common.core.utils.StreamUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -25,6 +27,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    /**
+     * 用户异常
+     * @param e
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(UserException.class)
+    public R<Void> handleUserException(UserException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',认证失败'{}'", requestURI, e.getMessage());
+        return R.fail(HttpStatus.HTTP_UNAUTHORIZED, e.getMessage());
+    }
 
     /**
      * 权限码异常
@@ -86,6 +102,16 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         Integer code = e.getCode();
         return ObjectUtil.isNotNull(code) ? R.fail(code, e.getMessage()) : R.fail(e.getMessage());
+    }
+
+    /**
+     * 拦截未知的运行时异常
+     */
+    @ExceptionHandler(GlobalException.class)
+    public R<Void> handleGlobalException(GlobalException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+        return R.fail(e.getMessage());
     }
 
     /**

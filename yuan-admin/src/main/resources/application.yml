@@ -112,6 +112,30 @@ springdoc:
     contact:
       name: yuan
 
+# 用户配置
+user:
+  password:
+    # 密码最大错误次数
+    maxRetryCount: 5
+    # 密码锁定时间（默认10分钟）
+    lockTime: 10
+
+# 多租户配置
+tenant:
+  # 是否开启
+  enable: true
+  # 排除表
+  excludes:
+    - sys_menu
+    - sys_tenant
+    - sys_tenant_package
+    - sys_role_dept
+    - sys_role_menu
+    - sys_user_post
+    - sys_user_role
+    - sys_dict
+    - sys_dict_data
+
 knife4j:
   enable: true
   setting:

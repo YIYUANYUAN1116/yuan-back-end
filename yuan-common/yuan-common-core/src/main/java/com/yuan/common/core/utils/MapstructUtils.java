@@ -14,7 +14,7 @@ import java.util.Map;
  * Mapstruct 工具类
  * <p>参考文档：<a href="https://mapstruct.plus/guide/quick-start">mapstruct-plus</a></p>
  *
- * @author Michelle.Chung
+ * 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MapstructUtils {

@@ -7,7 +7,7 @@ import com.yuan.common.core.utils.StringUtils;
 /**
  * web层通用数据处理
  *
- * @author Lion Li
+ * 
  */
 public class BaseController {
 

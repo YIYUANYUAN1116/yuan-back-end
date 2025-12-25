@@ -28,7 +28,7 @@ import java.util.Set;
  * 多用户体系 针对 多种用户类型 但权限控制不一致
  * 可以组成 多用户类型表与多设备类型 分别控制权限
  *
- * @author Lion Li
+ * 
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -177,6 +177,13 @@ public class LoginHelper {
         return isTenantAdmin(getLoginUser().getRolePermission());
     }
 
+    public static boolean isPlatAdmin() {
+        return isPlatAdmin(getLoginUser().getRolePermission());
+    }
+
+    public static boolean isPlatAdmin(Set<String> rolePermission) {
+        return rolePermission.contains(TenantConstants.PLAT_ADMIN_ROLE_KEY);
+    }
     /**
      * 检查当前用户是否已登录
      *

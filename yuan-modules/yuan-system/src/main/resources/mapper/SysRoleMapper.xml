@@ -62,4 +62,13 @@
         <include refid="selectRoleVo"/>
         WHERE r.del_flag = '0' and sur.user_id = #{userId}
     </select>
+    <select id="selectRolesByRoleKey" resultType="com.yuan.system.domain.SysRole">
+        select *
+        from sys_role
+        where role_key = #{roleKey} and tenant_id = #{tenantId} and del_flag = '0'
+    </select>
+    <select id="selectRoleList" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        ${ew.getCustomSqlSegment}
+    </select>
 </mapper>

@@ -71,4 +71,6 @@ public interface SysRoleService {
     int insertAuthUsers(Long roleId, Long[] userIds);
 
     Set<String> selectRolePermissionByUserId(Long userId);
+
+    List<SysRoleVo> selectRoleList(SysRoleBo sysRoleBo);
 }

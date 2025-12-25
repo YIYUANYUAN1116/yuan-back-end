@@ -1,8 +1,11 @@
 package com.yuan.system.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.annotation.DataColumn;
+import com.yuan.annotation.DataPermission;
 import com.yuan.core.mapper.BaseMapperPlus;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.SysUser;
@@ -30,4 +33,16 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     Page<SysUserVo> selectUnallocatedUserList(@Param("page") Page<SysUser> page,@Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
 
     List<SysRoleVo> selectRolePermissionByUserId(Long userId);
-}
+
+    SysRole selectRolesByRoleKey(@Param("roleKey") String roleKey,@Param("tenantId")String tenantId);
+
+    /**
+     * 根据条件分页查询角色数据
+     *
+     * @param queryWrapper 查询条件
+     * @return 角色数据集合信息
+     */
+    @DataPermission({
+            @DataColumn(key = "deptName", value = "d.dept_id")
+    })
+    List<SysRoleVo> selectRoleList(@Param(Constants.WRAPPER) Wrapper<SysRole> queryWrapper);}

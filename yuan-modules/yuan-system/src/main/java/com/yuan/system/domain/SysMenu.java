@@ -104,6 +104,11 @@ public class SysMenu extends BaseEntity {
      */
     private String remark;
 
+    /**
+     * 数据范围
+     */
+    private String scope;
+
     @TableField(exist = false)
     private List<SysMenu> children;
 

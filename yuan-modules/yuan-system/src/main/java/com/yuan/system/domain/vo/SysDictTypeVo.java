@@ -17,7 +17,7 @@ import java.util.Date;
 /**
  * 字典类型视图对象 sys_dict_type
  *
- * @author Michelle.Chung
+ * 
  */
 @Data
 @ExcelIgnoreUnannotated

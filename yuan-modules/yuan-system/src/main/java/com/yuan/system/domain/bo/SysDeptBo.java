@@ -81,4 +81,6 @@ public class SysDeptBo implements Serializable {
      */
     private LocalDateTime updateTime;
 
+
+
 }

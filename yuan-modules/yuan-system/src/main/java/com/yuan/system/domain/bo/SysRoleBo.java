@@ -1,12 +1,15 @@
 package com.yuan.system.domain.bo;
 
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.system.domain.SysRole;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,7 +23,8 @@ import java.util.List;
  * @date Sun Dec 07 17:25:44 CST 2025
  */
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
 @AutoMapper(target = SysRole.class, reverseConvertGenerate = false)
 public class SysRoleBo implements Serializable {
 
@@ -98,4 +102,12 @@ public class SysRoleBo implements Serializable {
     private List<Long> menuIdList;
     private String[] menuNames;
     private BigDecimal amount;
+
+    public SysRoleBo(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public boolean isSuperAdmin() {
+        return UserConstants.SUPER_ADMIN_ID.equals(this.roleId);
+    }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * 数据库助手
  *
- * @author Lion Li
+ * 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataBaseHelper {

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 幂等功能配置
  *
- * @author Lion Li
+ * 
  */
 @Configuration
 public class IdempotentConfig {

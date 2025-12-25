@@ -133,6 +133,9 @@ public class SysMenuVo implements Serializable {
     @ExcelProperty(value = "备注")
     private String remark;
 
+    @ExcelProperty(value = "范围")
+    private String scope;
+
     private List<SysMenuVo> children;
 
 }

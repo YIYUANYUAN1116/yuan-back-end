@@ -89,4 +89,28 @@
           and r.status = '0'
           and sur.user_id = #{userId}
     </select>
+    <select id="selectMenuTreeByScope" resultType="com.yuan.system.domain.SysMenu">
+        select distinct m.*
+        from sys_menu m
+        where (m.scope = #{scope} or m.scope = 'BOTH') and m.status = '0'
+    </select>
+    <select id="selectMenuIdsByUserId" resultType="java.lang.Long">
+        select distinct m.menu_id
+        from sys_menu m
+                 left join sys_role_menu rm on m.menu_id = rm.menu_id
+                 left join sys_user_role sur on rm.role_id = sur.role_id
+                 left join sys_role r on r.role_id = sur.role_id
+        where m.status = '0'
+          and r.status = '0'
+          and sur.user_id = #{userId}
+    </select>
+    <select id="selectScopesBymenuIds" resultType="java.lang.String">
+        select distinct m.scope
+        from sys_menu m
+        where m.menu_id in
+        <foreach collection="menuIds" item="menuId"  open="("  separator="," close=")">
+            #{menuId}
+        </foreach>
+    </select>
+
 </mapper>

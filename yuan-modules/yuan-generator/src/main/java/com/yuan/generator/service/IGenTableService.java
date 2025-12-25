@@ -3,7 +3,7 @@ package com.yuan.generator.service;
 /**
  * 业务 服务层
  *
- * @author Lion Li
+ * 
  */
 public interface IGenTableService {
 

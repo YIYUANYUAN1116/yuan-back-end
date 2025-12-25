@@ -1,6 +1,5 @@
 package com.yuan.controller;
 
-import com.yuan.common.core.constant.Constants;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.domain.model.LoginBody;
 import com.yuan.common.satoken.utils.LoginHelper;
@@ -35,11 +34,9 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "登录",operationId = "login")
     public R<LoginVo> login(@Validated @RequestBody LoginBody body) {
-        body.setTenantId(Constants.TENANT_ID);
         LoginVo loginVo = new LoginVo();
         // 生成令牌
         String token = loginService.login(
-                body.getTenantId(),
                 body.getUsername(), body.getPassword(),
                 body.getCode(), body.getUuid());
         loginVo.setToken(token);

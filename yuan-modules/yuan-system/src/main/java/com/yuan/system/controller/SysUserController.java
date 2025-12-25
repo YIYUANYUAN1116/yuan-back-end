@@ -125,7 +125,7 @@ public class SysUserController extends BaseController {
         if(StringUtils.isEmpty(user.getNickName())){
             user.setNickName(user.getUserName());
         }
-        user.setDeptId(103L);
+//        user.setDeptId(103L);
         user.setPassword(BCrypt.hashpw(user.getPassword()));
         return toAjax(sysUserService.insertByBo(user));
     }

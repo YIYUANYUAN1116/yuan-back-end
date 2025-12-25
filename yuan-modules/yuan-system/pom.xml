@@ -51,6 +51,11 @@
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-log</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-doc</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

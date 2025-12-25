@@ -57,9 +57,8 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public TableDataInfo<SysUserVo> queryPageList(SysUserBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<SysUser> lqw = buildQueryWrapper(bo);
-        Page<SysUserVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(result);
+        Page<SysUserVo> page = baseMapper.selectPageUserList(pageQuery.build(), this.buildQueryWrapper(bo));
+        return TableDataInfo.build(page);
     }
 
     /**

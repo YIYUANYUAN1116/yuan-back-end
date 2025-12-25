@@ -181,4 +181,6 @@ public class SysUserVo implements Serializable {
      * 部门对象
      */
     private SysDeptVo dept;
+
+    private String deptName;
 }

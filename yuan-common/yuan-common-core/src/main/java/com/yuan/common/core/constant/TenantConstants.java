@@ -30,7 +30,7 @@ public interface TenantConstants {
     /**
      * 租户管理员角色 roleKey
      */
-    String TENANT_ADMIN_ROLE_KEY = "admin";
+    String TENANT_ADMIN_ROLE_KEY = "tenantAdmin";
 
     /**
      * 租户管理员角色名称
@@ -41,5 +41,16 @@ public interface TenantConstants {
      * 默认租户ID
      */
     String DEFAULT_TENANT_ID = "000000";
+
+    /**
+     * 平台管理员
+     */
+    String PLAT_ADMIN_ROLE_KEY = "platAdmin";
+    //平台管理员可见
+    String MENU_SCOP_PLAT_ADMIN = "PLATFORM";
+    // 租户管理员可见
+    String MENU_SCOP_TENANT_ADMIN = "TENANT";
+    // 都可见
+    String MENU_SCOP_BOTH_ADMIN = "BOTH";
 
 }

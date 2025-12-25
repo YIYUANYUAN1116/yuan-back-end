@@ -12,8 +12,10 @@ import com.yuan.system.domain.bo.SysTenantBo;
 import com.yuan.system.domain.vo.SysTenantVo;
 import com.yuan.system.mapper.SysTenantMapper;
 import com.yuan.system.service.SysTenantService;
+import com.yuan.system.service.TenantBootstrapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.List;
 public class SysTenantServiceImpl implements SysTenantService {
 
     private final SysTenantMapper baseMapper;
+    private final TenantBootstrapService tenantBootstrapService;
 
     /**
      * 查询多租户
@@ -86,11 +89,13 @@ public class SysTenantServiceImpl implements SysTenantService {
      * 新增多租户
      */
     @Override
+    @Transactional
     public Boolean insertByBo(SysTenantBo bo) {
         SysTenant add = MapstructUtils.convert(bo, SysTenant. class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
+            tenantBootstrapService.initTenant(add);
             bo.setId(add.getId());
         }
         return flag;
