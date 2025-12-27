@@ -53,4 +53,14 @@ public interface SysUserService {
     boolean checkEmailUnique(SysUserBo user);
 
     void insertUserAuth(Long userId, Long[] roleIds);
+
+    SysUserVo selectUserById(Long userId);
+
+    String selectUserRoleGroup(Long userId);
+
+    String selectUserPostGroup(Long userId);
+
+    int updateUserProfile(SysUserBo user);
+
+    int resetUserPwd(Long userId, String hashpw);
 }

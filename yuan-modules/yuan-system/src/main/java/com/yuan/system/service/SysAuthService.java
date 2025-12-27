@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class SysLoginService {
+public class SysAuthService {
     private final SysUserMapper userMapper;
     private final ISysPermissionService permissionService;
 

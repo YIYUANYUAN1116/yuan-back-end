@@ -36,6 +36,7 @@ public class SpringDocConfig {
             }
             openApi.getComponents().getSchemas().values().forEach(schema -> {
                 Map properties = schema.getProperties();
+                if (properties == null) return;
                 Set set = properties.keySet();
                 for (Object o : set) {
                     Object object = properties.get(o);

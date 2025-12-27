@@ -5,6 +5,8 @@ import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.core.mapper.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * postMapper接口
  *
@@ -14,4 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
 
+    List<SysPostVo> selectPostsByUserId(Long userId);
 }

@@ -4,7 +4,7 @@ import com.yuan.common.core.domain.R;
 import com.yuan.common.core.domain.model.LoginBody;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.system.domain.vo.LoginVo;
-import com.yuan.system.service.SysLoginService;
+import com.yuan.system.service.SysAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "AuthController",description = "认证接口")
 public class AuthController {
 
-    private final SysLoginService loginService;
+    private final SysAuthService authService;
 //    private final SysRegisterService registerService;
 
     /**
@@ -36,7 +36,7 @@ public class AuthController {
     public R<LoginVo> login(@Validated @RequestBody LoginBody body) {
         LoginVo loginVo = new LoginVo();
         // 生成令牌
-        String token = loginService.login(
+        String token = authService.login(
                 body.getUsername(), body.getPassword(),
                 body.getCode(), body.getUuid());
         loginVo.setToken(token);
@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "退出登录",operationId = "logout")
     public R<Void> logout() {
-        loginService.logout();
+        authService.logout();
         return R.ok("退出成功");
     }
 

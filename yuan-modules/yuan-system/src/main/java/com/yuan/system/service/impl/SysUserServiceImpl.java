@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
@@ -17,8 +18,10 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.bo.SysUserBo;
+import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
+import com.yuan.system.mapper.SysPostMapper;
 import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysUserMapper;
 import com.yuan.system.mapper.SysUserRoleMapper;
@@ -43,6 +46,7 @@ public class SysUserServiceImpl implements SysUserService {
     private final SysUserMapper baseMapper;
     private final SysRoleMapper sysRoleMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
+    private final SysPostMapper sysPostMapper;
 
     /**
      * 查询用户
@@ -120,6 +124,58 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional(rollbackFor = Exception.class)
     public void insertUserAuth(Long userId, Long[] roleIds) {
         insertUserRole(userId, roleIds, true);
+    }
+
+    @Override
+    public SysUserVo selectUserById(Long userId) {
+        return baseMapper.selectVoById(userId);
+    }
+
+    /**
+     * 查询用户所属角色组
+     *
+     * @return 结果
+     */
+    @Override
+    public String selectUserRoleGroup(Long userId) {
+        List<SysRoleVo> list = sysRoleMapper.selectRolesByUserId(userId);
+        if (CollUtil.isEmpty(list)) {
+            return StringUtils.EMPTY;
+        }
+        return StreamUtils.join(list, SysRoleVo::getRoleName);
+    }
+
+    /**
+     * 查询用户所属岗位组
+     *
+     * @return 结果
+     */
+    @Override
+    public String selectUserPostGroup(Long userId) {
+        List<SysPostVo> list = sysPostMapper.selectPostsByUserId(userId);
+        if (CollUtil.isEmpty(list)) {
+            return StringUtils.EMPTY;
+        }
+        return StreamUtils.join(list, SysPostVo::getPostName);
+    }
+
+    @Override
+    public int updateUserProfile(SysUserBo user) {
+        return baseMapper.update(null,
+                new LambdaUpdateWrapper<SysUser>()
+                        .set(ObjectUtil.isNotNull(user.getNickName()), SysUser::getNickName, user.getNickName())
+                        .set(SysUser::getPhonenumber, user.getPhonenumber())
+                        .set(SysUser::getEmail, user.getEmail())
+                        .set(SysUser::getSex, user.getSex())
+                        .eq(SysUser::getUserId, user.getUserId()));
+    }
+
+    @Override
+    public int resetUserPwd(Long userId, String password) {
+        return baseMapper.update(null,
+                new LambdaUpdateWrapper<SysUser>()
+                        .set(SysUser::getPassword, password)
+                        .eq(SysUser::getUserId, userId));
     }
 
     private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
