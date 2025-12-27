@@ -39,6 +39,8 @@ public class LogininforEvent implements Serializable {
      */
     private String message;
 
+    private Long userId;
+
     /**
      * 请求体
      */

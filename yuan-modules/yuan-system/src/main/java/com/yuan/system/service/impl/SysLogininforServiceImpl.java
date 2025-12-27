@@ -11,6 +11,7 @@ import com.yuan.common.core.utils.ServletUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.core.utils.ip.AddressUtils;
 import com.yuan.common.log.event.LogininforEvent;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysLogininfor;
@@ -81,6 +82,10 @@ public class SysLogininforServiceImpl implements SysLogininforService {
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysLogininfor::getStatus, bo.getStatus());
                     lqw.eq(StringUtils.isNotBlank(bo.getMsg()), SysLogininfor::getMsg, bo.getMsg());
                     lqw.eq(bo.getLoginTime() != null, SysLogininfor::getLoginTime, bo.getLoginTime());
+
+                    if ((bo.isOnlySelf())){
+                        lqw.eq(SysLogininfor::getUserId,LoginHelper.getLoginUser().getUserId());
+                    }
         return lqw;
     }
 
@@ -160,6 +165,7 @@ public class SysLogininforServiceImpl implements SysLogininforService {
         logininfor.setLoginLocation(address);
         logininfor.setBrowser(browser);
         logininfor.setOs(os);
+        logininfor.setUserId(logininforEvent.getUserId());
         logininfor.setMsg(logininforEvent.getMessage());
         // 日志状态
         if (StringUtils.equalsAny(logininforEvent.getStatus(), Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {

@@ -30,6 +30,8 @@ public class SysLogininfor implements Serializable {
      */
     private String tenantId;
 
+    private Long userId;
+
     /**
      * 用户账号
      */

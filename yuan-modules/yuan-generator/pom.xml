@@ -40,6 +40,11 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-idemponent</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

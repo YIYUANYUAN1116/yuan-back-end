@@ -55,13 +55,13 @@ public class SysAuthService {
      */
     public String login(String username, String password, String code, String uuid) {
         SysUserVo user = loadUserByUsername(username);
-        checkLogin(LoginType.PASSWORD, user.getTenantId(), username, () -> !BCrypt.checkpw(password, user.getPassword()));
+        checkLogin(LoginType.PASSWORD, user.getUserId(),user.getTenantId(), username, () -> !BCrypt.checkpw(password, user.getPassword()));
         // 此处可根据登录用户的数据不同 自行创建 loginUser
         LoginUser loginUser = buildLoginUser(user);
         // 生成token
         LoginHelper.loginByDevice(loginUser, DeviceType.PC);
 
-        recordLogininfor(loginUser.getTenantId(), username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
+        recordLogininfor(loginUser.getTenantId(),user.getUserId() ,username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
         recordLoginInfo(user.getUserId());
         return StpUtil.getTokenValue();
     }
@@ -112,7 +112,7 @@ public class SysAuthService {
         return loginUser;
     }
 
-    private void checkLogin(LoginType loginType, String tenantId, String username, Supplier<Boolean> supplier) {
+    private void checkLogin(LoginType loginType,Long userId, String tenantId, String username, Supplier<Boolean> supplier) {
         String errorKey = GlobalConstants.PWD_ERR_CNT_KEY + username;
         String loginFail = Constants.LOGIN_FAIL;
 
@@ -120,7 +120,7 @@ public class SysAuthService {
         Integer errorNumber = RedisUtils.getCacheObject(errorKey);
         // 锁定时间内登录 则踢出
         if (ObjectUtil.isNotNull(errorNumber) && errorNumber.equals(maxRetryCount)) {
-            recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
+            recordLogininfor(tenantId,userId,username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
             throw new UserException(loginType.getRetryLimitExceed(), maxRetryCount, lockTime);
         }
 
@@ -130,12 +130,12 @@ public class SysAuthService {
             // 达到规定错误次数 则锁定登录
             if (errorNumber.equals(maxRetryCount)) {
                 RedisUtils.setCacheObject(errorKey, errorNumber, Duration.ofMinutes(lockTime));
-                recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
+                recordLogininfor(tenantId,userId, username, loginFail, MessageUtils.message(loginType.getRetryLimitExceed(), maxRetryCount, lockTime));
                 throw new UserException(loginType.getRetryLimitExceed(), maxRetryCount, lockTime);
             } else {
                 // 未达到规定错误次数 则递增
                 RedisUtils.setCacheObject(errorKey, errorNumber);
-                recordLogininfor(tenantId, username, loginFail, MessageUtils.message(loginType.getRetryLimitCount(), errorNumber));
+                recordLogininfor(tenantId,userId, username, loginFail, MessageUtils.message(loginType.getRetryLimitCount(), errorNumber));
                 throw new UserException(loginType.getRetryLimitCount(), errorNumber);
             }
         }
@@ -152,13 +152,14 @@ public class SysAuthService {
      * @param status   状态
      * @param message  消息内容
      */
-    private void recordLogininfor(String tenantId, String username, String status, String message) {
+    private void recordLogininfor(String tenantId,Long userId, String username, String status, String message) {
         LogininforEvent logininforEvent = new LogininforEvent();
         logininforEvent.setTenantId(tenantId);
         logininforEvent.setUsername(username);
         logininforEvent.setStatus(status);
         logininforEvent.setMessage(message);
         logininforEvent.setRequest(ServletUtils.getRequest());
+        logininforEvent.setUserId(userId);
         SpringUtils.context().publishEvent(logininforEvent);
     }
 
@@ -171,7 +172,7 @@ public class SysAuthService {
 //            }
             StpUtil.logout();
             if (loginUser != null) {
-                recordLogininfor(loginUser.getTenantId(), loginUser.getUsername(), Constants.LOGOUT, MessageUtils.message("user.logout.success"));
+                recordLogininfor(loginUser.getTenantId(),loginUser.getUserId() ,loginUser.getUsername(), Constants.LOGOUT, MessageUtils.message("user.logout.success"));
             }
         } catch (NotLoginException ignored) {
         }

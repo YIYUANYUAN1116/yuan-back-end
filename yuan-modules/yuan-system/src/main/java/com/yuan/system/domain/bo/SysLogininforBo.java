@@ -30,6 +30,10 @@ public class SysLogininforBo implements Serializable {
      */
     private String tenantId;
     /**
+     * 用户Id
+     */
+    private Long userId;
+    /**
      * 用户账号
      */
     private String userName;
@@ -62,4 +66,5 @@ public class SysLogininforBo implements Serializable {
      */
     private LocalDateTime loginTime;
 
+    private boolean onlySelf;
 }

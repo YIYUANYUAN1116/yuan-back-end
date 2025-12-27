@@ -35,6 +35,7 @@ public class SysLogininforVo implements Serializable {
      */
     @ExcelProperty(value = "用户账号")
     private String userName;
+    private Long userId;
     /**
      * 登录IP地址
      */
