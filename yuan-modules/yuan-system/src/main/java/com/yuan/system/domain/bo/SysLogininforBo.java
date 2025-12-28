@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 /**
  * loginlog业务对象 sys_logininfor
  *
- * @author ageerle
+ 
  * @date Wed Dec 17 21:48:44 CST 2025
  */
 @Data

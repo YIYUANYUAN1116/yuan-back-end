@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 /**
  * 多租户业务对象 sys_tenant
  *
- * @author ageerle
+ 
  * @date Wed Dec 10 17:18:08 CST 2025
  */
 @Data

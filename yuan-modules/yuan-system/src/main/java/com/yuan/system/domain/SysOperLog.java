@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /**
  * oprelog对象 sys_oper_log
  *
- * @author ageerle
+
  * @date Wed Dec 17 21:48:33 CST 2025
  */
 @Data

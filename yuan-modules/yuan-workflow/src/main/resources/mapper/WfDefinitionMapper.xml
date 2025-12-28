@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.workflow.mapper.WfDefinitionMapper">
+
+    <select id="selectLatestPublished" resultType="com.yuan.workflow.domain.WfDefinition">
+        select wfd.*
+        from wf_definition wfd
+        where wfd.tenant_id = #{tenantId} and wfd.process_key = #{processKey}
+        order by wfd.version desc
+        limit 1
+    </select>
+</mapper>

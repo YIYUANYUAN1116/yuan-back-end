@@ -1,0 +1,69 @@
+package com.yuan.workflow.domain;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+/**
+ * wfn对象 wf_node_instance
+ *
+ 
+ * @date Sun Dec 28 11:26:37 CST 2025
+ */
+@Data
+@TableName("wf_node_instance")
+public class WfNodeInstance implements Serializable {
+
+
+    /**
+     * 节点实例ID
+     */
+        @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 流程实例ID
+     */
+    private Long instanceId;
+
+    /**
+     * 节点标识(start/approve_1)
+     */
+    private String nodeKey;
+
+    /**
+     * 节点类型(START/APPROVAL/GATEWAY/END)
+     */
+    private String nodeType;
+
+    /**
+     * 审批人类型(USER/ROLE/DEPT)
+     */
+    private String assigneeType;
+
+    /**
+     * 审批人值
+     */
+    private String assigneeValue;
+
+    /**
+     * 状态(WAIT/DONE)
+     */
+    private String status;
+
+    /**
+     * 执行顺序
+     */
+    private Integer orderNo;
+
+    /**
+     * createTime
+     */
+    private LocalDateTime createTime;
+
+
+}

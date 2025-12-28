@@ -19,6 +19,7 @@
     <modules>
         <module>yuan-system</module>
         <module>yuan-generator</module>
+        <module>yuan-workflow</module>
     </modules>
 
     <properties>

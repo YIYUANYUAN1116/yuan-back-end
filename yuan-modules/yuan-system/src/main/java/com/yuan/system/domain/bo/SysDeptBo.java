@@ -10,11 +10,10 @@ import java.time.LocalDateTime;
 /**
  * dept业务对象 sys_dept
  *
- * @author ageerle
+
  * @date Mon Dec 22 15:20:54 CST 2025
  */
 @Data
-
 @AutoMapper(target = SysDept.class, reverseConvertGenerate = false)
 public class SysDeptBo implements Serializable {
 

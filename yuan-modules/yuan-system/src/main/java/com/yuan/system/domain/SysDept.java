@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 /**
  * 部门对象 sys_dept
  *
- * @author ageerle
+ 
  * @date Wed Dec 10 17:08:31 CST 2025
  */
 @EqualsAndHashCode(callSuper = true)
@@ -50,6 +50,11 @@ public class SysDept extends TenantEntity {
      * 负责人
      */
     private String leader;
+
+    /**
+     * 负责人
+     */
+    private Long leaderId;
 
     /**
      * 联系电话

@@ -8,7 +8,7 @@ import com.yuan.system.domain.vo.SysTenantVo;
 /**
  * 多租户Mapper接口
  *
- * @author ageerle
+ 
  * @date Wed Dec 10 17:18:08 CST 2025
  */
 @Mapper

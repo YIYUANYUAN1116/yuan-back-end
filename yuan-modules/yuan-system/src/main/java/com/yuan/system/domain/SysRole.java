@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 /**
  * 角色对象 sys_role
  *
- * @author ageerle
+
  * @date Sun Dec 07 17:25:44 CST 2025
  */
 @EqualsAndHashCode(callSuper = true)

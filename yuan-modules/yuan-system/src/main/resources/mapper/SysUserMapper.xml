@@ -104,4 +104,22 @@
         from sys_user u
         where u.user_name = #{username} and u.status = '0' and u.del_flag = '0'
     </select>
+    <select id="selectUserIdsByRole" resultType="java.lang.Long">
+        select *
+        from sys_role sr
+        join sys_user_role sur on sur.role_id = sr.role_id
+        join sys_user su on su.user_id = sur.user_id
+        where sr.tenant_id= #{tenantId} and sr.role_key = #{roleKey}
+    </select>
+    <select id="selectUserIdsByDept" resultType="java.lang.Long">
+        select *
+        from sys_dept sd
+                 join sys_user su on su.dept_id = sd.dept_id
+        where sd.tenant_id= #{tenantId} and sd.dept_id = #{deptId}
+    </select>
+    <select id="selectDtoById" resultType="com.yuan.system.dto.SysUserDTO">
+        select *
+        from sys_user
+        where user_id = #{userId}
+    </select>
 </mapper>

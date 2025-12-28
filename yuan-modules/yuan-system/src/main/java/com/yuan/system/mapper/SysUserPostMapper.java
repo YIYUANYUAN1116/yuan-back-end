@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * post-userMapper接口
  *
- * @author ageerle
+
  * @date Mon Dec 22 15:05:48 CST 2025
  */
 @Mapper
