@@ -33,7 +33,7 @@ public class WfDefinitionBo implements Serializable {
      * 流程业务标识(leave, expense)
      */
     @NotBlank(message = "流程业务标识(leave, expense)不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String processKey;
+    private String definitionKey;
     /**
      * 流程名称
      */

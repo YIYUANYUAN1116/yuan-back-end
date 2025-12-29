@@ -2,7 +2,7 @@ package com.yuan.workflow.core.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.workflow.domain.WfDefinition;
-import com.yuan.workflow.enums.NodeType;
+import com.yuan.workflow.api.enums.NodeType;
 import com.yuan.workflow.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

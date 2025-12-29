@@ -1,6 +1,6 @@
 package com.yuan.workflow.model;
 
-import com.yuan.workflow.enums.ConditionOperator;
+import com.yuan.workflow.api.enums.ConditionOperator;
 import lombok.Data;
 
 @Data

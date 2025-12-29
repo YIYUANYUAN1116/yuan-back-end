@@ -15,5 +15,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface WfDefinitionMapper extends BaseMapperPlus<WfDefinition, WfDefinitionVo> {
 
-    WfDefinition selectLatestPublished(@Param("tenantId") String tenantId,@Param("processKey") String processKey);
+    WfDefinition selectLatestPublished(@Param("tenantId") String tenantId,@Param("definitionKey") String definitionKey);
 }

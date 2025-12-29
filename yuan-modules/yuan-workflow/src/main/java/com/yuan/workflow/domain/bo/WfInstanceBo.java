@@ -38,7 +38,7 @@ public class WfInstanceBo implements Serializable {
      * 流程业务标识
      */
     @NotBlank(message = "流程业务标识不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String processKey;
+    private String definitionKey;
     /**
      * 流程版本
      */

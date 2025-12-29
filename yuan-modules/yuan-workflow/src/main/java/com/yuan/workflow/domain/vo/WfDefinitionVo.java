@@ -31,7 +31,7 @@ public class WfDefinitionVo implements Serializable {
      * 流程业务标识(leave, expense)
      */
     @ExcelProperty(value = "流程业务标识(leave, expense)")
-    private String processKey;
+    private String definitionKey;
     /**
      * 流程名称
      */

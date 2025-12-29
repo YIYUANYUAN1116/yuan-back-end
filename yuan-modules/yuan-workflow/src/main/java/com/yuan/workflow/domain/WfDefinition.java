@@ -34,7 +34,7 @@ public class WfDefinition implements Serializable {
     /**
      * 流程业务标识(leave, expense)
      */
-    private String processKey;
+    private String definitionKey;
 
     /**
      * 流程名称

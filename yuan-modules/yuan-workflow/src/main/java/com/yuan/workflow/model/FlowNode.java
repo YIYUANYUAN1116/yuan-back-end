@@ -1,7 +1,7 @@
 package com.yuan.workflow.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.yuan.workflow.enums.NodeType;
+import com.yuan.workflow.api.enums.NodeType;
 import lombok.Data;
 
 import java.util.List;

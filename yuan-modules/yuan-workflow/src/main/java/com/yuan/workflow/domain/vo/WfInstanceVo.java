@@ -36,7 +36,7 @@ public class WfInstanceVo implements Serializable {
      * 流程业务标识
      */
     @ExcelProperty(value = "流程业务标识")
-    private String processKey;
+    private String definitionKey;
     /**
      * 流程版本
      */

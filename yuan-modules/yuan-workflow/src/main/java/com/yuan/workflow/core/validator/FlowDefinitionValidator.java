@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.validator;
 
-import com.yuan.workflow.enums.NodeType;
+import com.yuan.workflow.api.enums.NodeType;
 import com.yuan.workflow.model.FlowDefinitionJson;
 import com.yuan.workflow.model.FlowEdge;
 import com.yuan.workflow.model.FlowNode;

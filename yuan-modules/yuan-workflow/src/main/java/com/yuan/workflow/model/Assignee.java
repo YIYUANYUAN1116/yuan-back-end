@@ -1,6 +1,6 @@
 package com.yuan.workflow.model;
 
-import com.yuan.workflow.enums.AssigneeType;
+import com.yuan.workflow.api.enums.AssigneeType;
 import lombok.Data;
 
 @Data

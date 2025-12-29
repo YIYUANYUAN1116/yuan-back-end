@@ -1,20 +1,29 @@
 package com.yuan.workflow.core.engine;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yuan.common.json.utils.JsonUtils;
 import com.yuan.common.satoken.utils.LoginHelper;
-import com.yuan.workflow.model.FlowNode;
+import com.yuan.workflow.api.cmd.*;
+import com.yuan.workflow.api.enums.*;
+import com.yuan.workflow.api.event.WfEvent;
+import com.yuan.workflow.api.event.WfEventContext;
+import com.yuan.workflow.api.event.WfEventFactory;
+import com.yuan.workflow.core.event.WfEventPublisher;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.*;
-import com.yuan.workflow.enums.*;
 import com.yuan.workflow.mapper.*;
+import com.yuan.workflow.model.FlowNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -29,6 +38,9 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     private final WfTaskLogMapper taskLogMapper;
     private final FlowParser flowParser;
     private final AssigneeResolver assigneeResolver;
+    private final WfBizRefMapper bizRefMapper;
+    private final WfEventPublisher wfEventPublisher;
+
 
     /**
      * 发起流程
@@ -38,59 +50,50 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
      */
     @Override
     public Long startProcess(StartProcessCmd cmd) {
-        Long userId = LoginHelper.getUserId();
-        String tenantId = LoginHelper.getTenantId();
-
+        String tenantId = cmd.getTenantId();
         //1.查询最新已发布流程定义
         WfDefinition def = definitionMapper.selectLatestPublished(
-                tenantId, cmd.getProcessKey());
+                tenantId, cmd.getDefinitionKey());
         Assert.notNull(def, "流程未发布");
 
         // 2. 创建流程实例
-        WfInstance instance = new WfInstance();
-        instance.setTenantId(tenantId);
-        instance.setDefinitionId(def.getId());
-        instance.setProcessKey(def.getProcessKey());
-        instance.setVersion(def.getVersion());
-        instance.setBusinessKey(cmd.getBusinessKey());
-        instance.setStatus(InstanceStatus.RUNNING.getCode());
-        instance.setStartUserId(userId);
-        instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
-        instanceMapper.insert(instance);
+        WfInstance instance = createInstance(cmd, def);
 
-        // 3. start 节点（自动完成）
+        // 3. 绑定业务
+        bindWfBizRef(cmd,instance.getId());
+
+        // 4. start 节点（自动完成）
         FlowNode startNode = flowParser.getStartNode(def);
         createNodeInstance(instance.getId(), startNode, NodeStatus.DONE, 1);
 
-        //4.找到下一个节点
+        //5.找到下一个节点
         FlowNode firstApproveNode = flowParser.getNextNode(def, startNode, cmd.getVariables());
-
-        // 5. 创建审批节点 + 任务
+        //6. 创建审批节点 + 任务
         WfNodeInstance nodeInstance =
                 createNodeInstance(instance.getId(), firstApproveNode,
                         NodeStatus.WAIT, 2);
-
         createTasks(instance, nodeInstance, firstApproveNode);
+
 
         return instance.getId();
     }
 
 
+
+
     /**
      * 审批通过
      *
-     * @param taskId
-     * @param comment
      */
     @Override
-    public void approveTask(Long taskId, String comment) {
-        Long userId = LoginHelper.getUserId();
-        WfTask task = taskMapper.selectById(taskId);
+    public void approveTask(ApproveTaskCmd cmd) {
+        Long userId = cmd.getOperatorUserId();
+        WfTask task = taskMapper.selectById(cmd.getTaskId());
 
         assertApproveTask(task,userId);
 
         // 2. 完成任务
-        finishTask(task, TaskAction.APPROVE, comment);
+        finishTask(task, TaskAction.APPROVE, cmd.getComment());
 
         // 3. 完成节点
         WfNodeInstance node =
@@ -112,49 +115,90 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     /**
      * 审批回驳(终止型)
      *
-     * @param taskId
-     * @param comment
      */
     @Override
-    public void rejectTask(Long taskId, String comment) {
-        Long userId = LoginHelper.getUserId();
-        WfTask task = taskMapper.selectById(taskId);
-
+    public void rejectTask(RejectTaskCmd cmd) {
+        Long userId = cmd.getOperatorUserId();
+        WfTask task = taskMapper.selectById(cmd.getTaskId());
+        //参数校验
         assertRejectTask(task,userId);
+        //更新任务
+        finishTask(task, TaskAction.REJECT, cmd.getComment());
 
-        finishTask(task, TaskAction.REJECT, comment);
+        // 2. 业务规则：拒绝是否直接结束？
+        boolean instanceEnded = isRejectEnd(task);
 
+
+        WfEventContext wfEventContext = buildEventContextByTask(task);
+        WfEvent rejectEvent = WfEventFactory.buildTaskRejected(wfEventContext,cmd.getComment(),Map.of());
+        publishAfterCommit(rejectEvent);
+
+
+        // 4. 如果拒绝即结束
+        if (instanceEnded) {
+            WfInstance instance =
+                    instanceMapper.selectById(task.getInstanceId());
+            WfBizRef bizRef = bizRefMapper.selectByInstanceId(instance.getId());
+
+            WfEvent endEvent = WfEventFactory.buildInstanceEnded(wfEventContext,WfEndReason.REJECTED,Map.of());
+            instance.setStatus(InstanceStatus.REJECTED.getCode());
+            instance.setEndTime(LocalDateTime.now());
+            instanceMapper.updateById(instance);
+
+            bizRef.setStatus(InstanceStatus.REJECTED.getCode());
+            bizRefMapper.updateById(bizRef);
+            // 清理未完成节点 / 任务（软完成）
+            nodeInstanceMapper.finishAll(instance.getId(),NodeStatus.CANCELED.getCode());
+            taskMapper.finishAll(instance.getId(),TaskStatus.CANCELED.getCode());
+
+            publishAfterCommit(endEvent);
+
+        }
+
+    }
+
+    private WfEventContext buildEventContextByTask(WfTask task) {
         WfInstance instance =
                 instanceMapper.selectById(task.getInstanceId());
+        WfBizRef bizRef = bizRefMapper.selectByInstanceId(instance.getId());
 
-        instance.setStatus(InstanceStatus.REJECTED.getCode());
-        instance.setEndTime(LocalDateTime.now());
-        instanceMapper.updateById(instance);
+        return WfEventContext.builder()
+                .tenantId(instance.getTenantId())
+                .bizId(bizRef.getBizId())
+                .bizType(bizRef.getBizType())
+                .definitionId(instance.getDefinitionId())
+                .instanceId(instance.getId())
+                .taskId(task.getId())
+                .nodeId(task.getNodeInstanceId())
+                .starterUserId(instance.getStartUserId())
+                .operatorUserId(task.getAssigneeId())
+                .build();
+    }
 
-        // 清理未完成节点 / 任务（软完成）
-        nodeInstanceMapper.finishAll(instance.getId(),NodeStatus.CANCELED.getCode());
-        taskMapper.finishAll(instance.getId(),TaskStatus.CANCELED.getCode());
+    private boolean isRejectEnd(WfTask task) {
+        return true;
     }
 
     @Override
-    public void rollbackToPrev(Long taskId, String comment) {
+    public void rollbackToPrev(RollbackToPrevCmd rollbackToPrevCmd) {
 
     }
 
     @Override
-    public void rollbackTo(Long taskId, String targetNodeId, String comment) {
+    public void rollbackTo(RollbackToCmd rollbackToCmd) {
 
     }
 
     @Override
-    public void withdraw(Long instanceId, String comment) {
+    public void withdraw(WithdrawCmd withdrawCmd) {
 
     }
 
     @Override
-    public void transfer(Long taskId, Long toUserId, String reason) {
+    public void transfer(TransferTaskCmd transferTaskCmd) {
 
     }
+
 
     private void assertRejectTask(WfTask task, Long userId) {
         Assert.notNull(task, "任务不存在");
@@ -224,10 +268,11 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
         FlowNode next = flowParser.getNextNode(def, flowNode, JsonUtils.parseMap(instance.getVariables()));
 
         // 5. 没有下一个节点 → 结束
-        if (next == null || NodeType.END.getCode().equals(next.getType())) {
+        if (next == null || NodeType.END.equals(next.getType())) {
             instance.setStatus(InstanceStatus.APPROVED.getCode());
             instance.setEndTime(LocalDateTime.now());
             instanceMapper.updateById(instance);
+            afterFinishProcess(instance.getId(), InstanceStatus.APPROVED.getCode());
             return;
         }
 
@@ -235,4 +280,55 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
         WfNodeInstance nextNodeIns = createNodeInstance(instance.getId(), next, NodeStatus.WAIT, currentNode.getOrderNo() + 1);
         createTasks(instance, nextNodeIns, next);
     }
+
+    private void afterFinishProcess(Long instanceId, String status) {
+        // 1. 更新业务绑定表
+        WfBizRef ref = bizRefMapper.selectOne(
+                new LambdaQueryWrapper<WfBizRef>()
+                        .eq(WfBizRef::getInstanceId, instanceId)
+        );
+        ref.setStatus(status);
+        ref.setUpdatedTime(LocalDateTime.now());
+        bizRefMapper.updateById(ref);
+
+
+    }
+
+    private void bindWfBizRef(StartProcessCmd cmd,Long instanceId) {
+        WfBizRef ref = new WfBizRef();
+        ref.setBizType(cmd.getBizType());
+        ref.setBizId(cmd.getBizId());
+        ref.setInstanceId(instanceId);
+        ref.setStatus(InstanceStatus.RUNNING.getCode());
+        ref.setCreatedBy(cmd.getStarterUserId());
+        ref.setCreatedTime(LocalDateTime.now());
+        ref.setUpdatedTime(LocalDateTime.now());
+        bizRefMapper.insert(ref);
+    }
+
+    private WfInstance createInstance(StartProcessCmd cmd, WfDefinition def) {
+        WfInstance instance = new WfInstance();
+        instance.setTenantId(cmd.getTenantId());
+        instance.setDefinitionId(def.getId());
+        instance.setDefinitionKey(def.getDefinitionKey());
+        instance.setVersion(def.getVersion());
+        instance.setBusinessKey(cmd.getBizType());
+        instance.setStatus(InstanceStatus.RUNNING.getCode());
+        instance.setStartUserId(cmd.getStarterUserId());
+        instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
+        instanceMapper.insert(instance);
+        return instance;
+    }
+
+    private void publishAfterCommit(WfEvent event) {
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        wfEventPublisher.publish(event);
+                    }
+                }
+        );
+    }
+
 }
