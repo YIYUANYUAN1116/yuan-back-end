@@ -62,7 +62,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                     lqw.eq(bo.getId() != null, WfInstance::getId, bo.getId());
                     lqw.eq(bo.getTenantId() != null, WfInstance::getTenantId, bo.getTenantId());
                     lqw.eq(bo.getDefinitionId() != null, WfInstance::getDefinitionId, bo.getDefinitionId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getdefinitionKey()), WfInstance::getdefinitionKey, bo.getdefinitionKey());
+                    lqw.eq(StringUtils.isNotBlank(bo.getDefinitionKey()), WfInstance::getDefinitionKey, bo.getDefinitionKey());
                     lqw.eq(bo.getVersion() != null, WfInstance::getVersion, bo.getVersion());
                     lqw.eq(StringUtils.isNotBlank(bo.getBusinessKey()), WfInstance::getBusinessKey, bo.getBusinessKey());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfInstance::getStatus, bo.getStatus());

@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.workflow.domain.WfBizRef;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = WfBizRef.class)
 public class WfBizRefVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
     /**
      * 业务类型，如 LEAVE/REIMBURSE

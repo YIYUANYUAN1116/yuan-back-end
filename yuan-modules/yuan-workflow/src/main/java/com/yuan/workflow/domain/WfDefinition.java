@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * wfd对象 wf_definition
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("wf_definition")
-public class WfDefinition implements Serializable {
+public class WfDefinition extends BaseEntity {
 
 
     /**
@@ -39,7 +37,7 @@ public class WfDefinition implements Serializable {
     /**
      * 流程名称
      */
-    private String processName;
+    private String definitionName;
 
     /**
      * 版本号(递增)
@@ -67,20 +65,7 @@ public class WfDefinition implements Serializable {
      */
     private String remark;
 
-    /**
-     * createBy
-     */
-    private Long createBy;
 
-    /**
-     * createTime
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * updateTime
-     */
-    private LocalDateTime updateTime;
 
 
 }

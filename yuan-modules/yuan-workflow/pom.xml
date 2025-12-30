@@ -20,6 +20,21 @@
 
         <dependency>
             <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-excel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-idemponent</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
             <artifactId>yuan-common-mybatis</artifactId>
         </dependency>
 
@@ -35,15 +50,6 @@
 
         <dependency>
             <groupId>com.yuan</groupId>
-            <artifactId>yuan-common-excel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.yuan</groupId>
-            <artifactId>yuan-system-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yuan</groupId>
             <artifactId>yuan-common-doc</artifactId>
         </dependency>
         <dependency>
@@ -52,12 +58,11 @@
         </dependency>
         <dependency>
             <groupId>com.yuan</groupId>
-            <artifactId>yuan-common-web</artifactId>
+            <artifactId>yuan-workflow-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.yuan</groupId>
-            <artifactId>yuan-workflow-api</artifactId>
+            <artifactId>yuan-system-api</artifactId>
         </dependency>
     </dependencies>
 

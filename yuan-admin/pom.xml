@@ -23,6 +23,11 @@
             <groupId>com.yuan</groupId>
             <artifactId>yuan-system</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-workflow</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

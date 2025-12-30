@@ -61,8 +61,8 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         LambdaQueryWrapper<WfDefinition> lqw = Wrappers.lambdaQuery();
                     lqw.eq(bo.getId() != null, WfDefinition::getId, bo.getId());
                     lqw.eq(bo.getTenantId() != null, WfDefinition::getTenantId, bo.getTenantId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getdefinitionKey()), WfDefinition::getdefinitionKey, bo.getdefinitionKey());
-                    lqw.eq(StringUtils.isNotBlank(bo.getProcessName()), WfDefinition::getProcessName, bo.getProcessName());
+                    lqw.eq(StringUtils.isNotBlank(bo.getDefinitionKey()), WfDefinition::getDefinitionKey, bo.getDefinitionKey());
+                    lqw.eq(StringUtils.isNotBlank(bo.getDefinitionName()), WfDefinition::getDefinitionName, bo.getDefinitionName());
                     lqw.eq(bo.getVersion() != null, WfDefinition::getVersion, bo.getVersion());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfDefinition::getStatus, bo.getStatus());
                     lqw.eq(StringUtils.isNotBlank(bo.getFormSchema()), WfDefinition::getFormSchema, bo.getFormSchema());

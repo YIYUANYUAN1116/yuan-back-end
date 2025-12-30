@@ -3,6 +3,7 @@ package com.yuan.workflow.domain.vo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import com.yuan.workflow.domain.WfNodeInstance;
 
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = WfNodeInstance.class)
 public class WfNodeInstanceVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
     /**
      * 流程实例ID
