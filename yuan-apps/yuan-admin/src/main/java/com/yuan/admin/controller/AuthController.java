@@ -1,4 +1,4 @@
-package com.yuan.controller;
+package com.yuan.admin.controller;
 
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.domain.model.LoginBody;

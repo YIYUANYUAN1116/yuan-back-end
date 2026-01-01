@@ -3,17 +3,22 @@ package com.yuan.workflow.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.exception.base.BaseException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import lombok.RequiredArgsConstructor;
+import com.yuan.workflow.api.enums.DefinitionAction;
+import com.yuan.workflow.api.enums.DefinitionStatus;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
+import com.yuan.workflow.domain.bo.WfDefinitionDto;
 import com.yuan.workflow.domain.vo.WfDefinitionVo;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.service.WfDefinitionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -79,6 +84,7 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
      */
     @Override
     public Boolean insertByBo(WfDefinitionBo bo) {
+        bo.setStatus(DefinitionStatus.DRAFT.getCode());
         WfDefinition add = MapstructUtils.convert(bo, WfDefinition. class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
@@ -115,4 +121,77 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         }
         return baseMapper.deleteBatchIds(ids) > 0;
     }
+
+    @Override
+    public Boolean updateByDto(WfDefinitionDto dto) {
+        WfDefinition definition = baseMapper.selectById(dto.getId());
+        if (definition == null) {
+            throw new BaseException("流程定义不存在");
+        }
+        definition.setFlowJson(dto.getFlowJson());
+        definition.setFormSchema(dto.getFormSchema());
+        return baseMapper.updateById(definition) > 0;
+    }
+
+    @Transactional
+    public Boolean changeStatus(Long id, DefinitionAction action) {
+        WfDefinition definition = baseMapper.selectById(id);
+        if (definition == null) {
+            throw new BaseException("流程定义不存在");
+        }
+        DefinitionStatus current = DefinitionStatus.fromCode(definition.getStatus());
+        switch (action) {
+            case PUBLISH:
+                publish(definition, current);
+                break;
+            case DISABLE:
+                disable(definition, current);
+                break;
+            default:
+                throw new BaseException("不支持的操作: " + action);
+        }
+
+       return baseMapper.updateById(definition)>0;
+    }
+
+    /**
+     * 停用流程
+     * @param definition
+     * @param current
+     */
+    private void disable(WfDefinition definition, DefinitionStatus current) {
+        if (current != DefinitionStatus.PUBLISHED) {
+            throw new BaseException("只有已发布流程才能停用");
+        }
+        // 校验流程合法性
+        disableHandler(definition);
+
+        definition.setStatus(DefinitionStatus.DISABLED.getCode());
+    }
+
+    /**
+     * 发布流程
+     * @param definition
+     * @param current
+     */
+    private void publish(WfDefinition definition, DefinitionStatus current) {
+        if (current != DefinitionStatus.DRAFT) {
+            throw new BaseException("只有草稿状态才能发布");
+        }
+
+        // 校验流程合法性
+        publishedHandler(definition);
+
+        definition.setStatus(DefinitionStatus.PUBLISHED.getCode());
+    }
+
+    private void disableHandler(WfDefinition definition) {
+
+    }
+
+    private void publishedHandler(WfDefinition definition) {
+
+    }
+
+
 }

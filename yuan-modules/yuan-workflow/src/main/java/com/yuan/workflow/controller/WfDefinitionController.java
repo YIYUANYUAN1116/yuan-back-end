@@ -13,7 +13,9 @@ import com.yuan.common.log.enums.BusinessType;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.enums.DefinitionAction;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
+import com.yuan.workflow.domain.bo.WfDefinitionDto;
 import com.yuan.workflow.domain.vo.WfDefinitionVo;
 import com.yuan.workflow.service.WfDefinitionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,7 +58,7 @@ public class WfDefinitionController extends BaseController {
      * 导出wfd列表
      */
     @SaCheckPermission("system:wfDefinition:export")
-    @Log(title = "wfd", businessType = BusinessType.EXPORT)
+    @Log(title = "流程定义", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfd列表",operationId = "WfDefinition_export")
     public void export(WfDefinitionBo bo, HttpServletResponse response) {
@@ -81,7 +83,7 @@ public class WfDefinitionController extends BaseController {
      * 新增wfd
      */
     @SaCheckPermission("system:wfDefinition:add")
-    @Log(title = "wfd", businessType = BusinessType.INSERT)
+    @Log(title = "流程定义", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增wfd",operationId = "WfDefinition_add")
@@ -93,7 +95,7 @@ public class WfDefinitionController extends BaseController {
      * 修改wfd
      */
     @SaCheckPermission("system:wfDefinition:edit")
-    @Log(title = "wfd", businessType = BusinessType.UPDATE)
+    @Log(title = "流程定义", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改wfd",operationId = "WfDefinition_edit")
@@ -107,11 +109,41 @@ public class WfDefinitionController extends BaseController {
      * @param ids 主键串
      */
     @SaCheckPermission("system:wfDefinition:remove")
-    @Log(title = "wfd", businessType = BusinessType.DELETE)
+    @Log(title = "流程定义", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfd",operationId = "WfDefinition_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(wfDefinitionService.deleteWithValidByIds(List.of(ids), true));
     }
+
+
+    /**
+     * 修改wfd
+     */
+    @SaCheckPermission("system:wfDefinition:edit")
+    @Log(title = "流程定义", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/dto")
+    @Operation(summary = "修改wfd_dto",operationId = "WfDefinition_edit_dto")
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfDefinitionDto dto) {
+        return toAjax(wfDefinitionService.updateByDto(dto));
+    }
+
+    /**
+     * 修改wfd
+     */
+    @SaCheckPermission("system:wfDefinition:edit")
+    @Log(title = "流程定义", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/{id}/{action}")
+    public R<Void> changeStatus(
+            @PathVariable Long id,
+            @PathVariable String action
+    ) {
+        DefinitionAction definitionAction = DefinitionAction.fromValue(action);
+        wfDefinitionService.changeStatus(id, definitionAction);
+        return R.ok();
+    }
+
 }

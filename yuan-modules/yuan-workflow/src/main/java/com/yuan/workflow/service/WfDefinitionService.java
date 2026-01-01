@@ -2,7 +2,9 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.enums.DefinitionAction;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
+import com.yuan.workflow.domain.bo.WfDefinitionDto;
 import com.yuan.workflow.domain.vo.WfDefinitionVo;
 
 import java.util.Collection;
@@ -45,4 +47,8 @@ public interface WfDefinitionService {
      * 校验并批量删除wfd信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    Boolean updateByDto(WfDefinitionDto dto);
+
+    Boolean changeStatus(Long id, DefinitionAction action);
 }

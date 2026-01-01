@@ -9,19 +9,18 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum DefinitionStatus implements BaseEnum {
+public enum DefinitionAction implements BaseEnum {
 
-    DRAFT("DRAFT", "草稿"),
-    PUBLISHED("PUBLISHED", "已发布"),
-    DISABLED("DISABLED", "已停用");
+    PUBLISH("publish", "发布流程"),
+    DISABLE("disable", "停用流程");
 
     private final String code;
     private final String desc;
 
-    public static DefinitionStatus fromCode(String code) {
+    public static DefinitionAction fromValue(String value) {
         return Arrays.stream(values())
-                .filter(e -> e.code.equals(code))
+                .filter(a -> a.code.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new BaseException("非法流程状态: " + code));
+                .orElseThrow(() -> new BaseException("非法操作类型: " + value));
     }
 }

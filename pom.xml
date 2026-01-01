@@ -13,10 +13,10 @@
     <url/>
 
     <modules>
-        <module>yuan-admin</module>
         <module>yuan-common</module>
         <module>yuan-modules</module>
         <module>yuan-modules-api</module>
+        <module>yuan-apps</module>
     </modules>
 
     <packaging>pom</packaging>

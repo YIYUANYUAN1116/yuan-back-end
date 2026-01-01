@@ -7,6 +7,7 @@ import com.yuan.common.core.domain.model.LoginUser;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.service.BaseContext;
 import com.yuan.common.core.utils.ObjectUtils;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.domain.BaseEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
@@ -92,9 +93,8 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
     private LoginUser getLoginUser() {
         LoginUser loginUser;
         try {
-            String token = BaseContext.getCurrentToken();
-//            loginUser = LoginHelper.getLoginUser(token);
-            loginUser = new LoginUser();
+//            String token = BaseContext.getCurrentToken();
+            loginUser = LoginHelper.getLoginUser();
         } catch (Exception e) {
             log.warn("自动注入警告 => 用户未登录");
             return null;
