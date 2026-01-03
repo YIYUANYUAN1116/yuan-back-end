@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,10 +22,7 @@ import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
-import com.yuan.system.mapper.SysPostMapper;
-import com.yuan.system.mapper.SysRoleMapper;
-import com.yuan.system.mapper.SysUserMapper;
-import com.yuan.system.mapper.SysUserRoleMapper;
+import com.yuan.system.mapper.*;
 import com.yuan.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,6 +45,7 @@ public class SysUserServiceImpl implements SysUserService {
     private final SysRoleMapper sysRoleMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
     private final SysPostMapper sysPostMapper;
+    private final SysDeptMapper sysDeptMapper;
 
     /**
      * 查询用户
@@ -70,7 +69,7 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public List<SysUserVo> queryList(SysUserBo bo) {
-        LambdaQueryWrapper<SysUser> lqw = buildQueryWrapper(bo);
+        QueryWrapper<SysUser> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
@@ -233,37 +232,17 @@ public class SysUserServiceImpl implements SysUserService {
         return !exist;
     }
 
-    private LambdaQueryWrapper<SysUser> buildQueryWrapper(SysUserBo bo) {
-        LambdaQueryWrapper<SysUser> lqw = Wrappers.lambdaQuery();
-        lqw.eq(bo.getUserId() != null, SysUser::getUserId, bo.getUserId());
-        lqw.eq(StringUtils.isNotBlank(bo.getOpenId()), SysUser::getOpenId, bo.getOpenId());
-        lqw.eq(StringUtils.isNotBlank(bo.getUserGrade()), SysUser::getUserGrade, bo.getUserGrade());
-        lqw.eq(bo.getUserBalance() != null, SysUser::getUserBalance, bo.getUserBalance());
-        lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysUser::getTenantId, bo.getTenantId());
-        lqw.eq(bo.getDeptId() != null, SysUser::getDeptId, bo.getDeptId());
-        lqw.eq(StringUtils.isNotBlank(bo.getUserName()), SysUser::getUserName, bo.getUserName());
-        lqw.like(StringUtils.isNotBlank(bo.getNickName()), SysUser::getNickName, bo.getNickName());
-        lqw.eq(StringUtils.isNotBlank(bo.getUserType()), SysUser::getUserType, bo.getUserType());
-        lqw.eq(StringUtils.isNotBlank(bo.getUserPlan()), SysUser::getUserPlan, bo.getUserPlan());
-        lqw.eq(StringUtils.isNotBlank(bo.getEmail()), SysUser::getEmail, bo.getEmail());
-        lqw.eq(StringUtils.isNotBlank(bo.getPhonenumber()), SysUser::getPhonenumber, bo.getPhonenumber());
-        lqw.eq(StringUtils.isNotBlank(bo.getSex()), SysUser::getSex, bo.getSex());
-        lqw.eq(StringUtils.isNotBlank(bo.getAvatar()), SysUser::getAvatar, bo.getAvatar());
-        lqw.eq(StringUtils.isNotBlank(bo.getWxAvatar()), SysUser::getWxAvatar, bo.getWxAvatar());
-        lqw.eq(StringUtils.isNotBlank(bo.getPassword()), SysUser::getPassword, bo.getPassword());
-        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysUser::getStatus, bo.getStatus());
-        lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), SysUser::getDelFlag, bo.getDelFlag());
-        lqw.eq(StringUtils.isNotBlank(bo.getLoginIp()), SysUser::getLoginIp, bo.getLoginIp());
-        lqw.eq(bo.getLoginDate() != null, SysUser::getLoginDate, bo.getLoginDate());
-        lqw.eq(StringUtils.isNotBlank(bo.getDomainName()), SysUser::getDomainName, bo.getDomainName());
-        lqw.eq(bo.getCreateDept() != null, SysUser::getCreateDept, bo.getCreateDept());
-        lqw.eq(bo.getCreateBy() != null, SysUser::getCreateBy, bo.getCreateBy());
-        lqw.eq(bo.getCreateTime() != null, SysUser::getCreateTime, bo.getCreateTime());
-        lqw.eq(bo.getUpdateBy() != null, SysUser::getUpdateBy, bo.getUpdateBy());
-        lqw.eq(bo.getUpdateTime() != null, SysUser::getUpdateTime, bo.getUpdateTime());
-        lqw.eq(StringUtils.isNotBlank(bo.getRemark()), SysUser::getRemark, bo.getRemark());
-        lqw.eq(StringUtils.isNotBlank(bo.getKroleGroupType()), SysUser::getKroleGroupType, bo.getKroleGroupType());
-        lqw.eq(StringUtils.isNotBlank(bo.getKroleGroupIds()), SysUser::getKroleGroupIds, bo.getKroleGroupIds());
-        return lqw;
+    private QueryWrapper<SysUser> buildQueryWrapper(SysUserBo user) {
+        QueryWrapper<SysUser> wrapper = Wrappers.query();
+        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+                .eq(ObjectUtil.isNotNull(user.getUserId()), "u.user_id", user.getUserId())
+                .eq(ObjectUtil.isNotNull(user.getUserGrade()), "u.user_grade", user.getUserGrade())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber())
+                .like(StringUtils.isNotBlank(user.getEmail()), "u.email", user.getEmail())
+                .eq(user.getDeptId() != null, "u.dept_id", user.getDeptId());
+        return wrapper;
     }
 }

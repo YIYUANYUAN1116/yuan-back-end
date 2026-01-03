@@ -3,9 +3,10 @@ package com.yuan.workflow.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -14,9 +15,10 @@ import java.time.LocalDateTime;
  
  * @date Sun Dec 28 11:26:44 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("wf_task_log")
-public class WfTaskLog implements Serializable {
+public class WfTaskLog extends TenantEntity {
 
 
     /**

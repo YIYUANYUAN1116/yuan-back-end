@@ -3,10 +3,9 @@ package com.yuan.workflow.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * wfref对象 wf_biz_ref
@@ -14,9 +13,10 @@ import java.time.LocalDateTime;
  * @author yuan
  * @date Mon Dec 29 20:51:33 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("wf_biz_ref")
-public class WfBizRef implements Serializable {
+public class WfBizRef extends BaseEntity {
 
 
     /**
@@ -44,21 +44,5 @@ public class WfBizRef implements Serializable {
      * RUNNING/APPROVED/REJECTED/CANCELED
      */
     private String status;
-
-    /**
-     * createdBy
-     */
-    private Long createdBy;
-
-    /**
-     * createdTime
-     */
-    private LocalDateTime createdTime;
-
-    /**
-     * updatedTime
-     */
-    private LocalDateTime updatedTime;
-
 
 }

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_user")
-public class SysUser extends BaseEntity {
+public class SysUser extends TenantEntity {
 
     /**
      * 用户ID
@@ -41,10 +41,6 @@ public class SysUser extends BaseEntity {
      */
     private BigDecimal userBalance;
 
-    /**
-     * 租户编号
-     */
-    private String tenantId;
 
     /**
      * 部门ID
@@ -126,8 +122,6 @@ public class SysUser extends BaseEntity {
      * 注册域名
      */
     private String domainName;
-
-
 
     /**
      * 备注

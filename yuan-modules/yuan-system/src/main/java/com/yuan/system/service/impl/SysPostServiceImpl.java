@@ -1,20 +1,31 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.utils.MapstructUtils;
+import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysPost;
+import com.yuan.system.domain.SysUser;
+import com.yuan.system.domain.SysUserPost;
 import com.yuan.system.domain.bo.SysPostBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
+import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysPostMapper;
+import com.yuan.system.mapper.SysUserPostMapper;
 import com.yuan.system.service.SysPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +40,7 @@ import java.util.List;
 public class SysPostServiceImpl implements SysPostService {
 
     private final SysPostMapper baseMapper;
+    private final SysUserPostMapper userPostMapper;
 
     /**
      * 查询post
@@ -114,5 +126,61 @@ public class SysPostServiceImpl implements SysPostService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        QueryWrapper<SysUser> wrapper = Wrappers.query();
+        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+                .eq(ObjectUtil.isNotNull(user.getPostId()), "sp.post_id", user.getPostId())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = baseMapper.selectAllocatedUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        List<Long> userIds = userPostMapper.selectUserIdsByPostId(user.getPostId());
+        QueryWrapper<SysUser> wrapper = Wrappers.query();
+        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+                .and(w -> w.ne("sp.post_id", user.getPostId()).or().isNull("sp.post_id"))
+                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = baseMapper.selectUnallocatedUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public Boolean cancelUserAll(Long postId, Long[] userIds) {
+        int rows = userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>()
+                .eq(SysUserPost::getPostId, postId)
+                .in(SysUserPost::getUserId, Arrays.asList(userIds)));
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows>0;
+    }
+
+    @Override
+    public Boolean selectUserAll(Long postId, Long[] userIds) {
+        int rows = 0;
+        List<SysUserPost> list = StreamUtils.toList(List.of(userIds), userId -> {
+            SysUserPost ur = new SysUserPost();
+            ur.setUserId(userId);
+            ur.setPostId(postId);
+            return ur;
+        });
+        if (CollUtil.isNotEmpty(list)) {
+            rows = userPostMapper.insertBatch(list) ? list.size() : 0;
+        }
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows>0;
     }
 }

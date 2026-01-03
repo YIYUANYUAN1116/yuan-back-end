@@ -4,4 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.system.mapper.SysUserPostMapper">
 
+    <select id="selectUserIdsByPostId" resultType="java.lang.Long">
+        select u.user_id
+        from sys_user u
+        inner join sys_user_post sup on u.user_id = sup.user_id and sup.post_id = #{postId}
+    </select>
 </mapper>

@@ -208,7 +208,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public int deleteAuthUsers(Long roleId, Long[] userIds) {
+    public int deleteUsers(Long roleId, Long[] userIds) {
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
                 .eq(SysUserRole::getRoleId, roleId)
                 .in(SysUserRole::getUserId, Arrays.asList(userIds)));
@@ -233,7 +233,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public int insertAuthUsers(Long roleId, Long[] userIds) {
+    public int insertUsers(Long roleId, Long[] userIds) {
         // 新增用户与角色管理
         int rows = 1;
         List<SysUserRole> list = StreamUtils.toList(List.of(userIds), userId -> {

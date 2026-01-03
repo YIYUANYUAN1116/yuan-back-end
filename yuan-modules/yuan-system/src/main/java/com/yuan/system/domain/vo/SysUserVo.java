@@ -183,4 +183,6 @@ public class SysUserVo implements Serializable {
     private SysDeptVo dept;
 
     private String deptName;
+
+    private String postName;
 }

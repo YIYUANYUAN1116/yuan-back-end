@@ -142,8 +142,8 @@ public class SysRoleController extends BaseController {
      * 查询已分配用户角色列表
      */
     @SaCheckPermission("system:role:list")
-    @GetMapping("/authUser/allocatedList")
-    @Operation(summary = "获取角色已分配用户列表",operationId = "allocatedUserList")
+    @GetMapping("/allocatedList")
+    @Operation(summary = "获取角色已分配用户列表",operationId = "roleAllocatedUserList")
     public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
         return sysRoleService.selectAllocatedUserList(bo, pageQuery);
     }
@@ -152,8 +152,8 @@ public class SysRoleController extends BaseController {
      * 查询未分配用户角色列表
      */
     @SaCheckPermission("system:role:list")
-    @GetMapping("/authUser/unallocatedList")
-    @Operation(summary = "获取角色未分配用户列表",operationId = "unallocatedUserList")
+    @GetMapping("/unallocatedList")
+    @Operation(summary = "获取角色未分配用户列表",operationId = "roleUnallocatedUserList")
     public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
         return sysRoleService.selectUnallocatedUserList(bo, pageQuery);
     }
@@ -166,10 +166,10 @@ public class SysRoleController extends BaseController {
      */
     @SaCheckPermission("system:role:edit")
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PutMapping("/authUser/cancelAll")
-    @Operation(summary = "批量取消授权用户",operationId = "cancelAuthUserAll")
-    public R<Void> cancelAuthUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
-        return toAjax(sysRoleService.deleteAuthUsers(roleId, userIds));
+    @PutMapping("/cancelAll")
+    @Operation(summary = "批量取消授权用户",operationId = "roleCancelUserAll")
+    public R<Void> cancelUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
+        return toAjax(sysRoleService.deleteUsers(roleId, userIds));
     }
 
     /**
@@ -180,11 +180,11 @@ public class SysRoleController extends BaseController {
      */
     @SaCheckPermission("system:role:edit")
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PutMapping("/authUser/selectAll")
-    @Operation(summary = "批量选择用户授权",operationId = "selectAuthUserAll")
-    public R<Void> selectAuthUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
+    @PutMapping("/selectAll")
+    @Operation(summary = "批量选择用户授权",operationId = "roleSelectUserAll")
+    public R<Void> selectUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
         sysRoleService.checkRoleDataScope(roleId);
-        return toAjax(sysRoleService.insertAuthUsers(roleId, userIds));
+        return toAjax(sysRoleService.insertUsers(roleId, userIds));
     }
 
 }

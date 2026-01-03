@@ -48,6 +48,7 @@ public class SysOperLogBo implements Serializable {
      * 操作类别（0其它 1后台用户 2手机端用户）
      */
     private Integer operatorType;
+    private Long operatorId;
     /**
      * 操作人员
      */

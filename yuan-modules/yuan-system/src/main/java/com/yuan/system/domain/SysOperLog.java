@@ -55,6 +55,8 @@ public class SysOperLog implements Serializable {
      */
     private Integer operatorType;
 
+    private Long operatorId;
+
     /**
      * 操作人员
      */

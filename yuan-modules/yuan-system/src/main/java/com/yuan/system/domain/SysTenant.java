@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_tenant")
-public class SysTenant extends BaseEntity {
+public class SysTenant extends TenantEntity {
 
 
     /**
@@ -27,11 +27,6 @@ public class SysTenant extends BaseEntity {
      */
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 租户编号
-     */
-    private String tenantId;
 
     /**
      * 联系人

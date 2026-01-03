@@ -57,6 +57,8 @@ public class SysOperLogVo implements Serializable {
     @ExcelProperty(value = "操作类别", converter = ExcelDictConvert.class)
     @ExcelDictFormat(readConverterExp = "$column.readConverterExp()")
     private Integer operatorType;
+    @ExcelProperty(value = "操作人员ID")
+    private Long operatorId;
     /**
      * 操作人员
      */

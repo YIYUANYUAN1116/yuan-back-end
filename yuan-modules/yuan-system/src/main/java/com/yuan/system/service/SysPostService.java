@@ -1,9 +1,11 @@
 package com.yuan.system.service;
 
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.bo.SysPostBo;
     import com.yuan.core.page.TableDataInfo;
     import com.yuan.core.page.PageQuery;
+import com.yuan.system.domain.vo.SysUserVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,4 +47,12 @@ public interface SysPostService {
      * 校验并批量删除post信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo bo, PageQuery pageQuery);
+
+    TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo bo, PageQuery pageQuery);
+
+    Boolean cancelUserAll(Long postId, Long[] userIds);
+
+    Boolean selectUserAll(Long postId, Long[] userIds);
 }

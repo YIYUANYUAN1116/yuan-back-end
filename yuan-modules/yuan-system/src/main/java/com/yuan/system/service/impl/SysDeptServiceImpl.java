@@ -3,6 +3,8 @@ package com.yuan.system.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.CommonTreeUtils;
@@ -12,9 +14,13 @@ import com.yuan.common.core.utils.TreeBuildUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysDept;
+import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.bo.SysDeptBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysDeptVo;
+import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysDeptMapper;
+import com.yuan.system.mapper.SysUserMapper;
 import com.yuan.system.service.SysDeptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * deptService业务层处理
  *
- 
  * @date Mon Dec 22 15:20:54 CST 2025
  */
 @RequiredArgsConstructor
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 public class SysDeptServiceImpl implements SysDeptService {
 
     private final SysDeptMapper baseMapper;
+    private final SysUserMapper userMapper;
 
     /**
      * 查询dept
@@ -42,15 +48,15 @@ public class SysDeptServiceImpl implements SysDeptService {
         return baseMapper.selectVoById(deptId);
     }
 
-        /**
-         * 查询dept列表
-         */
-        @Override
-        public TableDataInfo<SysDeptVo> queryPageList(SysDeptBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(bo);
-            Page<SysDeptVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-            return TableDataInfo.build(result);
-        }
+    /**
+     * 查询dept列表
+     */
+    @Override
+    public TableDataInfo<SysDeptVo> queryPageList(SysDeptBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(bo);
+        Page<SysDeptVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
 
     /**
      * 查询dept列表
@@ -63,23 +69,23 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     private LambdaQueryWrapper<SysDept> buildQueryWrapper(SysDeptBo bo) {
         LambdaQueryWrapper<SysDept> lqw = Wrappers.lambdaQuery();
-                    lqw.eq(bo.getDeptId() != null, SysDept::getDeptId, bo.getDeptId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysDept::getTenantId, bo.getTenantId());
-                    lqw.eq(bo.getParentId() != null, SysDept::getParentId, bo.getParentId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getAncestors()), SysDept::getAncestors, bo.getAncestors());
-                    lqw.like(StringUtils.isNotBlank(bo.getDeptName()), SysDept::getDeptName, bo.getDeptName());
-                    lqw.eq(bo.getOrderNum() != null, SysDept::getOrderNum, bo.getOrderNum());
-                    lqw.eq(StringUtils.isNotBlank(bo.getLeader()), SysDept::getLeader, bo.getLeader());
-                    lqw.eq(StringUtils.isNotBlank(bo.getPhone()), SysDept::getPhone, bo.getPhone());
-                    lqw.eq(StringUtils.isNotBlank(bo.getEmail()), SysDept::getEmail, bo.getEmail());
-                    lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysDept::getStatus, bo.getStatus());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), SysDept::getDelFlag, bo.getDelFlag());
-                    lqw.eq(bo.getCreateDept() != null, SysDept::getCreateDept, bo.getCreateDept());
-                    lqw.eq(bo.getCreateBy() != null, SysDept::getCreateBy, bo.getCreateBy());
-                    lqw.eq(bo.getCreateTime() != null, SysDept::getCreateTime, bo.getCreateTime());
-                    lqw.eq(bo.getUpdateBy() != null, SysDept::getUpdateBy, bo.getUpdateBy());
-                    lqw.eq(bo.getUpdateTime() != null, SysDept::getUpdateTime, bo.getUpdateTime());
-                    lqw.orderByAsc(SysDept::getOrderNum);
+        lqw.eq(bo.getDeptId() != null, SysDept::getDeptId, bo.getDeptId());
+        lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysDept::getTenantId, bo.getTenantId());
+        lqw.eq(bo.getParentId() != null, SysDept::getParentId, bo.getParentId());
+        lqw.eq(StringUtils.isNotBlank(bo.getAncestors()), SysDept::getAncestors, bo.getAncestors());
+        lqw.like(StringUtils.isNotBlank(bo.getDeptName()), SysDept::getDeptName, bo.getDeptName());
+        lqw.eq(bo.getOrderNum() != null, SysDept::getOrderNum, bo.getOrderNum());
+        lqw.eq(StringUtils.isNotBlank(bo.getLeader()), SysDept::getLeader, bo.getLeader());
+        lqw.eq(StringUtils.isNotBlank(bo.getPhone()), SysDept::getPhone, bo.getPhone());
+        lqw.eq(StringUtils.isNotBlank(bo.getEmail()), SysDept::getEmail, bo.getEmail());
+        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysDept::getStatus, bo.getStatus());
+        lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), SysDept::getDelFlag, bo.getDelFlag());
+        lqw.eq(bo.getCreateDept() != null, SysDept::getCreateDept, bo.getCreateDept());
+        lqw.eq(bo.getCreateBy() != null, SysDept::getCreateBy, bo.getCreateBy());
+        lqw.eq(bo.getCreateTime() != null, SysDept::getCreateTime, bo.getCreateTime());
+        lqw.eq(bo.getUpdateBy() != null, SysDept::getUpdateBy, bo.getUpdateBy());
+        lqw.eq(bo.getUpdateTime() != null, SysDept::getUpdateTime, bo.getUpdateTime());
+        lqw.orderByAsc(SysDept::getOrderNum);
         return lqw;
     }
 
@@ -88,7 +94,7 @@ public class SysDeptServiceImpl implements SysDeptService {
      */
     @Override
     public Boolean insertByBo(SysDeptBo bo) {
-        SysDept add = MapstructUtils.convert(bo, SysDept. class);
+        SysDept add = MapstructUtils.convert(bo, SysDept.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -102,7 +108,7 @@ public class SysDeptServiceImpl implements SysDeptService {
      */
     @Override
     public Boolean updateByBo(SysDeptBo bo) {
-        SysDept update = MapstructUtils.convert(bo, SysDept. class);
+        SysDept update = MapstructUtils.convert(bo, SysDept.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
@@ -140,7 +146,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 
 
         List<SysDeptVo> resultDept = null;
-        if (!Objects.equals(allDepts.size(),matchedDepts.size())) {
+        if (!Objects.equals(allDepts.size(), matchedDepts.size())) {
             // 3. 构建子菜单集合（只保留匹配的菜单及其子菜单）
             Set<Long> includedIds = new HashSet<>();
             for (SysDeptVo sysDept : matchedDepts) {
@@ -152,7 +158,7 @@ public class SysDeptServiceImpl implements SysDeptService {
                     .collect(Collectors.toList());
         }
 
-        resultDept = resultDept==null?matchedDepts:resultDept;
+        resultDept = resultDept == null ? matchedDepts : resultDept;
         // 构建树
         return CommonTreeUtils.buildTree(
                 resultDept,
@@ -180,6 +186,57 @@ public class SysDeptServiceImpl implements SysDeptService {
                         .setParentId(deptVo.getParentId())
                         .setName(deptVo.getDeptName())
                         .setWeight(deptVo.getOrderNum()));
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq(user.getDeptId() != null, "u.dept_id", user.getDeptId())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = userMapper.selectPageUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        List<Long> userIds = userMapper.selectUserIdsBydeptId(user.getDeptId());
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.and(w -> w.ne("u.dept_id", user.getDeptId())
+                        .or()
+                        .isNull("u.dept_id"))
+                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
+                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+        Page<SysUserVo> page = userMapper.selectPageUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public Boolean cancelUserAll(Long deptId, Long[] userIds) {
+        int rows = userMapper.update(new LambdaUpdateWrapper<SysUser>()
+                .eq(SysUser::getDeptId, deptId)
+                .in(SysUser::getUserId, Arrays.asList(userIds))
+                .set(SysUser::getDeptId, null));
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows > 0;
+    }
+
+    @Override
+    public Boolean selectUserAll(Long deptId, Long[] userIds) {
+        int rows = userMapper.update(new LambdaUpdateWrapper<SysUser>()
+                .in(SysUser::getUserId, Arrays.asList(userIds))
+                .set(SysUser::getDeptId, deptId));
+//        if (rows > 0) {
+//            cleanOnlineUserByRole(roleId);
+//        }
+        return rows > 0;
     }
 
     // 递归收集子菜单

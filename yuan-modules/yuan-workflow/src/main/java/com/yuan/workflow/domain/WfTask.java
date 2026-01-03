@@ -3,11 +3,12 @@ package com.yuan.workflow.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.api.enums.TaskAction;
 import com.yuan.workflow.api.enums.TaskStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -16,9 +17,10 @@ import java.time.LocalDateTime;
  
  * @date Sun Dec 28 11:26:41 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("wf_task")
-public class WfTask implements Serializable {
+public class WfTask extends TenantEntity {
 
 
     /**
@@ -26,11 +28,6 @@ public class WfTask implements Serializable {
      */
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 租户ID
-     */
-    private String tenantId;
 
     /**
      * 流程实例ID
@@ -64,10 +61,6 @@ public class WfTask implements Serializable {
      */
     private String comment;
 
-    /**
-     * createTime
-     */
-    private LocalDateTime createTime;
 
     /**
      * 完成时间

@@ -93,8 +93,11 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
     private LoginUser getLoginUser() {
         LoginUser loginUser;
         try {
-//            String token = BaseContext.getCurrentToken();
-            loginUser = LoginHelper.getLoginUser();
+            String token = BaseContext.getCurrentToken();
+            loginUser = LoginHelper.getLoginUser(token);
+            if (ObjectUtil.isNull(loginUser)) {
+                loginUser = LoginHelper.getLoginUser();
+            }
         } catch (Exception e) {
             log.warn("自动注入警告 => 用户未登录");
             return null;

@@ -57,6 +57,8 @@ public class OperLogEvent implements Serializable {
      */
     private Integer operatorType;
 
+    private Long operatorId;
+
     /**
      * 操作人员
      */

@@ -13,7 +13,9 @@ import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDeptBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysDeptVo;
+import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.domain.vo.TreeSelectVo;
 import com.yuan.system.service.SysDeptService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +49,7 @@ public class SysDeptController extends BaseController {
     /**
      * 查询部门列表
      */
-    @SaCheckPermission("system:sysDept:list")
+    @SaCheckPermission("system:dept:list")
     @GetMapping("/list")
     @Operation(summary = "查询部门列表",operationId = "sysDept_list")
     public TableDataInfo<SysDeptVo> list(SysDeptBo bo, PageQuery pageQuery) {
@@ -57,7 +59,7 @@ public class SysDeptController extends BaseController {
     /**
      * 导出部门列表
      */
-    @SaCheckPermission("system:sysDept:export")
+    @SaCheckPermission("system:dept:export")
     @Log(title = "部门管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出部门列表",operationId = "sysDept_export")
@@ -72,7 +74,7 @@ public class SysDeptController extends BaseController {
      * @param deptId 主键
      */
     @Operation(summary = "导出部门列表",operationId = "sysDept_getInfo")
-    @SaCheckPermission("system:sysDept:query")
+    @SaCheckPermission("system:dept:query")
     @GetMapping("/{deptId}")
     public R<SysDeptVo> getInfo(@NotNull(message = "主键不能为空")
                                 @PathId @PathVariable Long deptId) {
@@ -82,7 +84,7 @@ public class SysDeptController extends BaseController {
     /**
      * 新增部门
      */
-    @SaCheckPermission("system:sysDept:add")
+    @SaCheckPermission("system:dept:add")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -95,7 +97,7 @@ public class SysDeptController extends BaseController {
      * 修改部门
      */
     @Operation(summary = "修改部门",operationId = "sysDept_edit")
-    @SaCheckPermission("system:sysDept:edit")
+    @SaCheckPermission("system:dept:edit")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -109,7 +111,7 @@ public class SysDeptController extends BaseController {
      * @param deptIds 主键串
      */
     @Operation(summary = "删除部门",operationId = "sysDept_remove")
-    @SaCheckPermission("system:sysDept:remove")
+    @SaCheckPermission("system:dept:remove")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
@@ -139,5 +141,54 @@ public class SysDeptController extends BaseController {
         TreeSelectVo selectVo = new TreeSelectVo();
         selectVo.setTreeList(sysDeptService.buildDeptTreeSelect(deptVos));
         return R.ok(selectVo);
+    }
+
+    /**
+     * 查询已分配用户岗位列表
+     */
+    @SaCheckPermission("system:dept:list")
+    @GetMapping("/allocatedList")
+    @Operation(summary = "获取岗位已分配用户列表",operationId = "deptAllocatedUserList")
+    public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
+        return sysDeptService.selectAllocatedUserList(bo, pageQuery);
+    }
+
+    /**
+     * 查询未分配用户岗位列表
+     */
+    @SaCheckPermission("system:dept:list")
+    @GetMapping("/unallocatedList")
+    @Operation(summary = "获取岗位未分配用户列表",operationId = "deptUnallocatedUserList")
+    public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
+        return sysDeptService.selectUnallocatedUserList(bo, pageQuery);
+    }
+
+    /**
+     * 批量取消授权用户
+     *
+     * @param deptId
+     * @param userIds
+     */
+    @SaCheckPermission("system:dept:edit")
+    @Log(title = "岗位管理", businessType = BusinessType.GRANT)
+    @PutMapping("/cancelAll")
+    @Operation(summary = "批量取消授权用户",operationId = "deptCancelUserAll")
+    public R<Void> cancelUserAll(@PathId Long deptId, @PathIds Long[] userIds) {
+        return toAjax(sysDeptService.cancelUserAll(deptId, userIds));
+    }
+
+    /**
+     * 批量选择用户授权
+     *
+     * @param deptId
+     * @param userIds
+     */
+    @SaCheckPermission("system:dept:edit")
+    @Log(title = "岗位管理", businessType = BusinessType.GRANT)
+    @PutMapping("/selectAll")
+    @Operation(summary = "批量选择用户授权",operationId = "deptSelectUserAll")
+    public R<Void> selectUserAll(@PathId Long deptId, @PathIds Long[] userIds) {
+//        sysDeptService.checkRoleDataScope(deptId);
+        return toAjax(sysDeptService.selectUserAll(deptId, userIds));
     }
 }

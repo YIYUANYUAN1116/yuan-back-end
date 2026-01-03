@@ -3,10 +3,9 @@ package com.yuan.workflow.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * wfcc对象 wf_cc
@@ -14,9 +13,10 @@ import java.time.LocalDateTime;
  
  * @date Sun Dec 28 11:26:25 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("wf_cc")
-public class WfCc implements Serializable {
+public class WfCc extends TenantEntity {
 
 
     /**
@@ -25,10 +25,6 @@ public class WfCc implements Serializable {
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 租户ID
-     */
-    private String tenantId;
 
     /**
      * 流程实例ID
@@ -44,11 +40,6 @@ public class WfCc implements Serializable {
      * 是否已读(0未读 1已读)
      */
     private String readFlag;
-
-    /**
-     * createTime
-     */
-    private LocalDateTime createTime;
 
 
 }

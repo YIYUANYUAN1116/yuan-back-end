@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 
 /**
@@ -44,19 +44,19 @@ public class WfBizRefVo implements Serializable {
     @ExcelProperty(value = "RUNNING/APPROVED/REJECTED/CANCELED")
     private String status;
     /**
-     * createdBy
+     * createBy
      */
-    @ExcelProperty(value = "createdBy")
-    private Long createdBy;
+    @ExcelProperty(value = "createBy")
+    private Long createBy;
     /**
      * createdTime
      */
     @ExcelProperty(value = "createdTime")
-    private LocalDateTime createdTime;
+    private Date createTime;
     /**
      * updatedTime
      */
     @ExcelProperty(value = "updatedTime")
-    private LocalDateTime updatedTime;
+    private Date updateTime;
 
 }

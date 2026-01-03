@@ -1,9 +1,15 @@
 package com.yuan.system.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.system.domain.SysPost;
+import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.core.mapper.BaseMapperPlus;
+import com.yuan.system.domain.vo.SysUserVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,4 +23,8 @@ import java.util.List;
 public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
 
     List<SysPostVo> selectPostsByUserId(Long userId);
+
+    Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
+
+    Page<SysUserVo> selectUnallocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
 }

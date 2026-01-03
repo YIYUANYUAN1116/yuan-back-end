@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -288,7 +289,7 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
                         .eq(WfBizRef::getInstanceId, instanceId)
         );
         ref.setStatus(status);
-        ref.setUpdatedTime(LocalDateTime.now());
+        ref.setUpdateTime(new Date());
         bizRefMapper.updateById(ref);
 
 
@@ -300,9 +301,9 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
         ref.setBizId(cmd.getBizId());
         ref.setInstanceId(instanceId);
         ref.setStatus(InstanceStatus.RUNNING.getCode());
-        ref.setCreatedBy(cmd.getStarterUserId());
-        ref.setCreatedTime(LocalDateTime.now());
-        ref.setUpdatedTime(LocalDateTime.now());
+        ref.setCreateBy(cmd.getStarterUserId());
+        ref.setCreateTime(new Date());
+        ref.setUpdateTime(new Date());
         bizRefMapper.insert(ref);
     }
 

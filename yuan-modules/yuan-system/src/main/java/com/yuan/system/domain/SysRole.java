@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_role")
-public class SysRole extends BaseEntity {
+public class SysRole extends TenantEntity {
 
 
     /**
@@ -26,10 +26,6 @@ public class SysRole extends BaseEntity {
         @TableId(value = "role_id", type = IdType.AUTO)
     private Long roleId;
 
-    /**
-     * 租户编号
-     */
-    private String tenantId;
 
     /**
      * 角色名称

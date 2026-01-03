@@ -122,4 +122,10 @@
         from sys_user
         where user_id = #{userId}
     </select>
+    <select id="selectUserIdsBydeptId" resultType="java.lang.Long">
+        select su.user_id
+        from sys_dept sd
+                 join sys_user su on su.dept_id = sd.dept_id
+        where sd.dept_id = #{deptId} and su.del_flag = 0
+    </select>
 </mapper>

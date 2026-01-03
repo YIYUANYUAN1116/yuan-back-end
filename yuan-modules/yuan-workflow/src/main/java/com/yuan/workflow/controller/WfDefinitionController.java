@@ -137,8 +137,9 @@ public class WfDefinitionController extends BaseController {
     @Log(title = "流程定义", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/{id}/{action}")
+    @Operation(summary = "修改流程定义状态",operationId = "WfDefinition_change_status")
     public R<Void> changeStatus(
-            @PathVariable Long id,
+            @PathVariable @PathId Long id,
             @PathVariable String action
     ) {
         DefinitionAction definitionAction = DefinitionAction.fromValue(action);

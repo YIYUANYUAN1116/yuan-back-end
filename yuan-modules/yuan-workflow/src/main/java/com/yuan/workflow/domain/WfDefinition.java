@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * wfd对象 wf_definition
@@ -13,21 +14,16 @@ import lombok.Data;
  
  * @date Sun Dec 28 11:26:30 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("wf_definition")
-public class WfDefinition extends BaseEntity {
-
+public class WfDefinition extends TenantEntity {
 
     /**
      * 流程定义ID
      */
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 租户ID
-     */
-    private String tenantId;
 
     /**
      * 流程业务标识(leave, expense)
@@ -64,8 +60,5 @@ public class WfDefinition extends BaseEntity {
      * 备注
      */
     private String remark;
-
-
-
 
 }

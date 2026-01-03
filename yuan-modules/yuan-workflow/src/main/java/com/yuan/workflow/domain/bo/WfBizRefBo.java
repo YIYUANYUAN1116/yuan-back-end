@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * wfref业务对象 wf_biz_ref
@@ -45,18 +45,18 @@ public class WfBizRefBo implements Serializable {
     @NotBlank(message = "RUNNING/APPROVED/REJECTED/CANCELED不能为空", groups = { AddGroup.class, EditGroup.class })
     private String status;
     /**
-     * createdBy
+     * createBy
      */
-    private Long createdBy;
+    private Long createBy;
     /**
      * createdTime
      */
     @NotNull(message = "createdTime不能为空", groups = { AddGroup.class, EditGroup.class })
-    private LocalDateTime createdTime;
+    private Date createTime;
     /**
      * updatedTime
      */
     @NotNull(message = "updatedTime不能为空", groups = { AddGroup.class, EditGroup.class })
-    private LocalDateTime updatedTime;
+    private Date updateTime;
 
 }

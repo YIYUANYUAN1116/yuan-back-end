@@ -3,10 +3,8 @@ package com.yuan.system.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * post对象 sys_post
@@ -16,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("sys_post")
-public class SysPost extends BaseEntity implements Serializable {
+public class SysPost extends TenantEntity  {
 
 
     /**
@@ -24,11 +22,6 @@ public class SysPost extends BaseEntity implements Serializable {
      */
         @TableId(value = "post_id", type = IdType.AUTO)
     private Long postId;
-
-    /**
-     * 租户编号
-     */
-    private String tenantId;
 
     /**
      * 岗位编码

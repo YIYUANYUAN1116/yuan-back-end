@@ -37,4 +37,6 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     List<Long> selectUserIdsByDept(@Param("deptId") Long deptId, @Param("tenantId") String tenantId);
 
     SysUserDTO selectDtoById(@Param("userId") Long userId);
+
+    List<Long> selectUserIdsBydeptId(@Param("deptId") Long deptId);
 }

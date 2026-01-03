@@ -64,9 +64,9 @@ public class WfBizRefServiceImpl implements WfBizRefService {
                     lqw.eq(StringUtils.isNotBlank(bo.getBizId()), WfBizRef::getBizId, bo.getBizId());
                     lqw.eq(bo.getInstanceId() != null, WfBizRef::getInstanceId, bo.getInstanceId());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfBizRef::getStatus, bo.getStatus());
-                    lqw.eq(bo.getCreatedBy() != null, WfBizRef::getCreatedBy, bo.getCreatedBy());
-                    lqw.eq(bo.getCreatedTime() != null, WfBizRef::getCreatedTime, bo.getCreatedTime());
-                    lqw.eq(bo.getUpdatedTime() != null, WfBizRef::getUpdatedTime, bo.getUpdatedTime());
+                    lqw.eq(bo.getCreateBy() != null, WfBizRef::getCreateBy, bo.getCreateBy());
+                    lqw.eq(bo.getCreateTime() != null, WfBizRef::getCreateTime, bo.getCreateTime());
+                    lqw.eq(bo.getUpdateTime() != null, WfBizRef::getUpdateTime, bo.getUpdateTime());
         return lqw;
     }
 

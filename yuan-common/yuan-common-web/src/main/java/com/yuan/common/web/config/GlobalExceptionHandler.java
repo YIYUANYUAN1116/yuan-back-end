@@ -9,6 +9,7 @@ import com.yuan.common.core.domain.R;
 import com.yuan.common.core.exception.AuthException;
 import com.yuan.common.core.exception.GlobalException;
 import com.yuan.common.core.exception.ServiceException;
+import com.yuan.common.core.exception.base.BaseException;
 import com.yuan.common.core.exception.user.UserException;
 import com.yuan.common.core.utils.StreamUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -102,6 +103,16 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         Integer code = e.getCode();
         return ObjectUtil.isNotNull(code) ? R.fail(code, e.getMessage()) : R.fail(e.getMessage());
+    }
+
+    /**
+     * 拦截未知的运行时异常
+     */
+    @ExceptionHandler(BaseException.class)
+    public R<Void> handleBaseException(BaseException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+        return R.fail(e.getDefaultMessage());
     }
 
     /**

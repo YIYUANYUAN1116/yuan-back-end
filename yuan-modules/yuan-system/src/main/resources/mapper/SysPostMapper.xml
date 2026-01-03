@@ -15,5 +15,33 @@
                  left join sys_user u on u.user_id = up.user_id
         where u.user_id = #{userId}
     </select>
+    <select id="selectAllocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select distinct u.user_id,
+                        u.dept_id,
+                        u.user_name,
+                        u.nick_name,
+                        u.email,
+                        u.phonenumber,
+                        u.status,
+                        u.create_time
+        FROM sys_user u
+        join sys_user_post sup on sup.user_id = u.user_id
+        join sys_post  sp on sp.post_id = sup.post_id
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="selectUnallocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select distinct u.user_id,
+                        u.dept_id,
+                        u.user_name,
+                        u.nick_name,
+                        u.email,
+                        u.phonenumber,
+                        u.status,
+                        u.create_time
+        FROM sys_user u
+                 join sys_user_post sup on sup.user_id = u.user_id
+                 join sys_post  sp on sp.post_id = sup.post_id
+            ${ew.getCustomSqlSegment}
+    </select>
 
 </mapper>
