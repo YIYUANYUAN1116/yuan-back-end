@@ -25,5 +25,6 @@ public class SysUserPost implements Serializable {
      */
     private Long postId;
 
+    private Boolean  isPrimary;
 
 }

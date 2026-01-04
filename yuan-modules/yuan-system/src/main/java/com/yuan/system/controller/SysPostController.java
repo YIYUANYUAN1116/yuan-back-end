@@ -175,4 +175,12 @@ public class SysPostController extends BaseController {
 //        sysPostService.checkRoleDataScope(postId);
         return toAjax(sysPostService.selectUserAll(postId, userIds));
     }
+
+    @SaCheckPermission("system:sysPost:query")
+    @GetMapping("/byUser/{userId}")
+    @Operation(summary = "获取用户岗位详细信息",operationId = "SysPost_getByUserId")
+    public R<List<SysPostVo>> getByUserId(@NotNull(message = "主键不能为空")
+                                @PathVariable @PathId Long userId) {
+        return R.ok(sysPostService.queryByUserId(userId));
+    }
 }

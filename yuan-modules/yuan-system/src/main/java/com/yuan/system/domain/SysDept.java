@@ -46,10 +46,6 @@ public class SysDept extends TenantEntity {
      */
     private Integer orderNum;
 
-    /**
-     * 负责人
-     */
-    private String leader;
 
     /**
      * 负责人

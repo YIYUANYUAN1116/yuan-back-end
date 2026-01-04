@@ -143,4 +143,9 @@ public class SysUserBo implements Serializable {
     private Long roleId;
 
     private Long postId;
+
+    private String postName;
+    private String deptName;
+    private String roleName;
+    private Long primaryPostId;
 }

@@ -24,4 +24,5 @@ public class SysUserRoleVo implements Serializable {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long roleId;
 
+    private Boolean  isPrimary;
 }

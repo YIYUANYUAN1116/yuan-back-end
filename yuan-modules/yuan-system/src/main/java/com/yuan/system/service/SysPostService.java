@@ -1,10 +1,10 @@
 package com.yuan.system.service;
 
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.domain.bo.SysPostBo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
-import com.yuan.system.domain.bo.SysPostBo;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
 import com.yuan.system.domain.vo.SysUserVo;
 
 import java.util.Collection;
@@ -59,4 +59,6 @@ public interface SysPostService {
     Boolean checkPostNameUnique(SysPostBo bo);
 
     Boolean checkPostKeyUnique(SysPostBo bo);
+
+    List<SysPostVo> queryByUserId(Long userId);
 }

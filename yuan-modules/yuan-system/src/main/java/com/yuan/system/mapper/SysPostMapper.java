@@ -27,4 +27,10 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
     Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
 
     Page<SysUserVo> selectUnallocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
+
+    Page<SysPostVo> selectPagePostList(@Param("page") Page<Object> build, @Param(Constants.WRAPPER) QueryWrapper<SysPost> wrapper);
+
+    List<SysPostVo> selectPostList( @Param(Constants.WRAPPER) QueryWrapper<SysPost> wrapper);
+
+    List<SysPostVo> selectByUserId(@Param("userId") Long userId);
 }

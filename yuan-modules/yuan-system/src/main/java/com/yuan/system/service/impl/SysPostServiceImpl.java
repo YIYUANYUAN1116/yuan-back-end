@@ -19,6 +19,7 @@ import com.yuan.system.domain.bo.SysPostBo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.vo.SysUserVo;
+import com.yuan.system.mapper.SysDeptMapper;
 import com.yuan.system.mapper.SysPostMapper;
 import com.yuan.system.mapper.SysUserPostMapper;
 import com.yuan.system.service.SysPostService;
@@ -41,6 +42,7 @@ public class SysPostServiceImpl implements SysPostService {
 
     private final SysPostMapper baseMapper;
     private final SysUserPostMapper userPostMapper;
+    private final SysDeptMapper sysDeptMapper;
 
     /**
      * 查询post
@@ -55,8 +57,8 @@ public class SysPostServiceImpl implements SysPostService {
          */
         @Override
         public TableDataInfo<SysPostVo> queryPageList(SysPostBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<SysPost> lqw = buildQueryWrapper(bo);
-            Page<SysPostVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            QueryWrapper<SysPost> lqw = buildQueryWrapper(bo);
+            Page<SysPostVo> result = baseMapper.selectPagePostList(pageQuery.build(), lqw);
             return TableDataInfo.build(result);
         }
 
@@ -65,25 +67,18 @@ public class SysPostServiceImpl implements SysPostService {
      */
     @Override
     public List<SysPostVo> queryList(SysPostBo bo) {
-        LambdaQueryWrapper<SysPost> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        QueryWrapper<SysPost> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectPostList(lqw);
     }
-
-    private LambdaQueryWrapper<SysPost> buildQueryWrapper(SysPostBo bo) {
-        LambdaQueryWrapper<SysPost> lqw = Wrappers.lambdaQuery();
-                    lqw.eq(bo.getPostId() != null, SysPost::getPostId, bo.getPostId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), SysPost::getTenantId, bo.getTenantId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getPostCode()), SysPost::getPostCode, bo.getPostCode());
-                    lqw.eq(StringUtils.isNotBlank(bo.getPostName()), SysPost::getPostName, bo.getPostName());
-                    lqw.eq(bo.getPostSort() != null, SysPost::getPostSort, bo.getPostSort());
-                    lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysPost::getStatus, bo.getStatus());
-                    lqw.eq(bo.getCreateDept() != null, SysPost::getCreateDept, bo.getCreateDept());
-                    lqw.eq(bo.getCreateBy() != null, SysPost::getCreateBy, bo.getCreateBy());
-                    lqw.eq(bo.getCreateTime() != null, SysPost::getCreateTime, bo.getCreateTime());
-                    lqw.eq(bo.getUpdateBy() != null, SysPost::getUpdateBy, bo.getUpdateBy());
-                    lqw.eq(bo.getUpdateTime() != null, SysPost::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getRemark()), SysPost::getRemark, bo.getRemark());
-        return lqw;
+    private QueryWrapper<SysPost> buildQueryWrapper(SysPostBo bo) {
+        QueryWrapper<SysPost> wrapper = Wrappers.query();
+        wrapper.eq("sp.del_flag", UserConstants.USER_NORMAL)
+                .eq(ObjectUtil.isNotNull(bo.getPostId()), "sp.user_id", bo.getPostId())
+                .like(ObjectUtil.isNotNull(bo.getPostName()), "sp.post_name", bo.getPostName())
+                .like(ObjectUtil.isNotNull(bo.getPostCode()), "sp.post_code", bo.getPostCode())
+                .eq(StringUtils.isNotBlank(bo.getStatus()), "sp.status", bo.getStatus())
+                .eq(bo.getDeptId() != null, "sp.dept_id", bo.getDeptId());
+        return wrapper;
     }
 
     /**
@@ -146,7 +141,6 @@ public class SysPostServiceImpl implements SysPostService {
         List<Long> userIds = userPostMapper.selectUserIdsByPostId(user.getPostId());
         QueryWrapper<SysUser> wrapper = Wrappers.query();
         wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
-                .and(w -> w.ne("sp.post_id", user.getPostId()).or().isNull("sp.post_id"))
                 .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
                 .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
                 .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
@@ -201,5 +195,14 @@ public class SysPostServiceImpl implements SysPostService {
                 .eq(SysPost::getDeptId, bo.getDeptId())
                 .ne(ObjectUtil.isNotNull(bo.getPostId()), SysPost::getPostId, bo.getPostId()));
         return !exist;
+    }
+
+    @Override
+    public List<SysPostVo> queryByUserId(Long userId) {
+        List<SysPostVo> sysPostVos = baseMapper.selectByUserId(userId);
+        if (sysPostVos.isEmpty()) {
+            sysPostVos = baseMapper.selectVoList();
+        }
+        return sysPostVos;
     }
 }

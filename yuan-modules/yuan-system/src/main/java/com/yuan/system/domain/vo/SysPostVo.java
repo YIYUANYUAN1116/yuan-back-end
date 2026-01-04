@@ -87,4 +87,9 @@ public class SysPostVo implements Serializable {
 
     private String deptName;
 
+    private String delFlag;
+
+    private Long primaryPostId;
+
+    private Boolean isPrimary;
 }

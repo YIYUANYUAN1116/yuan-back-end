@@ -4,6 +4,30 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.system.mapper.SysDeptMapper">
 
-    <select id="selectAllocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo"></select>
-    <select id="selectUnallocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo"></select>
+    <select id="selectAllocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+
+    </select>
+    <select id="selectUnallocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+
+    </select>
+    <select id="selectPageDeptList" resultType="com.yuan.system.domain.vo.SysDeptVo">
+        select sd.*,u.user_name as leader
+        from sys_dept sd
+        left join sys_user u on sd.leader_Id = u.user_id
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="selectDeptList" resultType="com.yuan.system.domain.vo.SysDeptVo">
+        select sd.*,u.user_name as leader
+        from sys_dept sd
+                 left join sys_user u on sd.leader_Id = u.user_id
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="selectByUserId" resultType="com.yuan.system.domain.SysDept">
+        select sd.*
+        from sys_user su
+        left join sys_post sp on sp.post_id = su.primary_post_id
+        left join sys_dept sd on sd.dept_id = sp.dept_id
+        where su.user_id = #{userId}
+
+    </select>
 </mapper>

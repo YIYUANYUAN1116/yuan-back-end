@@ -7,15 +7,8 @@
     <!-- 多结构嵌套自动映射需带上每个实体的主键id 否则映射会失败 -->
     <resultMap type="com.yuan.system.domain.vo.SysUserVo" id="SysUserResult">
         <id property="userId" column="user_id"/>
-        <association property="dept">
-            <id property="deptId" column="dept_id"/>
-            <result property="deptName" column="dept_name"/>
-            <result property="leader" column="leader"/>
-        </association>
         <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
     </resultMap>
-
-
 
     <resultMap id="RoleResult" type="com.yuan.system.domain.vo.SysRoleVo">
         <id property="roleId" column="role_id"/>
@@ -26,7 +19,6 @@
                u.tenant_id,
                u.user_balance,
                u.user_grade,
-               u.dept_id,
                u.user_name,
                u.nick_name,
                u.user_type,
@@ -51,16 +43,17 @@
                d.ancestors,
                d.dept_name,
                d.order_num,
-               d.leader,
                d.status as dept_status,
                r.role_id,
                r.role_name,
                r.role_key,
                r.role_sort,
                r.data_scope,
-               r.status as role_status
+               r.status as role_status,
+                sp.post_name
         from sys_user u
-                 left join sys_dept d on u.dept_id = d.dept_id
+                 left join sys_post sp on sp.post_id = u.primary_post_id
+                 left join sys_dept d on sp.dept_id = d.dept_id
                  left join sys_user_role sur on u.user_id = sur.user_id
                  left join sys_role r on r.role_id = sur.role_id
     </sql>
@@ -75,28 +68,16 @@
         where u.del_flag = '0' and u.user_name = #{userName}
     </select>
     <select id="selectPageUserList" resultMap="SysUserResult">
-        select u.user_id,
-               u.dept_id,
-               u.nick_name,
-               u.user_name,
-               u.email,
-               u.avatar,
-               u.phonenumber,
-               u.sex,
-               u.user_balance,
-               u.user_grade,
-               u.domain_name,
-               u.status,
-               u.del_flag,
-               u.login_ip,
-               u.login_date,
-               u.create_by,
-               u.create_time,
-               u.remark,
-               d.dept_name,
-               d.leader
+        select u.*,
+               sd.dept_id,
+               sd.dept_name,
+               sp.post_name,
+               sr.role_name
         from sys_user u
-                 left join sys_dept d on u.dept_id = d.dept_id
+            left join sys_post sp on sp.post_id = u.primary_post_id
+            left join sys_dept sd on sd.dept_id = sp.dept_id
+            left join sys_user_role sur on sur.user_id = u.user_id
+            left join sys_role sr on sr.role_id = sur.role_id
             ${ew.getCustomSqlSegment}
     </select>
     <select id="selectUserByUsernameByLogin" resultType="com.yuan.system.domain.vo.SysUserVo">
@@ -127,5 +108,17 @@
         from sys_dept sd
                  join sys_user su on su.dept_id = sd.dept_id
         where sd.dept_id = #{deptId} and su.del_flag = 0
+    </select>
+    <select id="selectUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select u.*,
+               sd.dept_name,
+               sp.post_name,
+               sr.role_name
+        from sys_user u
+                 left join sys_post sp on sp.post_id = u .primary_post_id
+                 left join sys_dept sd on sd.dept_id = sp.dept_id
+                 left join sys_user_role sur on sur.user_id = u.user_id
+                 left join sys_role sr on sr.role_id = sur.role_id
+            ${ew.getCustomSqlSegment}
     </select>
 </mapper>

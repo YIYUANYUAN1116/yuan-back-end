@@ -43,11 +43,6 @@ public class SysUser extends TenantEntity {
 
 
     /**
-     * 部门ID
-     */
-    private Long deptId;
-
-    /**
      * 用户账号
      */
     private String userName;
@@ -138,5 +133,5 @@ public class SysUser extends TenantEntity {
      */
     private String kroleGroupIds;
 
-
+    private Long primaryPostId;
 }

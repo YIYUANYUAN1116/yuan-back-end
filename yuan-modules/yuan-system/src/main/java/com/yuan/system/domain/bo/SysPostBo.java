@@ -77,4 +77,6 @@ public class SysPostBo implements Serializable {
      */
     private String remark;
 
+
+    private String delFlag;
 }

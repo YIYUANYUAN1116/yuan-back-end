@@ -54,7 +54,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
         nodeInstanceMapper.updateById(node);
 
         // 7) 推进
-        flowAdvanceService.advance(node);
+        flowAdvanceService.advance(node,cmd.getOperatorUserId());
 
         return null;
     }

@@ -185,4 +185,7 @@ public class SysUserVo implements Serializable {
     private String deptName;
 
     private String postName;
+
+    private Boolean isPrimaryPost;
+    private Long primaryPostId;
 }

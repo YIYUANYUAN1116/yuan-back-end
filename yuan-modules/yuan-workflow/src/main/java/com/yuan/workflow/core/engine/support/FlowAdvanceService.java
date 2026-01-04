@@ -32,7 +32,7 @@ public class FlowAdvanceService {
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
 
-    public void advance(WfNodeInstance currentNode) {
+    public void advance(WfNodeInstance currentNode,Long operatorId) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
         Assert.notNull(instance, "实例不存在");
 
@@ -47,7 +47,7 @@ public class FlowAdvanceService {
 
         // 没有下一个节点或 next 是 END -> 结束
         if (next == null || NodeType.END.equals(next.getType())) {
-            instanceLifecycle.finishApproved(instance.getId());
+            instanceLifecycle.finishApproved(instance.getId(),operatorId);
             return;
         }
         // 创建下一个节点 + 任务

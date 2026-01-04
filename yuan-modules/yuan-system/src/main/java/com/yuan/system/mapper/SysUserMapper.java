@@ -2,6 +2,7 @@ package com.yuan.system.mapper;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.core.mapper.BaseMapperPlus;
@@ -39,4 +40,6 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     SysUserDTO selectDtoById(@Param("userId") Long userId);
 
     List<Long> selectUserIdsBydeptId(@Param("deptId") Long deptId);
+
+    List<SysUserVo> selectUserList(QueryWrapper<SysUser> lqw);
 }

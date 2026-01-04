@@ -90,7 +90,7 @@ public class TenantBootstrapService {
         user.setPhonenumber(tenant.getContactPhone());
         user.setStatus(SystemConstants.NORMAL);
         user.setNickName(tenant.getCompanyName()+":租户管理员");
-        user.setDeptId(deptId);
+
         userMapper.insert(user);
         return user;
     }

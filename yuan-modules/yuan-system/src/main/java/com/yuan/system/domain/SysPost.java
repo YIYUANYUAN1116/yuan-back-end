@@ -2,6 +2,7 @@ package com.yuan.system.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
@@ -52,4 +53,9 @@ public class SysPost extends TenantEntity  {
 
     private Long deptId;
 
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    @TableLogic
+    private String delFlag;
 }

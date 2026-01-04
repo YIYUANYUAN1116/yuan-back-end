@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
 import com.yuan.common.excel.utils.ExcelUtil;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
@@ -26,8 +28,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.yuan.common.doc.annotation.PathId;
-import com.yuan.common.doc.annotation.PathIds;
 
 import java.util.List;
 
@@ -156,7 +156,8 @@ public class SysDeptController extends BaseController {
     @GetMapping("/allocatedList")
     @Operation(summary = "获取岗位已分配用户列表",operationId = "deptAllocatedUserList")
     public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
-        return sysDeptService.selectAllocatedUserList(bo, pageQuery);
+//        return sysDeptService.selectAllocatedUserList(bo, pageQuery);
+        return TableDataInfo.build();
     }
 
     /**
@@ -166,7 +167,8 @@ public class SysDeptController extends BaseController {
     @GetMapping("/unallocatedList")
     @Operation(summary = "获取岗位未分配用户列表",operationId = "deptUnallocatedUserList")
     public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
-        return sysDeptService.selectUnallocatedUserList(bo, pageQuery);
+//        return sysDeptService.selectUnallocatedUserList(bo, pageQuery);
+        return TableDataInfo.build();
     }
 
     /**
@@ -180,7 +182,8 @@ public class SysDeptController extends BaseController {
     @PutMapping("/cancelAll")
     @Operation(summary = "批量取消授权用户",operationId = "deptCancelUserAll")
     public R<Void> cancelUserAll(@PathId Long deptId, @PathIds Long[] userIds) {
-        return toAjax(sysDeptService.cancelUserAll(deptId, userIds));
+//        return toAjax(sysDeptService.cancelUserAll(deptId, userIds));
+        return toAjax(true);
     }
 
     /**
@@ -195,6 +198,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "批量选择用户授权",operationId = "deptSelectUserAll")
     public R<Void> selectUserAll(@PathId Long deptId, @PathIds Long[] userIds) {
 //        sysDeptService.checkRoleDataScope(deptId);
-        return toAjax(sysDeptService.selectUserAll(deptId, userIds));
+//        return toAjax(sysDeptService.selectUserAll(deptId, userIds));
+        return toAjax(true);
     }
 }

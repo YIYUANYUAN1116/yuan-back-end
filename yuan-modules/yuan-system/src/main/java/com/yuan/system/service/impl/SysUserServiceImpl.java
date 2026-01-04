@@ -34,7 +34,6 @@ import java.util.List;
 /**
  * 用户Service业务层处理
  *
- 
  * @date Sun Dec 07 17:25:38 CST 2025
  */
 @RequiredArgsConstructor
@@ -70,7 +69,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public List<SysUserVo> queryList(SysUserBo bo) {
         QueryWrapper<SysUser> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        return baseMapper.selectUserList(lqw);
     }
 
 
@@ -243,7 +242,9 @@ public class SysUserServiceImpl implements SysUserService {
                 .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
                 .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber())
                 .like(StringUtils.isNotBlank(user.getEmail()), "u.email", user.getEmail())
-                .eq(user.getDeptId() != null, "u.dept_id", user.getDeptId());
+                .eq(user.getDeptId() != null, "sd.dept_id", user.getDeptId())
+                .eq(user.getRoleId() != null, "sr.role_id", user.getRoleId());
+
         return wrapper;
     }
 }

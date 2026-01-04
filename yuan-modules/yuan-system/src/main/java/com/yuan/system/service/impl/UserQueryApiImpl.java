@@ -37,7 +37,7 @@ public class UserQueryApiImpl implements UserQueryApi {
     public Long findLeaderUserId(Long userId) {
         SysUser user = userMapper.selectById(userId);
         if (user == null) return null;
-        SysDept dept = deptMapper.selectById(user.getDeptId());
+        SysDept dept = deptMapper.selectByUserId(user.getUserId());
         return dept != null ? dept.getLeaderId() : null;
     }
 }

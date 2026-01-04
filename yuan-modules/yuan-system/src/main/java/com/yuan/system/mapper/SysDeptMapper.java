@@ -11,6 +11,8 @@ import com.yuan.system.domain.vo.SysUserVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 
 /**
  * 部门Mapper接口
@@ -23,4 +25,10 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
     Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
 
     Page<SysUserVo> selectUnallocatedUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper);
+
+    Page<SysDeptVo> selectPageDeptList(@Param("page") Page<SysDept> page, @Param(Constants.WRAPPER) QueryWrapper<SysDept> wrapper);
+
+    List<SysDeptVo> selectDeptList(@Param(Constants.WRAPPER) QueryWrapper<SysDept> wrapper);
+
+    SysDept selectByUserId(@Param("userId") Long userId);
 }
