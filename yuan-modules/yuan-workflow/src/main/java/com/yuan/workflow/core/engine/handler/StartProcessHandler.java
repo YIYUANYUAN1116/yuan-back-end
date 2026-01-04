@@ -61,7 +61,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
             wfTaskService.createTasks(instance, nodeInstance,userIds);
         } else {
             // 没有审批节点，直接结束
-            instanceLifecycle.finishApproved(instance.getId());
+            instanceLifecycle.finishApproved(instance.getId(), cmd.getOperatorUserId());
         }
 
         return instance.getId();
