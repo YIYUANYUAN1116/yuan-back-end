@@ -16,4 +16,8 @@ import org.apache.ibatis.annotations.Param;
 public interface WfTaskMapper extends BaseMapperPlus<WfTask, WfTaskVo> {
 
     void finishAll(@Param("instanceId") Long instanceId,@Param("status") String status);
+
+    void cancelOtherTodoTasks(@Param("nodeInstanceId") Long nodeInstanceId,@Param("keepTaskId") Long keepTaskId,@Param("code") String code);
+
+    int countTodoByNode(@Param("nodeInstanceId") Long nodeInstanceId,@Param("code") String code);
 }

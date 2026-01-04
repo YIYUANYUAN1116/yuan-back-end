@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * post对象 sys_post
@@ -12,6 +13,7 @@ import lombok.Data;
  
  * @date Mon Dec 22 15:05:40 CST 2025
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_post")
 public class SysPost extends TenantEntity  {
@@ -48,9 +50,6 @@ public class SysPost extends TenantEntity  {
      */
     private String remark;
 
-    /**
-     * 数据范围（1：所有数据权限；2：自定义数据权限；3：本部门数据权限；4：本部门及以下数据权限；5：仅本人数据权限）
-     */
-    private String dataScope;
+    private Long deptId;
 
 }

@@ -11,4 +11,20 @@
         WHERE instance_id = #{instanceId}
           AND status = 'TODO';
     </update>
+
+
+    <update id="cancelOtherTodoTasks">
+        UPDATE wf_task
+        SET
+            status = #{canceledStatus},
+            finish_time = NOW()
+        WHERE node_instance_id = #{nodeInstanceId}
+          AND id != #{keepTaskId}
+          AND status = #{todoStatus}
+    </update>
+    <select id="countTodoByNode" resultType="java.lang.Integer">
+
+    </select>
+
+
 </mapper>

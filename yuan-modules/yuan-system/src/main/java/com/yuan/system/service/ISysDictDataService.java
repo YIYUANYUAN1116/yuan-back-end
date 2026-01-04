@@ -64,5 +64,9 @@ public interface ISysDictDataService {
      * @return 结果
      */
     List<SysDictDataVo> updateDictData(SysDictDataBo bo);
+
+    Boolean checkDictLabelUnique(SysDictDataBo bo);
+
+    Boolean checkDictValueUnique(SysDictDataBo bo);
 }
 

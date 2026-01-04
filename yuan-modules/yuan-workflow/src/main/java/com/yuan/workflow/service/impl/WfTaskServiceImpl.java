@@ -7,6 +7,9 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.enums.TaskStatus;
+import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
 import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.bo.WfTaskBo;
@@ -112,5 +115,18 @@ public class WfTaskServiceImpl implements WfTaskService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public void createTasks(WfInstance instance, WfNodeInstance nodeInstance, List<Long> userIds) {
+        for (Long uid : userIds) {
+            WfTask task = new WfTask();
+            task.setTenantId(instance.getTenantId());
+            task.setInstanceId(instance.getId());
+            task.setNodeInstanceId(nodeInstance.getId());
+            task.setAssigneeId(uid);
+            task.setStatus(TaskStatus.TODO.getCode());
+            baseMapper.insert(task);
+        }
     }
 }

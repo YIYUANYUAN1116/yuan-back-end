@@ -2,6 +2,7 @@ package com.yuan.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -25,7 +26,13 @@ import com.yuan.system.service.SysDeptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -237,6 +244,14 @@ public class SysDeptServiceImpl implements SysDeptService {
 //            cleanOnlineUserByRole(roleId);
 //        }
         return rows > 0;
+    }
+
+    @Override
+    public Boolean checkDeptNameUnique(SysDeptBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysDept>()
+                .eq(SysDept::getDeptName, bo.getDeptName())
+                .ne(ObjectUtil.isNotNull(bo.getDeptId()), SysDept::getDeptId, bo.getDeptId()));
+        return !exist;
     }
 
     // 递归收集子菜单

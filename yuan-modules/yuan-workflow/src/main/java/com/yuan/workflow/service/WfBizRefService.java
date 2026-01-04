@@ -2,6 +2,7 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.bo.WfBizRefBo;
 import com.yuan.workflow.domain.vo.WfBizRefVo;
 
@@ -45,4 +46,6 @@ public interface WfBizRefService {
      * 校验并批量删除wfref信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    void bindWfBizRef(StartProcessCmd cmd, Long id);
 }

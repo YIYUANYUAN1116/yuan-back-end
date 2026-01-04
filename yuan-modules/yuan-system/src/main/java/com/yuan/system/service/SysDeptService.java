@@ -63,4 +63,6 @@ public interface SysDeptService {
     Boolean cancelUserAll(Long deptId, Long[] userIds);
 
     Boolean selectUserAll(Long deptId, Long[] userIds);
+
+    Boolean checkDeptNameUnique(SysDeptBo bo);
 }

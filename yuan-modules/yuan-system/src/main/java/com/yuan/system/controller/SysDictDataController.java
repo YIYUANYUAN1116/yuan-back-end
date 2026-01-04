@@ -95,8 +95,13 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:add")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
-    @Operation(summary = "新增字典类型",operationId = "dict_add")
+    @Operation(summary = "新增字典",operationId = "dict_add")
     public R<Void> add(@Validated @RequestBody SysDictDataBo bo) {
+        if (!dictDataService.checkDictLabelUnique(bo)) {
+            return R.fail("新增字典'" + bo.getDictLabel() + "'失败，字典名称已存在");
+        } else if (!dictDataService.checkDictValueUnique(bo)) {
+            return R.fail("新增字典'" + bo.getDictValue() + "'失败，字典值已存在");
+        }
         dictDataService.insertDictData(bo);
         return R.ok();
     }
@@ -107,8 +112,13 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("system:dict:edit")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
-    @Operation(summary = "修改保存字典类型",operationId = "dict_edit")
+    @Operation(summary = "修改保存字典",operationId = "dict_edit")
     public R<Void> edit(@Validated @RequestBody SysDictDataBo bo) {
+        if (!dictDataService.checkDictLabelUnique(bo)) {
+            return R.fail("修改字典'" + bo.getDictLabel() + "'失败，字典名称已存在");
+        } else if (!dictDataService.checkDictValueUnique(bo)) {
+            return R.fail("修改字典'" + bo.getDictValue() + "'失败，字典值已存在");
+        }
         dictDataService.updateDictData(bo);
         return R.ok();
     }

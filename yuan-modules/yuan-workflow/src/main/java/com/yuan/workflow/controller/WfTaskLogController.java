@@ -56,7 +56,7 @@ public class WfTaskLogController extends BaseController {
      * 导出wftl列表
      */
     @SaCheckPermission("system:wfTaskLog:export")
-    @Log(title = "wftl", businessType = BusinessType.EXPORT)
+    @Log(title = "流程任务日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wftl列表",operationId = "WfTaskLog_export")
     public void export(WfTaskLogBo bo, HttpServletResponse response) {
@@ -81,7 +81,7 @@ public class WfTaskLogController extends BaseController {
      * 新增wftl
      */
     @SaCheckPermission("system:wfTaskLog:add")
-    @Log(title = "wftl", businessType = BusinessType.INSERT)
+    @Log(title = "流程任务日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增wftl",operationId = "WfTaskLog_add")
@@ -93,7 +93,7 @@ public class WfTaskLogController extends BaseController {
      * 修改wftl
      */
     @SaCheckPermission("system:wfTaskLog:edit")
-    @Log(title = "wftl", businessType = BusinessType.UPDATE)
+    @Log(title = "流程任务日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改wftl",operationId = "WfTaskLog_edit")
@@ -107,7 +107,7 @@ public class WfTaskLogController extends BaseController {
      * @param ids 主键串
      */
     @SaCheckPermission("system:wfTaskLog:remove")
-    @Log(title = "wftl", businessType = BusinessType.DELETE)
+    @Log(title = "流程任务日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wftl",operationId = "WfTaskLog_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

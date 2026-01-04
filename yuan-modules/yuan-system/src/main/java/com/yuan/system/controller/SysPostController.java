@@ -88,6 +88,11 @@ public class SysPostController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增岗位",operationId = "SysPost_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysPostBo bo) {
+        if (!sysPostService.checkPostNameUnique(bo)) {
+            return R.fail("新增岗位'" + bo.getPostName() + "'失败，岗位名称已存在");
+        } else if (!sysPostService.checkPostKeyUnique(bo)) {
+            return R.fail("新增岗位'" + bo.getPostCode() + "'失败，岗位编码已存在");
+        }
         return toAjax(sysPostService.insertByBo(bo));
     }
 
@@ -100,6 +105,11 @@ public class SysPostController extends BaseController {
     @PutMapping()
     @Operation(summary = "修改岗位",operationId = "SysPost_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysPostBo bo) {
+        if (!sysPostService.checkPostNameUnique(bo)) {
+            return R.fail("修改岗位'" + bo.getPostName() + "'失败，岗位名称已存在");
+        } else if (!sysPostService.checkPostKeyUnique(bo)) {
+            return R.fail("修改岗位'" + bo.getPostCode() + "'失败，岗位编码已存在");
+        }
         return toAjax(sysPostService.updateByBo(bo));
     }
 

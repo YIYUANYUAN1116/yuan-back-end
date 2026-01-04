@@ -90,6 +90,9 @@ public class SysDeptController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增部门",operationId = "sysDept_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysDeptBo bo) {
+        if (!sysDeptService.checkDeptNameUnique(bo)) {
+            return R.fail("新增部门'" + bo.getDeptName() + "'失败，部门名称已存在");
+        }
         return toAjax(sysDeptService.insertByBo(bo));
     }
 
@@ -102,6 +105,9 @@ public class SysDeptController extends BaseController {
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysDeptBo bo) {
+        if (!sysDeptService.checkDeptNameUnique(bo)) {
+            return R.fail("修改部门'" + bo.getDeptName() + "'失败，部门名称已存在");
+        }
         return toAjax(sysDeptService.updateByBo(bo));
     }
 

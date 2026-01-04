@@ -107,8 +107,8 @@ public class SysUserController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增用户",operationId = "sysUser_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysUserBo user) {
-        if (!sysUserService.checkUserNameUnique(user)) {
-            return R.fail("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
+        if (!sysUserService.checkNickNameUnique(user)) {
+            return R.fail("新增用户'" + user.getUserName() + "'失败，用户昵称已存在");
         } else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !sysUserService.checkPhoneUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
         } else if (StringUtils.isNotEmpty(user.getEmail()) && !sysUserService.checkEmailUnique(user)) {
@@ -139,8 +139,8 @@ public class SysUserController extends BaseController {
     @PutMapping()
     @Operation(summary = "修改用户",operationId = "sysUser_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysUserBo user) {
-        if (!sysUserService.checkUserNameUnique(user)) {
-            return R.fail("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
+        if (!sysUserService.checkNickNameUnique(user)) {
+            return R.fail("修改用户'" + user.getUserName() + "'失败，用户昵称已存在");
         } else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !sysUserService.checkPhoneUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         } else if (StringUtils.isNotEmpty(user.getEmail()) && !sysUserService.checkEmailUnique(user)) {

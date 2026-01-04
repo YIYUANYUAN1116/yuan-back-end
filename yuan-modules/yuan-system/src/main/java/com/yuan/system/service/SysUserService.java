@@ -46,7 +46,7 @@ public interface SysUserService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    boolean checkUserNameUnique(SysUserBo user);
+    boolean checkNickNameUnique(SysUserBo user);
 
     boolean checkPhoneUnique(SysUserBo user);
 

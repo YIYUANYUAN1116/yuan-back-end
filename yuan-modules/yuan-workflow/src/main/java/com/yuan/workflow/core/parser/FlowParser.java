@@ -1,9 +1,12 @@
 package com.yuan.workflow.core.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.api.enums.NodeType;
-import com.yuan.workflow.model.*;
+import com.yuan.workflow.domain.WfDefinition;
+import com.yuan.workflow.model.Expression;
+import com.yuan.workflow.model.logicflow.LfEdge;
+import com.yuan.workflow.model.logicflow.LfGraph;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FlowParser {
     private final ObjectMapper objectMapper;
     /** 缓存解析结果 */
-    private final Map<String, FlowDefinitionJson> cache = new ConcurrentHashMap<>();
+    private final Map<String, LfGraph> cache = new ConcurrentHashMap<>();
 
-    public FlowNode getStartNode(WfDefinition def) {
-        FlowDefinitionJson json = parse(def);
+    public LfNode getStartNode(WfDefinition def) {
+        LfGraph json = parse(def);
         return json.getNodes().stream()
                 .filter(n->n.getType() == NodeType.START)
                 .findFirst()
@@ -29,20 +32,20 @@ public class FlowParser {
     }
 
 
-    public FlowNode getNode(WfDefinition def, String nodeKey) {
-        FlowDefinitionJson json = parse(def);
+    public LfNode getNode(WfDefinition def, String nodeKey) {
+        LfGraph json = parse(def);
         return json.getNodes().stream()
                 .filter(n-> Objects.equals(n.getId(), nodeKey))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("节点不存在: " + nodeKey));
     }
 
-    public FlowNode getNextNode(WfDefinition def, FlowNode currentNode, Map<String, Object> variables) {
-        FlowDefinitionJson json = parse(def);
+    public LfNode getNextNode(WfDefinition def, LfNode currentNode, Map<String, Object> variables) {
+        LfGraph json = parse(def);
 
         // 1. 找出所有出边
-        List<FlowEdge> outEdges = json.getEdges().stream()
-                .filter(e -> e.getFrom().equals(currentNode.getId()))
+        List<LfEdge> outEdges = json.getEdges().stream()
+                .filter(e -> e.getSourceNodeId().equals(currentNode.getId()))
                 .toList();
 
         if (outEdges.isEmpty()) {
@@ -51,20 +54,17 @@ public class FlowParser {
 
         // 2. 非网关：只有一条出边
         if (currentNode.getType() != NodeType.GATEWAY) {
-            String nextId = outEdges.get(0).getTo();
+            String nextId = outEdges.get(0).getTargetNodeId();
             return getNode(def, nextId);
         }
 
         // 3. 网关：按条件判断
-        for (GatewayCondition condition : currentNode.getConditions()) {
-            if (match(condition.getExpression(), variables)) {
-                return getNode(def, condition.getTarget());
+        for (LfEdge outEdge : outEdges) {
+            Map<String, Object> properties = outEdge.getProperties();
+            Expression expression = (Expression) properties.get("condition");
+            if (match(expression, variables)) {
+                return getNode(def, outEdge.getTargetNodeId());
             }
-        }
-
-        // 4. 兜底分支
-        if (currentNode.getDefaultTarget() != null) {
-            return getNode(def, currentNode.getDefaultTarget());
         }
 
         throw new IllegalStateException(
@@ -93,12 +93,12 @@ public class FlowParser {
 
     }
 
-    private FlowDefinitionJson parse(WfDefinition def) {
+    private LfGraph parse(WfDefinition def) {
         String key = def.getId()+"-"+def.getVersion();
         return cache.computeIfAbsent(key, id -> {
             try {
                 return objectMapper.readValue(
-                        def.getFlowJson(), FlowDefinitionJson.class);
+                        def.getFlowJson(), LfGraph.class);
             } catch (Exception e) {
                 throw new IllegalStateException("流程 JSON 解析失败", e);
             }

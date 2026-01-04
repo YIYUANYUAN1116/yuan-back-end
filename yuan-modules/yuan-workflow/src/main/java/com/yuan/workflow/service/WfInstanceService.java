@@ -2,6 +2,9 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.domain.WfDefinition;
+import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 
@@ -45,4 +48,6 @@ public interface WfInstanceService {
      * 校验并批量删除wfi信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    WfInstance createInstance(StartProcessCmd cmd, WfDefinition def);
 }

@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.json.utils.JsonUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.api.enums.InstanceStatus;
+import com.yuan.workflow.domain.WfDefinition;
 import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
@@ -112,5 +116,26 @@ public class WfInstanceServiceImpl implements WfInstanceService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public WfInstance createInstance(StartProcessCmd cmd, WfDefinition def) {
+        WfInstance instance = new WfInstance();
+        instance.setTenantId(cmd.getTenantId());
+        instance.setDefinitionId(def.getId());
+        instance.setDefinitionKey(def.getDefinitionKey());
+        instance.setVersion(def.getVersion());
+
+        if (cmd.getBizType() != null && cmd.getBizId() != null) {
+            instance.setBusinessKey(cmd.getBizType() + ":" + cmd.getBizId());
+        } else {
+            instance.setBusinessKey(cmd.getBizType());
+        }
+
+        instance.setStatus(InstanceStatus.RUNNING.getCode());
+        instance.setStartUserId(cmd.getStarterUserId());
+        instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
+        baseMapper.insert(instance);
+        return instance;
     }
 }

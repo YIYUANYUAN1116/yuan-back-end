@@ -1,5 +1,6 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -134,6 +135,25 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
             return baseMapper.selectDictDataByType(data.getDictType());
         }
         throw new ServiceException("操作失败");
+    }
+
+    @Override
+    public Boolean checkDictLabelUnique(SysDictDataBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictLabel, bo.getDictLabel())
+                .eq(SysDictData::getDictType, bo.getDictType())
+                .ne(ObjectUtil.isNotNull(bo.getDictCode()), SysDictData::getDictCode, bo.getDictCode()));
+        return !exist;
+
+    }
+
+    @Override
+    public Boolean checkDictValueUnique(SysDictDataBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictValue, bo.getDictValue())
+                .eq(SysDictData::getDictType, bo.getDictType())
+                .ne(ObjectUtil.isNotNull(bo.getDictCode()), SysDictData::getDictCode, bo.getDictCode()));
+        return !exist;
     }
 
 }

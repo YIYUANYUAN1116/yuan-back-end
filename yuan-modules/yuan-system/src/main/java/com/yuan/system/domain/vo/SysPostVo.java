@@ -51,10 +51,9 @@ public class SysPostVo implements Serializable {
     @ExcelProperty(value = "状态", converter = ExcelDictConvert.class)
     @ExcelDictFormat(readConverterExp = "$column.readConverterExp()")
     private String status;
-    /**
-     * 数据范围（1：所有数据权限；2：自定义数据权限；3：本部门数据权限；4：本部门及以下数据权限；5：仅本人数据权限）
-     */
-    private String dataScope;
+
+    @ExcelProperty(value = "部门ID")
+    private Long deptId;
     /**
      * 创建部门
      */
@@ -85,5 +84,7 @@ public class SysPostVo implements Serializable {
      */
     @ExcelProperty(value = "备注")
     private String remark;
+
+    private String deptName;
 
 }

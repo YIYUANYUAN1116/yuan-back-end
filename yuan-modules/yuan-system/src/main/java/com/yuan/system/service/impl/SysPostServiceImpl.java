@@ -183,4 +183,23 @@ public class SysPostServiceImpl implements SysPostService {
 //        }
         return rows>0;
     }
+
+    @Override
+    public Boolean checkPostNameUnique(SysPostBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getPostName, bo.getPostName())
+                .eq(SysPost::getDeptId, bo.getDeptId())
+                .ne(ObjectUtil.isNotNull(bo.getPostId()), SysPost::getPostId, bo.getPostId()));
+        return !exist;
+
+    }
+
+    @Override
+    public Boolean checkPostKeyUnique(SysPostBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getPostCode, bo.getPostCode())
+                .eq(SysPost::getDeptId, bo.getDeptId())
+                .ne(ObjectUtil.isNotNull(bo.getPostId()), SysPost::getPostId, bo.getPostId()));
+        return !exist;
+    }
 }

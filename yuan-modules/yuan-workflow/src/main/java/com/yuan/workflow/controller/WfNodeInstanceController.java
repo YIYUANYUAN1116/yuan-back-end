@@ -56,7 +56,7 @@ public class WfNodeInstanceController extends BaseController {
      * 导出wfn列表
      */
     @SaCheckPermission("system:wfNodeInstance:export")
-    @Log(title = "wfn", businessType = BusinessType.EXPORT)
+    @Log(title = "流程结点", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfn列表",operationId = "WfNodeInstance_export")
     public void export(WfNodeInstanceBo bo, HttpServletResponse response) {
@@ -81,7 +81,7 @@ public class WfNodeInstanceController extends BaseController {
      * 新增wfn
      */
     @SaCheckPermission("system:wfNodeInstance:add")
-    @Log(title = "wfn", businessType = BusinessType.INSERT)
+    @Log(title = "流程结点", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增wfn",operationId = "WfNodeInstance_add")
@@ -93,7 +93,7 @@ public class WfNodeInstanceController extends BaseController {
      * 修改wfn
      */
     @SaCheckPermission("system:wfNodeInstance:edit")
-    @Log(title = "wfn", businessType = BusinessType.UPDATE)
+    @Log(title = "流程结点", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改wfn",operationId = "WfNodeInstance_edit")
@@ -107,7 +107,7 @@ public class WfNodeInstanceController extends BaseController {
      * @param ids 主键串
      */
     @SaCheckPermission("system:wfNodeInstance:remove")
-    @Log(title = "wfn", businessType = BusinessType.DELETE)
+    @Log(title = "流程结点", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfn",operationId = "WfNodeInstance_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

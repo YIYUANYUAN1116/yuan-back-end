@@ -55,4 +55,8 @@ public interface SysPostService {
     Boolean cancelUserAll(Long postId, Long[] userIds);
 
     Boolean selectUserAll(Long postId, Long[] userIds);
+
+    Boolean checkPostNameUnique(SysPostBo bo);
+
+    Boolean checkPostKeyUnique(SysPostBo bo);
 }

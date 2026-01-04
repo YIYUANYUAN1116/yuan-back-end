@@ -1,13 +1,21 @@
 package com.yuan.workflow.core.validator;
 
 import com.yuan.workflow.api.enums.NodeType;
-import com.yuan.workflow.model.FlowDefinitionJson;
-import com.yuan.workflow.model.FlowEdge;
-import com.yuan.workflow.model.FlowNode;
+import com.yuan.workflow.model.logicflow.LfEdge;
+import com.yuan.workflow.model.logicflow.LfGraph;
+import com.yuan.workflow.model.logicflow.LfNode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class FlowDefinitionValidator {
@@ -16,7 +24,7 @@ public class FlowDefinitionValidator {
     private static final Set<NodeType> ALLOWED_NODE_TYPES =
             Set.of(NodeType.START, NodeType.APPROVAL, NodeType.GATEWAY, NodeType.END);
 
-    public FlowValidationResult validateForPublish(FlowDefinitionJson def) {
+    public FlowValidationResult validateForPublish(LfGraph def) {
         List<String> errors = new ArrayList<>();
 
         if (def == null) {
@@ -34,8 +42,8 @@ public class FlowDefinitionValidator {
         }
 
         // 2) 节点合法性（id/type、重复、未知类型）
-        Map<String, FlowNode> nodeMap = new HashMap<>();
-        for (FlowNode n : def.getNodes()) {
+        Map<String, LfNode> nodeMap = new HashMap<>();
+        for (LfNode n : def.getNodes()) {
             if (n == null) {
                 errors.add("存在空节点对象");
                 continue;
@@ -63,10 +71,10 @@ public class FlowDefinitionValidator {
         }
 
         // 3) start/end 规则：必须且只能 1 个
-        List<FlowNode> starts = nodeMap.values().stream()
+        List<LfNode> starts = nodeMap.values().stream()
                 .filter(n -> NodeType.START.equals(n.getType()))
                 .toList();
-        List<FlowNode> ends = nodeMap.values().stream()
+        List<LfNode> ends = nodeMap.values().stream()
                 .filter(n -> NodeType.END.equals(n.getType()))
                 .toList();
 
@@ -79,25 +87,25 @@ public class FlowDefinitionValidator {
 
         // 4) 边合法性（from/to 必须存在、不能自环、重复边）
         Set<String> edgeUniq = new HashSet<>();
-        for (FlowEdge e : def.getEdges()) {
+        for (LfEdge e : def.getEdges()) {
             if (e == null) {
                 errors.add("存在空边对象");
                 continue;
             }
-            if (!StringUtils.hasText(e.getFrom()) || !StringUtils.hasText(e.getTo())) {
+            if (!StringUtils.hasText(e.getSourceNodeId()) || !StringUtils.hasText(e.getTargetNodeId())) {
                 errors.add("存在边 from/to 为空");
                 continue;
             }
-            if (!nodeMap.containsKey(e.getFrom())) {
-                errors.add("边 from 节点不存在: " + e.getFrom());
+            if (!nodeMap.containsKey(e.getSourceNodeId())) {
+                errors.add("边 from 节点不存在: " + e.getSourceNodeId());
             }
-            if (!nodeMap.containsKey(e.getTo())) {
-                errors.add("边 to 节点不存在: " + e.getTo());
+            if (!nodeMap.containsKey(e.getTargetNodeId())) {
+                errors.add("边 to 节点不存在: " + e.getTargetNodeId());
             }
-            if (e.getFrom().equals(e.getTo())) {
-                errors.add("存在自环边: " + e.getFrom() + " -> " + e.getTo());
+            if (e.getSourceNodeId().equals(e.getTargetNodeId())) {
+                errors.add("存在自环边: " + e.getSourceNodeId() + " -> " + e.getTargetNodeId());
             }
-            String key = e.getFrom() + "->" + e.getTo();
+            String key = e.getSourceNodeId() + "->" + e.getTargetNodeId();
             if (!edgeUniq.add(key)) {
                 errors.add("重复边: " + key);
             }
@@ -111,9 +119,9 @@ public class FlowDefinitionValidator {
             nextMap.put(id, new ArrayList<>());
             prevMap.put(id, new ArrayList<>());
         }
-        for (FlowEdge e : def.getEdges()) {
-            nextMap.get(e.getFrom()).add(e.getTo());
-            prevMap.get(e.getTo()).add(e.getFrom());
+        for (LfEdge e : def.getEdges()) {
+            nextMap.get(e.getSourceNodeId()).add(e.getTargetNodeId());
+            prevMap.get(e.getTargetNodeId()).add(e.getSourceNodeId());
         }
 
         // 6) 结构约束（可选但强烈推荐）

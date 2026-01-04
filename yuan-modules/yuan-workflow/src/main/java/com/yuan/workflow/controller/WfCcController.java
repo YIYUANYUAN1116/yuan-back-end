@@ -56,7 +56,7 @@ public class WfCcController extends BaseController {
      * 导出wfcc列表
      */
     @SaCheckPermission("system:wfCc:export")
-    @Log(title = "wfcc", businessType = BusinessType.EXPORT)
+    @Log(title = "流程抄送", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfcc列表",operationId = "WfCc_export")
     public void export(WfCcBo bo, HttpServletResponse response) {
@@ -81,7 +81,7 @@ public class WfCcController extends BaseController {
      * 新增wfcc
      */
     @SaCheckPermission("system:wfCc:add")
-    @Log(title = "wfcc", businessType = BusinessType.INSERT)
+    @Log(title = "流程抄送", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增wfcc",operationId = "WfCc_add")
@@ -93,7 +93,7 @@ public class WfCcController extends BaseController {
      * 修改wfcc
      */
     @SaCheckPermission("system:wfCc:edit")
-    @Log(title = "wfcc", businessType = BusinessType.UPDATE)
+    @Log(title = "流程抄送", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改wfcc",operationId = "WfCc_edit")
@@ -107,7 +107,7 @@ public class WfCcController extends BaseController {
      * @param ids 主键串
      */
     @SaCheckPermission("system:wfCc:remove")
-    @Log(title = "wfcc", businessType = BusinessType.DELETE)
+    @Log(title = "流程抄送", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfcc",operationId = "WfCc_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

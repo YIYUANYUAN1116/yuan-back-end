@@ -7,6 +7,8 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.enums.NodeStatus;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
@@ -111,5 +113,17 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public WfNodeInstance createNodeInstance(Long instanceId, LfNode lfNode, NodeStatus nodeStatus, int orderNo) {
+        WfNodeInstance ni = new WfNodeInstance();
+        ni.setInstanceId(instanceId);
+        ni.setNodeKey(lfNode.getId());
+        ni.setNodeType(lfNode.getType().getCode());
+        ni.setStatus(nodeStatus.getCode());
+        ni.setOrderNo(orderNo);
+        baseMapper.insert(ni);
+        return ni;
     }
 }

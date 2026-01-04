@@ -56,7 +56,7 @@ public class WfBizRefController extends BaseController {
      * 导出wfref列表
      */
     @SaCheckPermission("system:wfBizRef:export")
-    @Log(title = "wfref", businessType = BusinessType.EXPORT)
+    @Log(title = "流程业务关联", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfref列表",operationId = "WfBizRef_export")
     public void export(WfBizRefBo bo, HttpServletResponse response) {
@@ -81,7 +81,7 @@ public class WfBizRefController extends BaseController {
      * 新增wfref
      */
     @SaCheckPermission("system:wfBizRef:add")
-    @Log(title = "wfref", businessType = BusinessType.INSERT)
+    @Log(title = "流程业务关联", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     @Operation(summary = "新增wfref",operationId = "WfBizRef_add")
@@ -93,7 +93,7 @@ public class WfBizRefController extends BaseController {
      * 修改wfref
      */
     @SaCheckPermission("system:wfBizRef:edit")
-    @Log(title = "wfref", businessType = BusinessType.UPDATE)
+    @Log(title = "流程业务关联", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     @Operation(summary = "修改wfref",operationId = "WfBizRef_edit")
@@ -107,7 +107,7 @@ public class WfBizRefController extends BaseController {
      * @param ids 主键串
      */
     @SaCheckPermission("system:wfBizRef:remove")
-    @Log(title = "wfref", businessType = BusinessType.DELETE)
+    @Log(title = "流程业务关联", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfref",operationId = "WfBizRef_remove")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

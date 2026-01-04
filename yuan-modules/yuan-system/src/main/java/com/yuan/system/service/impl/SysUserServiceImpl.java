@@ -95,6 +95,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateByBo(SysUserBo bo) {
+        bo.setUserName(null);
         SysUser update = MapstructUtils.convert(bo, SysUser.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
@@ -209,9 +210,9 @@ public class SysUserServiceImpl implements SysUserService {
 
 
     @Override
-    public boolean checkUserNameUnique(SysUserBo user) {
+    public boolean checkNickNameUnique(SysUserBo user) {
         boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUserName, user.getUserName())
+                .eq(SysUser::getNickName, user.getNickName())
                 .ne(ObjectUtil.isNotNull(user.getUserId()), SysUser::getUserId, user.getUserId()));
         return !exist;
     }

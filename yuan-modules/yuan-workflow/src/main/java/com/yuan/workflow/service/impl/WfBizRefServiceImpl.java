@@ -7,6 +7,8 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.api.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.bo.WfBizRefBo;
 import com.yuan.workflow.domain.vo.WfBizRefVo;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,5 +113,18 @@ public class WfBizRefServiceImpl implements WfBizRefService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public void bindWfBizRef(StartProcessCmd cmd, Long instanceId) {
+        WfBizRef ref = new WfBizRef();
+        ref.setBizType(cmd.getBizType());
+        ref.setBizId(cmd.getBizId());
+        ref.setInstanceId(instanceId);
+        ref.setStatus(InstanceStatus.RUNNING.getCode());
+        ref.setCreateBy(cmd.getStarterUserId());
+        ref.setCreateTime(new Date());
+        ref.setUpdateTime(new Date());
+        baseMapper.insert(ref);
     }
 }
