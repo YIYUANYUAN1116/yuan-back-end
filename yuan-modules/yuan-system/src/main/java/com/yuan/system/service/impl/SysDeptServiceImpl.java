@@ -15,8 +15,11 @@ import com.yuan.common.core.utils.TreeBuildUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysDept;
+import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.bo.SysDeptBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysDeptVo;
+import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.mapper.SysDeptMapper;
 import com.yuan.system.mapper.SysUserMapper;
 import com.yuan.system.service.SysDeptService;
@@ -174,56 +177,16 @@ public class SysDeptServiceImpl implements SysDeptService {
                         .setWeight(deptVo.getOrderNum()));
     }
 
-//    @Override
-//    public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
-//        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-//        wrapper.eq(user.getDeptId() != null, "u.dept_id", user.getDeptId())
-//                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
-//                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-//                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
-//                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
-//        Page<SysUserVo> page = userMapper.selectPageUserList(pageQuery.build(), wrapper);
-//        return TableDataInfo.build(page);
-//    }
-//
-//    @Override
-//    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
-//        List<Long> userIds = userMapper.selectUserIdsBydeptId(user.getDeptId());
-//        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-//        wrapper.and(w -> w.ne("u.dept_id", user.getDeptId())
-//                        .or()
-//                        .isNull("u.dept_id"))
-//                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
-//                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
-//                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-//                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
-//                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
-//        Page<SysUserVo> page = userMapper.selectPageUserList(pageQuery.build(), wrapper);
-//        return TableDataInfo.build(page);
-//    }
-
-//    @Override
-//    public Boolean cancelUserAll(Long deptId, Long[] userIds) {
-//        int rows = userMapper.update(new LambdaUpdateWrapper<SysUser>()
-//                .eq(SysUser::getDeptId, deptId)
-//                .in(SysUser::getUserId, Arrays.asList(userIds))
-//                .set(SysUser::getDeptId, null));
-////        if (rows > 0) {
-////            cleanOnlineUserByRole(roleId);
-////        }
-//        return rows > 0;
-//    }
-//
-//    @Override
-//    public Boolean selectUserAll(Long deptId, Long[] userIds) {
-//        int rows = userMapper.update(new LambdaUpdateWrapper<SysUser>()
-//                .in(SysUser::getUserId, Arrays.asList(userIds))
-//                .set(SysUser::getDeptId, deptId));
-////        if (rows > 0) {
-////            cleanOnlineUserByRole(roleId);
-////        }
-//        return rows > 0;
-//    }
+    @Override
+    public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq(user.getDeptId() != null, "sd.dept_id", user.getDeptId())
+                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
+                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus());
+        Page<SysUserVo> page = userMapper.selectPageUserList(pageQuery.build(), wrapper);
+        return TableDataInfo.build(page);
+    }
 
     @Override
     public Boolean checkDeptNameUnique(SysDeptBo bo) {

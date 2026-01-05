@@ -58,17 +58,11 @@ public interface SysRoleService {
 
     List<SysRoleVo> selectRolesByUserId(Long userId);
 
-    SelectRolesVo selectSelectRolesVo(Long userId);
+    SelectRolesVo selectPostRolesVo(Long userId);
 
     TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery);
 
-    TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery);
-
-    int deleteUsers(Long roleId, Long[] userIds);
-
     void checkRoleDataScope(Long roleId);
-
-    int insertUsers(Long roleId, Long[] userIds);
 
     Set<String> selectRolePermissionByUserId(Long userId);
 

@@ -15,8 +15,8 @@ public class TenantBootstrapService {
     private final SysRoleMapper roleMapper;
     private final SysPostMapper postMapper;
     private final SysDeptMapper deptMapper;
-    private final SysUserRoleMapper userRoleMapper;
     private final SysUserPostMapper userPostMapper;
+    private final SysRolePostMapper rolePostMapper;
 
     /**
      * 初始化租户数据（部门 + 角色 + 职位 + 管理员）
@@ -32,16 +32,23 @@ public class TenantBootstrapService {
         SysRole adminRole = createTenantAdminRole(tenantId);
 
         // 3. 创建管理员岗位
-        SysPost adminPost = createAdminPost(tenantId);
+        SysPost adminPost = createAdminPost(tenantId,dept.getDeptId());
 
         // 4. 创建管理员用户
-        SysUser adminUser = createAdminUser(tenant,dept.getDeptId());
+        SysUser adminUser = createAdminUser(tenant,adminPost.getPostId());
 
         // 5. 绑定关系
-        bindUserRole(adminUser.getUserId(), adminRole.getRoleId());
-        bindUserPost(adminUser.getUserId(), adminPost.getPostId());
+        bindPostRole(adminPost.getPostId(), adminRole.getRoleId());
+        bindPostUser(adminPost.getPostId(), adminUser.getUserId());
     }
 
+    private void bindPostUser(Long postId, Long userId) {
+        SysUserPost up = new SysUserPost();
+        up.setUserId(userId);
+        up.setPostId(postId);
+        up.setIsPrimary(true);
+        userPostMapper.insert(up);
+    }
 
 
     private SysDept createRootDept(String tenantId) {
@@ -69,18 +76,19 @@ public class TenantBootstrapService {
         return role;
     }
 
-    private SysPost createAdminPost(String tenantId) {
+    private SysPost createAdminPost(String tenantId,Long deptId) {
         SysPost post = new SysPost();
         post.setTenantId(tenantId);
-        post.setPostName("系统管理员");
+        post.setPostName("租户管理员");
         post.setPostCode(TenantConstants.TENANT_ADMIN_ROLE_KEY);
         post.setPostSort(0);
         post.setStatus(SystemConstants.NORMAL);
+        post.setDeptId(deptId);
         postMapper.insert(post);
         return post;
     }
 
-    private SysUser createAdminUser(SysTenant tenant,Long deptId) {
+    private SysUser createAdminUser(SysTenant tenant,Long postId) {
         //todo 生成激活链接给用户，用户激活设置密码
         SysUser user = new SysUser();
         user.setTenantId(tenant.getTenantId());
@@ -90,22 +98,16 @@ public class TenantBootstrapService {
         user.setPhonenumber(tenant.getContactPhone());
         user.setStatus(SystemConstants.NORMAL);
         user.setNickName(tenant.getCompanyName()+":租户管理员");
-
+        user.setPrimaryPostId(postId);
         userMapper.insert(user);
         return user;
     }
 
-    private void bindUserRole(Long userId, Long roleId) {
-        SysUserRole ur = new SysUserRole();
-        ur.setUserId(userId);
-        ur.setRoleId(roleId);
-        userRoleMapper.insert(ur);
-    }
 
-    private void bindUserPost(Long userId, Long postId) {
-        SysUserPost up = new SysUserPost();
-        up.setUserId(userId);
+    private void bindPostRole(Long postId, Long roleId) {
+        SysRolePost up = new SysRolePost();
+        up.setRoleId(roleId);
         up.setPostId(postId);
-        userPostMapper.insert(up);
+        rolePostMapper.insert(up);
     }
 }

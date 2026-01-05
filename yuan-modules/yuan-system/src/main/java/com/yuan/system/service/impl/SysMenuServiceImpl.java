@@ -17,7 +17,6 @@ import com.yuan.system.domain.vo.ReactRouterVo;
 import com.yuan.system.domain.vo.SysMenuVo;
 import com.yuan.system.mapper.SysMenuMapper;
 import com.yuan.system.mapper.SysRoleMapper;
-import com.yuan.system.mapper.SysUserRoleMapper;
 import com.yuan.system.service.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,6 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     private final SysRoleMapper roleMapper;
 
-    private final SysUserRoleMapper sysUserRoleMapper;
 
     /**
      * 查询菜单
@@ -193,7 +191,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     @Override
     public List<Long> selectMenuListByUserId(Long userId) {
         if (userId == null) return null;
-        Long[] roleIds = sysUserRoleMapper.selectRoleIdsByUserId(userId);
+        Long[] roleIds = roleMapper.selectRoleIdsByUserId(userId);
         if (roleIds == null || roleIds.length == 0) return null;
         return baseMapper.selectMenuListByRoleIds(roleIds);
     }

@@ -167,21 +167,6 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 用户授权角色
-     *
-     * @param userId  用户Id
-     * @param roleIds 角色ID串
-     */
-    @SaCheckPermission("system:user:edit")
-    @Log(title = "用户管理", businessType = BusinessType.GRANT)
-    @PutMapping("/authRole")
-    @Operation(summary = "用户授权角色",operationId = "sysUser_insertAuthRole")
-    public R<Void> insertAuthRole(@PathId Long userId,@PathIds Long[] roleIds) {
-        sysUserService.insertUserAuth(userId, roleIds);
-        return R.ok();
-    }
-
-    /**
      * 获取用户详细信息
      *
      */

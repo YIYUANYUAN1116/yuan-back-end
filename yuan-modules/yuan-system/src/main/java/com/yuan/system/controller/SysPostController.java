@@ -137,50 +137,34 @@ public class SysPostController extends BaseController {
         return sysPostService.selectAllocatedUserList(bo, pageQuery);
     }
 
-    /**
-     * 查询未分配用户岗位列表
-     */
-    @SaCheckPermission("system:sysPost:list")
-    @GetMapping("/unallocatedList")
-    @Operation(summary = "获取岗位未分配用户列表",operationId = "postUnallocatedUserList")
-    public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
-        return sysPostService.selectUnallocatedUserList(bo, pageQuery);
-    }
-
-    /**
-     * 批量取消授权用户
-     *
-     * @param postId
-     * @param userIds
-     */
-    @SaCheckPermission("system:sysPost:edit")
-    @Log(title = "岗位管理", businessType = BusinessType.GRANT)
-    @PutMapping("/cancelAll")
-    @Operation(summary = "批量取消授权用户",operationId = "postCancelUserAll")
-    public R<Void> cancelUserAll(@PathId Long postId, @PathIds Long[] userIds) {
-        return toAjax(sysPostService.cancelUserAll(postId, userIds));
-    }
-
-    /**
-     * 批量选择用户授权
-     *
-     * @param postId
-     * @param userIds
-     */
-    @SaCheckPermission("system:sysPost:edit")
-    @Log(title = "岗位管理", businessType = BusinessType.GRANT)
-    @PutMapping("/selectAll")
-    @Operation(summary = "批量选择用户授权",operationId = "postSelectUserAll")
-    public R<Void> selectUserAll(@PathId Long postId, @PathIds Long[] userIds) {
-//        sysPostService.checkRoleDataScope(postId);
-        return toAjax(sysPostService.selectUserAll(postId, userIds));
-    }
-
     @SaCheckPermission("system:sysPost:query")
     @GetMapping("/byUser/{userId}")
     @Operation(summary = "获取用户岗位详细信息",operationId = "SysPost_getByUserId")
     public R<List<SysPostVo>> getByUserId(@NotNull(message = "主键不能为空")
                                 @PathVariable @PathId Long userId) {
         return R.ok(sysPostService.queryByUserId(userId));
+    }
+
+    @SaCheckPermission("system:sysPost:query")
+    @GetMapping("/dept/{deptId}")
+    @Operation(summary = "根据部门获取岗位",operationId = "SysPost_getByDeptId")
+    public R<List<SysPostVo>> getByDeptId(@NotNull(message = "主键不能为空")
+                                          @PathVariable @PathId Long deptId) {
+        return R.ok(sysPostService.getByDeptId(deptId));
+    }
+
+    /**
+     * 岗位授权角色
+     *
+     * @param postId  用户Id
+     * @param roleIds 角色ID串
+     */
+    @SaCheckPermission("system:sysPost:edit")
+    @Log(title = "岗位管理", businessType = BusinessType.GRANT)
+    @PutMapping("/insertPostRole")
+    @Operation(summary = "岗位授权角色",operationId = "sysPost_insertPostRole")
+    public R<Void> insertPostRole(@PathId Long postId,@PathIds Long[] roleIds) {
+        sysPostService.insertPostRole(postId, roleIds);
+        return R.ok();
     }
 }

@@ -128,14 +128,15 @@ public class SysRoleController extends BaseController {
         return toAjax(sysRoleService.deleteWithValidByIds(List.of(roleIds), true));
     }
 
+
     /**
      * 获取角色选择框列表
      */
     @SaCheckPermission("system:role:query")
-    @GetMapping("/optionselect")
-    @Operation(summary = "获取角色选择框列表",operationId = "sysRoleOptionselect")
-    public R<SelectRolesVo> optionSelect(@RequestParam @PathId Long userId) {
-        return R.ok(sysRoleService.selectSelectRolesVo(userId));
+    @GetMapping("/postRole")
+    @Operation(summary = "获取角色选择框列表",operationId = "sysRolePostSelect")
+    public R<SelectRolesVo> rolePostSelect(@RequestParam @PathId Long postId) {
+        return R.ok(sysRoleService.selectPostRolesVo(postId));
     }
 
     /**
@@ -146,45 +147,6 @@ public class SysRoleController extends BaseController {
     @Operation(summary = "获取角色已分配用户列表",operationId = "roleAllocatedUserList")
     public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
         return sysRoleService.selectAllocatedUserList(bo, pageQuery);
-    }
-
-    /**
-     * 查询未分配用户角色列表
-     */
-    @SaCheckPermission("system:role:list")
-    @GetMapping("/unallocatedList")
-    @Operation(summary = "获取角色未分配用户列表",operationId = "roleUnallocatedUserList")
-    public TableDataInfo<SysUserVo> unallocatedUserList(SysUserBo bo, PageQuery pageQuery) {
-        return sysRoleService.selectUnallocatedUserList(bo, pageQuery);
-    }
-
-    /**
-     * 批量取消授权用户
-     *
-     * @param roleId  角色ID
-     * @param userIds 用户ID串
-     */
-    @SaCheckPermission("system:role:edit")
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PutMapping("/cancelAll")
-    @Operation(summary = "批量取消授权用户",operationId = "roleCancelUserAll")
-    public R<Void> cancelUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
-        return toAjax(sysRoleService.deleteUsers(roleId, userIds));
-    }
-
-    /**
-     * 批量选择用户授权
-     *
-     * @param roleId  角色ID
-     * @param userIds 用户ID串
-     */
-    @SaCheckPermission("system:role:edit")
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PutMapping("/selectAll")
-    @Operation(summary = "批量选择用户授权",operationId = "roleSelectUserAll")
-    public R<Void> selectUserAll(@PathId Long roleId, @PathIds Long[] userIds) {
-        sysRoleService.checkRoleDataScope(roleId);
-        return toAjax(sysRoleService.insertUsers(roleId, userIds));
     }
 
 }

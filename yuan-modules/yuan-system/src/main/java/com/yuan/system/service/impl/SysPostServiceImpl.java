@@ -1,32 +1,32 @@
 package com.yuan.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
+import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysPost;
+import com.yuan.system.domain.SysRolePost;
 import com.yuan.system.domain.SysUser;
-import com.yuan.system.domain.SysUserPost;
 import com.yuan.system.domain.bo.SysPostBo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
+import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
-import com.yuan.system.mapper.SysDeptMapper;
-import com.yuan.system.mapper.SysPostMapper;
-import com.yuan.system.mapper.SysUserPostMapper;
+import com.yuan.system.mapper.*;
 import com.yuan.system.service.SysPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,7 +43,8 @@ public class SysPostServiceImpl implements SysPostService {
     private final SysPostMapper baseMapper;
     private final SysUserPostMapper userPostMapper;
     private final SysDeptMapper sysDeptMapper;
-
+    private final SysRolePostMapper rolePostMapper;
+    private final SysRoleMapper sysRoleMapper;
     /**
      * 查询post
      */
@@ -130,53 +131,11 @@ public class SysPostServiceImpl implements SysPostService {
                 .eq(ObjectUtil.isNotNull(user.getPostId()), "sp.post_id", user.getPostId())
                 .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
                 .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
-                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus());
         Page<SysUserVo> page = baseMapper.selectAllocatedUserList(pageQuery.build(), wrapper);
         return TableDataInfo.build(page);
     }
 
-    @Override
-    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
-        List<Long> userIds = userPostMapper.selectUserIdsByPostId(user.getPostId());
-        QueryWrapper<SysUser> wrapper = Wrappers.query();
-        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
-                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
-                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
-                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
-        Page<SysUserVo> page = baseMapper.selectUnallocatedUserList(pageQuery.build(), wrapper);
-        return TableDataInfo.build(page);
-    }
-
-    @Override
-    public Boolean cancelUserAll(Long postId, Long[] userIds) {
-        int rows = userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>()
-                .eq(SysUserPost::getPostId, postId)
-                .in(SysUserPost::getUserId, Arrays.asList(userIds)));
-//        if (rows > 0) {
-//            cleanOnlineUserByRole(roleId);
-//        }
-        return rows>0;
-    }
-
-    @Override
-    public Boolean selectUserAll(Long postId, Long[] userIds) {
-        int rows = 0;
-        List<SysUserPost> list = StreamUtils.toList(List.of(userIds), userId -> {
-            SysUserPost ur = new SysUserPost();
-            ur.setUserId(userId);
-            ur.setPostId(postId);
-            return ur;
-        });
-        if (CollUtil.isNotEmpty(list)) {
-            rows = userPostMapper.insertBatch(list) ? list.size() : 0;
-        }
-//        if (rows > 0) {
-//            cleanOnlineUserByRole(roleId);
-//        }
-        return rows>0;
-    }
 
     @Override
     public Boolean checkPostNameUnique(SysPostBo bo) {
@@ -204,5 +163,46 @@ public class SysPostServiceImpl implements SysPostService {
             sysPostVos = baseMapper.selectVoList();
         }
         return sysPostVos;
+    }
+
+    @Override
+    public List<SysPostVo> getByDeptId(Long deptId) {
+        return baseMapper.selectByDeptId(deptId);
+    }
+
+    @Override
+    public void insertPostRole(Long postId, Long[] roleIds) {
+        insertPostRole(postId,roleIds,true);
+    }
+
+    private void insertPostRole(Long postId, Long[] roleIds, boolean clear) {
+        if (clear) {
+            // 删除用户与角色关联
+            rolePostMapper.delete(new LambdaQueryWrapper<SysRolePost>().eq(SysRolePost::getPostId, postId));
+        }
+        if (ArrayUtil.isNotEmpty(roleIds)) {
+            //todo 权限校验
+
+            // 判断是否具有此角色的操作权限
+            List<SysRoleVo> roles = sysRoleMapper.selectVoList(new LambdaQueryWrapper<>());
+            if (CollUtil.isEmpty(roles)) {
+                throw new ServiceException("没有权限访问角色的数据");
+            }
+            List<Long> roleList = StreamUtils.toList(roles, SysRoleVo::getRoleId);
+            roleList.remove(UserConstants.SUPER_ADMIN_ID);
+
+            List<Long> canDoRoleList = StreamUtils.filter(List.of(roleIds), roleList::contains);
+            if (CollUtil.isEmpty(canDoRoleList)) {
+                throw new ServiceException("没有权限访问角色的数据");
+            }
+            // 新增用户与角色管理
+            List<SysRolePost> list = StreamUtils.toList(canDoRoleList, roleId -> {
+                SysRolePost ur = new SysRolePost();
+                ur.setPostId(postId);
+                ur.setRoleId(roleId);
+                return ur;
+            });
+            rolePostMapper.insertBatch(list);
+        }
     }
 }

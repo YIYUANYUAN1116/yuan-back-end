@@ -52,8 +52,6 @@ public interface SysUserService {
 
     boolean checkEmailUnique(SysUserBo user);
 
-    void insertUserAuth(Long userId, Long[] roleIds);
-
     SysUserVo selectUserById(Long userId);
 
     String selectUserRoleGroup(Long userId);

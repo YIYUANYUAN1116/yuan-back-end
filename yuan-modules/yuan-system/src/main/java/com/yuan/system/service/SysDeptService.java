@@ -5,7 +5,9 @@ import cn.hutool.core.lang.tree.Tree;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysDeptBo;
+import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysDeptVo;
+import com.yuan.system.domain.vo.SysUserVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,13 +56,7 @@ public interface SysDeptService {
 
     List<Tree<Long>> buildDeptTreeSelect(List<SysDeptVo> deptVos);
 
-//    TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo bo, PageQuery pageQuery);
-//
-//    TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo bo, PageQuery pageQuery);
-//
-//    Boolean cancelUserAll(Long deptId, Long[] userIds);
-//
-//    Boolean selectUserAll(Long deptId, Long[] userIds);
+    TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo bo, PageQuery pageQuery);
 
     Boolean checkDeptNameUnique(SysDeptBo bo);
 }

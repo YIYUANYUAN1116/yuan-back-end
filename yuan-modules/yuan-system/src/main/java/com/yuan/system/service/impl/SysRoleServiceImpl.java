@@ -10,25 +10,21 @@ import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.exception.GlobalException;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.MapstructUtils;
-import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.SysRoleMenu;
+import com.yuan.system.domain.SysRolePost;
 import com.yuan.system.domain.SysUser;
-import com.yuan.system.domain.SysUserRole;
 import com.yuan.system.domain.bo.SysRoleBo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.helper.MenuScopHelper;
-import com.yuan.system.mapper.SysMenuMapper;
-import com.yuan.system.mapper.SysRoleMapper;
-import com.yuan.system.mapper.SysRoleMenuMapper;
-import com.yuan.system.mapper.SysUserRoleMapper;
+import com.yuan.system.mapper.*;
 import com.yuan.system.service.SysMenuService;
 import com.yuan.system.service.SysRoleService;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +44,10 @@ import java.util.*;
 public class SysRoleServiceImpl implements SysRoleService {
 
     private final SysRoleMapper baseMapper;
-    private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMenuMapper roleMenuMapper;
     private final SysMenuService menuService;
     private final SysMenuMapper sysMenuMapper;
+    private final SysRolePostMapper sysRolePostMapper;
 
     /**
      * 查询角色
@@ -132,15 +128,15 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         for (Long roleId : ids) {
             SysRole role = baseMapper.selectById(roleId);
-            if (countUserRoleByRoleId(roleId) > 0) {
+            if (countPostRoleByRoleId(roleId) > 0) {
                 throw new ServiceException(String.format("%1$s已分配,不能删除", role.getRoleName()));
             }
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
 
-    private Long countUserRoleByRoleId(Long roleId) {
-        return userRoleMapper.selectCount(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getRoleId, roleId));
+    private Long countPostRoleByRoleId(Long roleId) {
+        return sysRolePostMapper.selectCount(new LambdaQueryWrapper<SysRolePost>().eq(SysRolePost::getRoleId, roleId));
     }
 
     @Override
@@ -170,12 +166,12 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public SelectRolesVo selectSelectRolesVo(Long userId) {
+    public SelectRolesVo selectPostRolesVo(Long postId) {
         SelectRolesVo selectRolesVo = new SelectRolesVo();
         List<SysRoleVo> sysRoleVos = baseMapper.selectVoList();
         selectRolesVo.setRoles(sysRoleVos);
-        if (userId != null) {
-            selectRolesVo.setCheckedKeys(userRoleMapper.selectRoleIdsByUserId(userId));
+        if (postId != null) {
+            selectRolesVo.setCheckedKeys(sysRolePostMapper.selectRoleIdsByPostId(postId));
         }
         return selectRolesVo;
     }
@@ -184,39 +180,14 @@ public class SysRoleServiceImpl implements SysRoleService {
     public TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo user, PageQuery pageQuery) {
         QueryWrapper<SysUser> wrapper = Wrappers.query();
         wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
-                .eq(ObjectUtil.isNotNull(user.getRoleId()), "r.role_id", user.getRoleId())
                 .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
                 .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
-                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
-        Page<SysUserVo> page = baseMapper.selectAllocatedUserList(pageQuery.build(), wrapper);
+                .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus());
+        Page<SysUserVo> page = baseMapper.selectAllocatedUserList(pageQuery.build(), wrapper,user.getRoleId());
         return TableDataInfo.build(page);
     }
 
-    @Override
-    public TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo user, PageQuery pageQuery) {
-        List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(user.getRoleId());
-        QueryWrapper<SysUser> wrapper = Wrappers.query();
-        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
-                .and(w -> w.ne("r.role_id", user.getRoleId()).or().isNull("r.role_id"))
-                .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
-                .like(StringUtils.isNotBlank(user.getNickName()), "u.nick_name", user.getNickName())
-                .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
-                .like(StringUtils.isNotBlank(user.getPhonenumber()), "u.phonenumber", user.getPhonenumber());
-        Page<SysUserVo> page = baseMapper.selectUnallocatedUserList(pageQuery.build(), wrapper);
-        return TableDataInfo.build(page);
-    }
 
-    @Override
-    public int deleteUsers(Long roleId, Long[] userIds) {
-        int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, roleId)
-                .in(SysUserRole::getUserId, Arrays.asList(userIds)));
-//        if (rows > 0) {
-//            cleanOnlineUserByRole(roleId);
-//        }
-        return rows;
-    }
 
     @Override
     public void checkRoleDataScope(Long roleId) {
@@ -230,25 +201,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (CollUtil.isEmpty(roles)) {
             throw new ServiceException("没有权限访问角色数据！");
         }
-    }
-
-    @Override
-    public int insertUsers(Long roleId, Long[] userIds) {
-        // 新增用户与角色管理
-        int rows = 1;
-        List<SysUserRole> list = StreamUtils.toList(List.of(userIds), userId -> {
-            SysUserRole ur = new SysUserRole();
-            ur.setUserId(userId);
-            ur.setRoleId(roleId);
-            return ur;
-        });
-        if (CollUtil.isNotEmpty(list)) {
-            rows = userRoleMapper.insertBatch(list) ? list.size() : 0;
-        }
-//        if (rows > 0) {
-//            cleanOnlineUserByRole(roleId);
-//        }
-        return rows;
     }
 
     @Override

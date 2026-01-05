@@ -32,23 +32,6 @@
                  left join sys_dept sd on sd.dept_id = sp.dept_id
             ${ew.getCustomSqlSegment}
     </select>
-    <select id="selectUnallocatedUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
-        select distinct u.user_id,
-                        u.user_name,
-                        u.nick_name,
-                        u.email,
-                        u.phonenumber,
-                        u.status,
-                        u.create_time,
-                        sp.post_name,
-                        sd.dept_name,
-                        sup.is_primary as isPrimaryPost
-        FROM sys_user u
-             left join sys_user_post sup on sup.user_id = u.user_id
-             left join sys_post  sp on sp.post_id = sup.post_id
-             left join sys_dept sd on sd.dept_id = sp.dept_id
-            ${ew.getCustomSqlSegment}
-    </select>
 
     <select id="selectPagePostList" resultMap="SysPostResult">
         select sp.*,sd.dept_name
@@ -70,6 +53,11 @@
         JOIN sys_user_post sup on sup.post_id = sp.post_id
         left join sys_dept sd on sd.dept_id = sp.dept_id
         where sup.user_id = #{userId}
+    </select>
+    <select id="selectByDeptId" resultType="com.yuan.system.domain.vo.SysPostVo">
+        select sp.post_id,sp.post_name
+        from sys_post sp
+        where sp.dept_id = #{deptId}
     </select>
 
 </mapper>

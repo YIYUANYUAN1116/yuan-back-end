@@ -50,15 +50,13 @@ public interface SysPostService {
 
     TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo bo, PageQuery pageQuery);
 
-    TableDataInfo<SysUserVo> selectUnallocatedUserList(SysUserBo bo, PageQuery pageQuery);
-
-    Boolean cancelUserAll(Long postId, Long[] userIds);
-
-    Boolean selectUserAll(Long postId, Long[] userIds);
-
     Boolean checkPostNameUnique(SysPostBo bo);
 
     Boolean checkPostKeyUnique(SysPostBo bo);
 
     List<SysPostVo> queryByUserId(Long userId);
+
+    List<SysPostVo> getByDeptId(Long deptId);
+
+    void insertPostRole(Long postId, Long[] roleIds);
 }

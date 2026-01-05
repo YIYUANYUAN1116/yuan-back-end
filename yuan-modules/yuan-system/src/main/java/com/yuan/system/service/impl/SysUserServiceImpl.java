@@ -1,7 +1,6 @@
 package com.yuan.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -9,20 +8,21 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
-import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
-import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysUser;
-import com.yuan.system.domain.SysUserRole;
+import com.yuan.system.domain.SysUserPost;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
-import com.yuan.system.mapper.*;
+import com.yuan.system.mapper.SysPostMapper;
+import com.yuan.system.mapper.SysRoleMapper;
+import com.yuan.system.mapper.SysUserMapper;
+import com.yuan.system.mapper.SysUserPostMapper;
 import com.yuan.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,9 +42,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     private final SysUserMapper baseMapper;
     private final SysRoleMapper sysRoleMapper;
-    private final SysUserRoleMapper sysUserRoleMapper;
     private final SysPostMapper sysPostMapper;
-    private final SysDeptMapper sysDeptMapper;
+    private final SysUserPostMapper userPostMapper;
+
 
     /**
      * 查询用户
@@ -114,16 +114,11 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         // 删除用户与角色关联
-        sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().in(SysUserRole::getUserId, ids));
+        userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().in(SysUserPost::getUserId, ids));
         return baseMapper.deleteByIds(ids) > 0;
     }
 
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void insertUserAuth(Long userId, Long[] roleIds) {
-        insertUserRole(userId, roleIds, true);
-    }
 
     @Override
     public SysUserVo selectUserById(Long userId) {
@@ -177,35 +172,6 @@ public class SysUserServiceImpl implements SysUserService {
                         .eq(SysUser::getUserId, userId));
     }
 
-    private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
-        if (clear) {
-            // 删除用户与角色关联
-            sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
-        }
-        if (ArrayUtil.isNotEmpty(roleIds)) {
-            // 判断是否具有此角色的操作权限
-            List<SysRoleVo> roles = sysRoleMapper.selectVoList(new LambdaQueryWrapper<>());
-            if (CollUtil.isEmpty(roles)) {
-                throw new ServiceException("没有权限访问角色的数据");
-            }
-            List<Long> roleList = StreamUtils.toList(roles, SysRoleVo::getRoleId);
-            if (!LoginHelper.isSuperAdmin(userId)) {
-                roleList.remove(UserConstants.SUPER_ADMIN_ID);
-            }
-            List<Long> canDoRoleList = StreamUtils.filter(List.of(roleIds), roleList::contains);
-            if (CollUtil.isEmpty(canDoRoleList)) {
-                throw new ServiceException("没有权限访问角色的数据");
-            }
-            // 新增用户与角色管理
-            List<SysUserRole> list = StreamUtils.toList(canDoRoleList, roleId -> {
-                SysUserRole ur = new SysUserRole();
-                ur.setUserId(userId);
-                ur.setRoleId(roleId);
-                return ur;
-            });
-            sysUserRoleMapper.insertBatch(list);
-        }
-    }
 
 
     @Override
