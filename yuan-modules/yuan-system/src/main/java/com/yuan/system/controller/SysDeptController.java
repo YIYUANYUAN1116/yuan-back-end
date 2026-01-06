@@ -159,4 +159,16 @@ public class SysDeptController extends BaseController {
         return sysDeptService.selectAllocatedUserList(bo, pageQuery);
     }
 
+
+    /**
+     * 设置部门负责人
+     */
+    @SaCheckPermission("system:dept:edit")
+    @GetMapping("/setLeader/{deptId}/{userId}")
+    @Operation(summary = "设置部门负责人",operationId = "deptSetLeader")
+    public R<Void> setLeader(@PathVariable @PathId Long deptId,@PathVariable  @PathId Long userId) {
+        return toAjax(sysDeptService.setLeader(deptId, userId));
+
+    }
+
 }

@@ -47,7 +47,6 @@ public class SysUserBo implements Serializable {
     /**
      * 用户账号
      */
-    @NotBlank(message = "用户账号不能为空", groups = { AddGroup.class, EditGroup.class })
     private String userName;
     /**
      * 用户昵称

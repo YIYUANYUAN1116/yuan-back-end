@@ -42,4 +42,6 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     List<Long> selectUserIdsBydeptId(@Param("deptId") Long deptId);
 
     List<SysUserVo> selectUserList(QueryWrapper<SysUser> lqw);
+
+    SysUserVo selectVoByUserId(Long userId);
 }

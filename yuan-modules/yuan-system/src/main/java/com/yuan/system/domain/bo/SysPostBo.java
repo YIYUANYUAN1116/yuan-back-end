@@ -49,7 +49,7 @@ public class SysPostBo implements Serializable {
     @NotBlank(message = "状态（0正常 1停用）不能为空", groups = { AddGroup.class, EditGroup.class })
     private String status;
 
-    @NotBlank(message = "所属部门不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "所属部门不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**

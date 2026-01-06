@@ -1,6 +1,7 @@
 package com.yuan.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
+import com.yuan.common.core.enums.BooleanEnum;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -24,6 +26,7 @@ import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.mapper.SysUserMapper;
 import com.yuan.system.mapper.SysUserPostMapper;
 import com.yuan.system.service.SysUserService;
+import com.yuan.system.utils.UserNameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,13 +82,42 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean insertByBo(SysUserBo bo) {
+        bo.setUserName(UserNameGenerator.generateUserName(IdUtil.getSnowflakeNextId()));
         SysUser add = MapstructUtils.convert(bo, SysUser.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setUserId(add.getUserId());
+            bindUserPrimaryPost(bo);
         }
         return flag;
+    }
+
+    /**
+     * 绑定主岗位
+     * @param bo
+     */
+    private void bindUserPrimaryPost(SysUserBo bo) {
+        Long primaryPostId = bo.getPrimaryPostId();
+        if (primaryPostId != null) {
+            boolean exists = userPostMapper.exists(Wrappers.<SysUserPost>lambdaQuery()
+                    .eq(SysUserPost::getUserId, bo.getUserId())
+                    .eq(SysUserPost::getPostId, primaryPostId)
+                    .eq(SysUserPost::getIsPrimary, BooleanEnum.TURE.getValue()));
+            if (exists) {
+                return;
+            }
+            //清除原有主岗位
+            userPostMapper.update(Wrappers.<SysUserPost>lambdaUpdate()
+                    .eq(SysUserPost::getUserId, bo.getUserId())
+                    .set(SysUserPost::getIsPrimary, BooleanEnum.FALSE.getValue()));
+
+            SysUserPost up = new SysUserPost();
+            up.setUserId(bo.getUserId());
+            up.setPostId(primaryPostId);
+            up.setIsPrimary(true);
+            userPostMapper.insert(up);
+        }
     }
 
     /**
@@ -97,6 +129,7 @@ public class SysUserServiceImpl implements SysUserService {
         bo.setUserName(null);
         SysUser update = MapstructUtils.convert(bo, SysUser.class);
         validEntityBeforeSave(update);
+        bindUserPrimaryPost(bo);
         return baseMapper.updateById(update) > 0;
     }
 
@@ -122,7 +155,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserVo selectUserById(Long userId) {
-        return baseMapper.selectVoById(userId);
+        return baseMapper.selectVoByUserId(userId);
     }
 
     /**

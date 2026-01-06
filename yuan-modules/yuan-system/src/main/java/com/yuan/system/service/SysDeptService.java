@@ -59,4 +59,6 @@ public interface SysDeptService {
     TableDataInfo<SysUserVo> selectAllocatedUserList(SysUserBo bo, PageQuery pageQuery);
 
     Boolean checkDeptNameUnique(SysDeptBo bo);
+
+    Boolean setLeader(Long deptId, Long userId);
 }

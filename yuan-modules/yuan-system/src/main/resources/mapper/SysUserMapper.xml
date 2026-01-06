@@ -126,4 +126,22 @@
                  left join sys_role sr on sr.role_id = sur.role_id
             ${ew.getCustomSqlSegment}
     </select>
+    <select id="selectVoByUserId" resultType="com.yuan.system.domain.vo.SysUserVo">
+        select distinct u.user_id,
+                        u.user_name,
+                        u.nick_name,
+                        u.email,
+                        u.sex,
+                        u.phonenumber,
+                        u.status,
+                        u.create_time,
+                        sp.post_name,
+                        sp.post_id as primaryPostId,
+                        sd.dept_id,
+                        sd.dept_name
+        from sys_user u
+                 left join sys_post sp on sp.post_id = u.primary_post_id
+                 left join sys_dept sd on sd.dept_id = sp.dept_id
+        where u.user_id = #{userId}
+    </select>
 </mapper>

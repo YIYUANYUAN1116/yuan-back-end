@@ -42,7 +42,7 @@ public class SysDeptBo implements Serializable {
     /**
      * 负责人
      */
-    private String leader;
+    private Long leaderId;
     /**
      * 联系电话
      */
@@ -81,5 +81,6 @@ public class SysDeptBo implements Serializable {
     private LocalDateTime updateTime;
 
 
+    private String leader;
 
 }

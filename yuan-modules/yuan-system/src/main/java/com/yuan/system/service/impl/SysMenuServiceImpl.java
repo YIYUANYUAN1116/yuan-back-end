@@ -240,7 +240,9 @@ public class SysMenuServiceImpl implements SysMenuService {
         if (LoginHelper.isSuperAdmin(userId)) {
             menus = baseMapper.selectMenuTreeAll();
         }else {
-            menus = baseMapper.selectMenuTreeByUserId(userId);
+            menus = baseMapper.selectMenuTreeByRoleUser(userId);
+            menus.addAll(baseMapper.selectMenuTreeByPostUser(userId));
+
         }
         return getChildPerms(menus, 0);
     }
@@ -268,7 +270,8 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public Set<String> selectMenuPermsByUserId(Long userId) {
-        List<String> perms = baseMapper.selectMenuPermsByUserId(userId);
+        List<String> perms = baseMapper.selectMenuPermsByRoleUser(userId);
+        perms.addAll(baseMapper.selectMenuPermsByPostUser(userId));
         Set<String> permsSet = new HashSet<>();
         for (String perm : perms) {
             if (StringUtils.isNotEmpty(perm)) {

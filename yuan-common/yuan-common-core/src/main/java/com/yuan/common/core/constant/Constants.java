@@ -92,5 +92,6 @@ public interface Constants {
      **/
     String TENANT_ID = "00000";
 
+    Integer DEFAULT_ORDER_NUM = 0;
 }
 

@@ -1,7 +1,6 @@
 package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.util.IdUtil;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
@@ -87,7 +86,6 @@ public class SysTenantController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增多租户",operationId = "sysTenant_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantBo bo) {
-        bo.setTenantId(IdUtil.getSnowflakeNextIdStr());
         return toAjax(sysTenantService.insertByBo(bo));
     }
 

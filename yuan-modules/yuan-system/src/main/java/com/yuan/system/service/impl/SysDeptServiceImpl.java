@@ -5,6 +5,7 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.constant.UserConstants;
@@ -194,6 +195,14 @@ public class SysDeptServiceImpl implements SysDeptService {
                 .eq(SysDept::getDeptName, bo.getDeptName())
                 .ne(ObjectUtil.isNotNull(bo.getDeptId()), SysDept::getDeptId, bo.getDeptId()));
         return !exist;
+    }
+
+    @Override
+    public Boolean setLeader(Long deptId, Long userId) {
+        int update = baseMapper.update(new LambdaUpdateWrapper<SysDept>()
+                .set(SysDept::getLeaderId, userId)
+                .eq(SysDept::getDeptId, deptId));
+        return update > 0;
     }
 
     // 递归收集子菜单

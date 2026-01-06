@@ -10,6 +10,7 @@ import com.yuan.system.domain.vo.SysMenuVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -48,13 +49,17 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @param userId 用户ID
      * @return 菜单列表
      */
-    List<SysMenu> selectMenuTreeByUserId(Long userId);
+    List<SysMenu> selectMenuTreeByRoleUser(Long userId);
 
-    List<String> selectMenuPermsByUserId(Long userId);
+    List<String> selectMenuPermsByRoleUser(Long userId);
 
     List<SysMenu> selectMenuTreeByScope(@Param("scope") String scope);
 
     Set<Long> selectMenuIdsByUserId(Long userId);
 
     List<String> selectScopesBymenuIds(Set<Long> menuIds);
+
+    List<SysMenu> selectMenuTreeByPostUser(Long userId);
+
+    Collection<String> selectMenuPermsByPostUser(Long userId);
 }

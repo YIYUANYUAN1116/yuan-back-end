@@ -33,7 +33,7 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
 
     Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page,@Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper,@Param("roleId") Long roleId);
 
-    List<SysRoleVo> selectRolePermissionByUserId(Long userId);
+    List<SysRoleVo> selectRolePermissionByRoleUser(Long userId);
 
     SysRole selectRolesByRoleKey(@Param("roleKey") String roleKey,@Param("tenantId")String tenantId);
 
@@ -46,4 +46,7 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     @DataPermission({
             @DataColumn(key = "deptName", value = "d.dept_id")
     })
-    List<SysRoleVo> selectRoleList(@Param(Constants.WRAPPER) Wrapper<SysRole> queryWrapper);}
+    List<SysRoleVo> selectRoleList(@Param(Constants.WRAPPER) Wrapper<SysRole> queryWrapper);
+
+    List<SysRoleVo>  selectRolePermissionByPostUser(Long userId);
+}

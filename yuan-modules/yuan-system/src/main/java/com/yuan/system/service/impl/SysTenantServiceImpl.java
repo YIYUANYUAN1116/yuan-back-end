@@ -1,5 +1,6 @@
 package com.yuan.system.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -91,6 +92,7 @@ public class SysTenantServiceImpl implements SysTenantService {
     @Override
     @Transactional
     public Boolean insertByBo(SysTenantBo bo) {
+        bo.setTenantId(IdUtil.getSnowflakeNextIdStr());
         SysTenant add = MapstructUtils.convert(bo, SysTenant. class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;

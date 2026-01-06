@@ -135,6 +135,7 @@ tenant:
     - sys_user_role
     - sys_dict
     - sys_dict_data
+    - sys_role_post
 
 knife4j:
   enable: true

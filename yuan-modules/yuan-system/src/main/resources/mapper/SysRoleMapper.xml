@@ -21,7 +21,6 @@
         FROM sys_user u
                 left JOIN sys_role_post srp on srp.post_id = u.primary_post_id
                 left JOIN sys_role r on  r.role_id = srp.role_id
-                left JOIN sys_dept sd ON sd.dept_id = sr.dept_id
     </sql>
 
     <select id="selectRolesByUserId" parameterType="long" resultMap="SysRoleResult">
@@ -47,8 +46,11 @@
          ${ew.getCustomSqlSegment}
     </select>
 
-    <select id="selectRolePermissionByUserId" resultType="com.yuan.system.domain.vo.SysRoleVo">
-        <include refid="selectRoleVo"/>
+    <select id="selectRolePermissionByRoleUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
+        select r.*
+        FROM sys_user u
+                 join sys_user_role sur on sur.user_id = u.user_id
+                 join sys_role r on  r.role_id = sur.role_id
         WHERE r.del_flag = '0' and u.user_id = #{userId}
     </select>
     <select id="selectRolesByRoleKey" resultType="com.yuan.system.domain.SysRole">
@@ -66,6 +68,14 @@
                  left JOIN sys_role_post srp on srp.post_id = u.primary_post_id
                  left JOIN sys_role r on  r.role_id = srp.role_id
                  left JOIN sys_dept sd ON sd.dept_id = sr.dept_id
+        WHERE r.del_flag = '0' and u.user_id = #{userId}
+    </select>
+    <select id="selectRolePermissionByPostUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
+        select r.*
+        FROM sys_user u
+                 join  sys_user_post sup on sup.user_id = u.user_id
+                 join sys_role_post srp on srp.post_id = sup.post_id
+                 join sys_role r on  r.role_id = srp.role_id
         WHERE r.del_flag = '0' and u.user_id = #{userId}
     </select>
 </mapper>

@@ -108,11 +108,11 @@ public class SysUserController extends BaseController {
     @Operation(summary = "新增用户",operationId = "sysUser_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysUserBo user) {
         if (!sysUserService.checkNickNameUnique(user)) {
-            return R.fail("新增用户'" + user.getUserName() + "'失败，用户昵称已存在");
+            return R.fail("新增用户'" + user.getNickName() + "'失败，用户昵称已存在");
         } else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !sysUserService.checkPhoneUnique(user)) {
-            return R.fail("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
+            return R.fail("新增用户'" + user.getPhonenumber() + "'失败，手机号码已存在");
         } else if (StringUtils.isNotEmpty(user.getEmail()) && !sysUserService.checkEmailUnique(user)) {
-            return R.fail("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
+            return R.fail("新增用户'" + user.getEmail() + "'失败，邮箱账号已存在");
         }
 //        if (TenantHelper.isEnable()) {
 //            if (!tenantService.checkAccountBalance(TenantHelper.getTenantId())) {
@@ -122,10 +122,6 @@ public class SysUserController extends BaseController {
         if(StringUtils.isEmpty(user.getPassword())){
             user.setPassword("123456");
         }
-        if(StringUtils.isEmpty(user.getNickName())){
-            user.setNickName(user.getUserName());
-        }
-//        user.setDeptId(103L);
         user.setPassword(BCrypt.hashpw(user.getPassword()));
         return toAjax(sysUserService.insertByBo(user));
     }

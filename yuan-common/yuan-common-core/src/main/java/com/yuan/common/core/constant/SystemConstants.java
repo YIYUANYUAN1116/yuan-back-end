@@ -75,6 +75,6 @@ public interface SystemConstants {
     /**
      * 根部门祖级列表
      */
-    String ROOT_DEPT_ANCESTORS = "0";
+    Long ROOT_DEPT_ANCESTORS = 1L;
 
 }
