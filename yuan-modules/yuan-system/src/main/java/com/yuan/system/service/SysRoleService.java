@@ -8,6 +8,7 @@ import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -67,4 +68,6 @@ public interface SysRoleService {
     Set<String> selectRolePermissionByUserId(Long userId);
 
     List<SysRoleVo> selectRoleList(SysRoleBo sysRoleBo);
+
+    List<SysRoleVo> selectRoleVoByUserId(Long userId);
 }
