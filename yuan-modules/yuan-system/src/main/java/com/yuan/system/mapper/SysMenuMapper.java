@@ -43,13 +43,6 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
         return this.selectList(lqw);
     }
 
-    /**
-     * 根据用户ID查询菜单
-     *
-     * @param userId 用户ID
-     * @return 菜单列表
-     */
-    List<SysMenu> selectMenuTreeByRoleUser(Long userId);
 
     List<String> selectMenuPermsByRoleUser(Long userId);
 
@@ -59,7 +52,19 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
 
     List<String> selectScopesBymenuIds(Set<Long> menuIds);
 
-    List<SysMenu> selectMenuTreeByPostUser(Long userId);
+    List<SysMenu> selectSysMenuByPostUser(Long userId);
+    /**
+     * 根据用户的角色查询菜单
+     *
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    List<SysMenu> selectSysMenuByRoleUser(Long userId);
 
+    /**
+     * 根据用户的岗位查询菜单
+     * @param userId
+     * @return
+     */
     Collection<String> selectMenuPermsByPostUser(Long userId);
 }

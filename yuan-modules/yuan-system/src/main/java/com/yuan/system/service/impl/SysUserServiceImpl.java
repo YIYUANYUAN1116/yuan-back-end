@@ -166,6 +166,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public String selectUserRoleGroup(Long userId) {
         List<SysRoleVo> list = sysRoleMapper.selectRolesByUserId(userId);
+
         if (CollUtil.isEmpty(list)) {
             return StringUtils.EMPTY;
         }

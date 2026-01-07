@@ -46,13 +46,6 @@
          ${ew.getCustomSqlSegment}
     </select>
 
-    <select id="selectRolePermissionByRoleUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
-        select r.*
-        FROM sys_user u
-                 join sys_user_role sur on sur.user_id = u.user_id
-                 join sys_role r on  r.role_id = sur.role_id
-        WHERE r.del_flag = '0' and u.user_id = #{userId}
-    </select>
     <select id="selectRolesByRoleKey" resultType="com.yuan.system.domain.SysRole">
         select *
         from sys_role
@@ -70,12 +63,25 @@
                  left JOIN sys_dept sd ON sd.dept_id = sr.dept_id
         WHERE r.del_flag = '0' and u.user_id = #{userId}
     </select>
-    <select id="selectRolePermissionByPostUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
-        select r.*
+    <select id="selectRoleVoByPostUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
+        select distinct
+            r.*
         FROM sys_user u
-                 join  sys_user_post sup on sup.user_id = u.user_id
+                 join sys_user_post sup on sup.user_id = u.user_id
                  join sys_role_post srp on srp.post_id = sup.post_id
                  join sys_role r on  r.role_id = srp.role_id
-        WHERE r.del_flag = '0' and u.user_id = #{userId}
+        WHERE
+            r.del_flag = '0'
+          and u.user_id = #{userId}
+    </select>
+    <select id="selectRoleVoByRoleUser" resultType="com.yuan.system.domain.vo.SysRoleVo">
+        select distinct
+            r.*
+        FROM sys_user u
+                 join sys_user_role sur on sur.user_id = u.user_id
+                 join sys_role r on  r.role_id = sur.role_id
+        WHERE
+            r.del_flag = '0'
+          and u.user_id = #{userId}
     </select>
 </mapper>

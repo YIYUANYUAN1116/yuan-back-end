@@ -33,7 +33,6 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
 
     Page<SysUserVo> selectAllocatedUserList(@Param("page") Page<SysUser> page,@Param(Constants.WRAPPER) QueryWrapper<SysUser> wrapper,@Param("roleId") Long roleId);
 
-    List<SysRoleVo> selectRolePermissionByRoleUser(Long userId);
 
     SysRole selectRolesByRoleKey(@Param("roleKey") String roleKey,@Param("tenantId")String tenantId);
 
@@ -48,5 +47,18 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     })
     List<SysRoleVo> selectRoleList(@Param(Constants.WRAPPER) Wrapper<SysRole> queryWrapper);
 
-    List<SysRoleVo>  selectRolePermissionByPostUser(Long userId);
+    /**
+     * 根据用户岗位获取perm
+     * @param userId
+     * @return
+     */
+    List<SysRoleVo> selectRoleVoByPostUser(Long userId);
+
+    /**
+     * 根据角色获取perm
+     * @param userId
+     * @return
+     */
+    List<SysRoleVo> selectRoleVoByRoleUser(Long userId);
+
 }

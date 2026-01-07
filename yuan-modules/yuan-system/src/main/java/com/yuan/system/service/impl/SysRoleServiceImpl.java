@@ -205,8 +205,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public Set<String> selectRolePermissionByUserId(Long userId) {
-        List<SysRoleVo> perms = baseMapper.selectRolePermissionByRoleUser(userId);
-        perms.addAll(baseMapper.selectRolePermissionByPostUser(userId));
+        List<SysRoleVo> perms = selectRoleVoByUserId(userId);
         Set<String> permsSet = new HashSet<>();
         for (SysRoleVo perm : perms) {
             if (ObjectUtil.isNotNull(perm)) {
@@ -236,6 +235,14 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (!list.isEmpty()) {
             roleMenuMapper.insertBatch(list);
         }
+    }
+
+    @Override
+    public List<SysRoleVo> selectRoleVoByUserId(Long userId) {
+        List<SysRoleVo> res = new ArrayList<>();
+        res.addAll(baseMapper.selectRoleVoByRoleUser(userId));
+        res.addAll(baseMapper.selectRoleVoByPostUser(userId));
+        return res;
     }
 
     private void checkMenuScop(Long roleId, Set<Long> menuIds) {
