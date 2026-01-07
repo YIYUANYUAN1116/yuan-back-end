@@ -39,10 +39,25 @@
             sp.post_name,
             sd.dept_name
         FROM sys_user u
-                 JOIN sys_post sp
-                      ON sp.post_id = u.primary_post_id
-                 JOIN sys_dept sd
-                      ON sd.dept_id = sp.dept_id
+                 join (
+                     -- 用户直授的角色
+                     select su.user_id
+                       from sys_user su
+                       join sys_user_role sur on sur.user_id = su.user_id
+                       where sur.role_id = #{roleId}
+
+                     UNION
+
+                     -- 用户岗位
+                     select su.user_id
+                     from sys_user su
+                              join sys_user_post sup on sup.user_id = su.user_id
+                              join sys_role_post srp on srp.post_id = sup.post_id
+                     where srp.role_id = #{roleId}
+
+                    ) as un on un.user_id = u.user_id
+                 left join sys_post sp on sp.post_id = u.primary_post_id
+                 left join sys_dept sd on sd.dept_id = sp.dept_id
          ${ew.getCustomSqlSegment}
     </select>
 

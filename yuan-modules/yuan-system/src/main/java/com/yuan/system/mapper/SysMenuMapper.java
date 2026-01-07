@@ -10,7 +10,6 @@ import com.yuan.system.domain.vo.SysMenuVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +22,9 @@ import java.util.Set;
 @Mapper
 public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
 
-    List<SysMenu> selectMenuListByUserId(@Param(Constants.WRAPPER) Wrapper<SysMenu> queryWrapper);
+    List<SysMenu> selectMenuListByUserId(@Param("userId") Long userId, @Param(Constants.WRAPPER) Wrapper<SysMenu> queryWrapper);
+
+    List<SysMenuVo> selectMenuVoListByUserId(@Param("userId") Long userId, @Param(Constants.WRAPPER) Wrapper<SysMenu> queryWrapper);
 
     List<Long> selectMenuListByRoleId(Long roleId, Boolean menuCheckStrictly);
 
@@ -43,23 +44,11 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
         return this.selectList(lqw);
     }
 
-    /**
-     * 根据用户ID查询菜单
-     *
-     * @param userId 用户ID
-     * @return 菜单列表
-     */
-    List<SysMenu> selectMenuTreeByRoleUser(Long userId);
-
-    List<String> selectMenuPermsByRoleUser(Long userId);
-
     List<SysMenu> selectMenuTreeByScope(@Param("scope") String scope);
 
     Set<Long> selectMenuIdsByUserId(Long userId);
 
     List<String> selectScopesBymenuIds(Set<Long> menuIds);
 
-    List<SysMenu> selectMenuTreeByPostUser(Long userId);
-
-    Collection<String> selectMenuPermsByPostUser(Long userId);
+    List<String> selectMenuPermsByUserId(Long userId);
 }

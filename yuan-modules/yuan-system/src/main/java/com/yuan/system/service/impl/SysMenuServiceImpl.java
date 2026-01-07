@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.utils.*;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
@@ -149,15 +150,14 @@ public class SysMenuServiceImpl implements SysMenuService {
                     .orderByAsc(SysMenu::getOrderNum));
         } else {
             QueryWrapper<SysMenu> wrapper = Wrappers.query();
-            wrapper.eq("sur.user_id", userId)
-                    .like(StringUtils.isNotBlank(menu.getMenuName()), "m.menu_name", menu.getMenuName())
+            wrapper.like(StringUtils.isNotBlank(menu.getMenuName()), "m.menu_name", menu.getMenuName())
                     .eq(StringUtils.isNotBlank(menu.getVisible()), "m.visible", menu.getVisible())
                     .eq(StringUtils.isNotBlank(menu.getStatus()), "m.status", menu.getStatus())
                     .in(menu.getMenuTypes() != null && !menu.getMenuTypes().isEmpty(),
                             "m.menu_type", menu.getMenuTypes())
                     .orderByAsc("m.parent_id")
                     .orderByAsc("m.order_num");
-            List<SysMenu> list = baseMapper.selectMenuListByUserId(wrapper);
+            List<SysMenu> list = baseMapper.selectMenuListByUserId(userId,wrapper);
             menuList = MapstructUtils.convert(list, SysMenuVo.class);
         }
         return menuList;
@@ -200,15 +200,27 @@ public class SysMenuServiceImpl implements SysMenuService {
     public List<SysMenuVo> listTree(SysMenuBo bo) {
         // 1. 查询匹配的菜单（根据menuName）
         LambdaQueryWrapper<SysMenu> lqw = buildQueryWrapper(bo);
-        List<SysMenuVo> matchedMenus = baseMapper.selectVoList(lqw);
+        List<SysMenuVo> matchedMenus = null;
+
+        if (LoginHelper.isSuperAdmin(LoginHelper.getUserId())) {
+            //超级管理员查询所有
+            matchedMenus = baseMapper.selectVoList(lqw);
+        }else {
+            matchedMenus = baseMapper.selectMenuVoListByUserId(LoginHelper.getUserId(),lqw);
+        }
 
         if (matchedMenus.isEmpty()) {
             return Collections.emptyList();
         }
 
         // 2. 查询所有菜单
-        List<SysMenuVo> allMenus = baseMapper.selectVoList(new LambdaQueryWrapper<>());
-
+        List<SysMenuVo> allMenus = null;
+        if (LoginHelper.isSuperAdmin(LoginHelper.getUserId())) {
+            //超级管理员查询所有
+            allMenus = baseMapper.selectVoList(new LambdaQueryWrapper<>());
+        }else {
+            allMenus = baseMapper.selectMenuVoListByUserId(LoginHelper.getUserId(),new LambdaQueryWrapper<>());
+        }
 
         List<SysMenuVo> resultMenus = null;
         if (!Objects.equals(allMenus.size(),matchedMenus.size())) {
@@ -240,9 +252,11 @@ public class SysMenuServiceImpl implements SysMenuService {
         if (LoginHelper.isSuperAdmin(userId)) {
             menus = baseMapper.selectMenuTreeAll();
         }else {
-            menus = baseMapper.selectMenuTreeByRoleUser(userId);
-            menus.addAll(baseMapper.selectMenuTreeByPostUser(userId));
-
+            menus = baseMapper.selectMenuListByUserId(userId,new LambdaQueryWrapper<SysMenu>()
+                    .in(SysMenu::getMenuType, UserConstants.TYPE_DIR, UserConstants.TYPE_MENU)
+                    .eq(SysMenu::getStatus, UserConstants.MENU_NORMAL)
+                    .orderByAsc(SysMenu::getParentId)
+                    .orderByAsc(SysMenu::getOrderNum));
         }
         return getChildPerms(menus, 0);
     }
@@ -270,8 +284,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public Set<String> selectMenuPermsByUserId(Long userId) {
-        List<String> perms = baseMapper.selectMenuPermsByRoleUser(userId);
-        perms.addAll(baseMapper.selectMenuPermsByPostUser(userId));
+        List<String> perms = baseMapper.selectMenuPermsByUserId(userId);
         Set<String> permsSet = new HashSet<>();
         for (String perm : perms) {
             if (StringUtils.isNotEmpty(perm)) {

@@ -2,6 +2,8 @@ package com.yuan.system.domain.bo;
 
 import com.yuan.system.domain.SysDept;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -46,10 +48,15 @@ public class SysDeptBo implements Serializable {
     /**
      * 联系电话
      */
+    @Pattern(
+            regexp = "^1[3-9]\\d{9}$",
+            message = "手机号格式不正确"
+    )
     private String phone;
     /**
      * 邮箱
      */
+    @Email(message = "邮箱格式不正确")
     private String email;
     /**
      * 部门状态（0正常 1停用）

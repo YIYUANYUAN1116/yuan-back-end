@@ -100,8 +100,10 @@ public class SysAuthService {
         loginUser.setTenantId(user.getTenantId());
         loginUser.setUserId(user.getUserId());
         loginUser.setDeptId(user.getDeptId());
+        loginUser.setNickName(user.getNickName());
         loginUser.setUsername(user.getUserName());
         loginUser.setAvatar(user.getAvatar());
+        loginUser.setDeptName(user.getDeptName());
         loginUser.setUserType(user.getUserType());
         loginUser.setKroleGroupIds(user.getKroleGroupIds());
         loginUser.setKroleGroupType(user.getKroleGroupType());

@@ -4,7 +4,9 @@ import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.system.domain.SysUser;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -65,10 +67,15 @@ public class SysUserBo implements Serializable {
      * 用户邮箱
      */
     @NotBlank(message = "用户邮箱不能为空", groups = { AddGroup.class, EditGroup.class })
+    @Email(message = "邮箱格式不正确")
     private String email;
     /**
      * 手机号码
      */
+    @Pattern(
+            regexp = "^1[3-9]\\d{9}$",
+            message = "手机号格式不正确"
+    )
     private String phonenumber;
     /**
      * 用户性别（0男 1女 2未知）

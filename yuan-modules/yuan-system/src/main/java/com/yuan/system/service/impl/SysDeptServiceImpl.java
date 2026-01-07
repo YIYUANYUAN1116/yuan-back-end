@@ -132,8 +132,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         }
 
         // 2. 查询所有菜单
+//        List<SysDeptVo> allDepts = baseMapper.selectVoList();
         List<SysDeptVo> allDepts = baseMapper.selectDeptList(new QueryWrapper<>());
-
 
         List<SysDeptVo> resultDept = null;
         if (!Objects.equals(allDepts.size(), matchedDepts.size())) {
