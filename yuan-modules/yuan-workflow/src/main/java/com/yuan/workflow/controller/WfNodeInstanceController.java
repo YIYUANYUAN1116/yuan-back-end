@@ -45,7 +45,7 @@ public class WfNodeInstanceController extends BaseController {
 /**
  * 查询wfn列表
  */
-@SaCheckPermission("system:wfNodeInstance:list")
+@SaCheckPermission("workflow:wfNodeInstance:list")
 @GetMapping("/list")
 @Operation(summary = "查询wfn列表",operationId = "WfNodeInstance_list")
     public TableDataInfo<WfNodeInstanceVo> list(WfNodeInstanceBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class WfNodeInstanceController extends BaseController {
     /**
      * 导出wfn列表
      */
-    @SaCheckPermission("system:wfNodeInstance:export")
+    @SaCheckPermission("workflow:wfNodeInstance:export")
     @Log(title = "流程结点", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfn列表",operationId = "WfNodeInstance_export")
@@ -69,7 +69,7 @@ public class WfNodeInstanceController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfNodeInstance:query")
+    @SaCheckPermission("workflow:wfNodeInstance:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wfn详细信息",operationId = "WfNodeInstance_getInfo")
     public R<WfNodeInstanceVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class WfNodeInstanceController extends BaseController {
     /**
      * 新增wfn
      */
-    @SaCheckPermission("system:wfNodeInstance:add")
+    @SaCheckPermission("workflow:wfNodeInstance:add")
     @Log(title = "流程结点", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class WfNodeInstanceController extends BaseController {
     /**
      * 修改wfn
      */
-    @SaCheckPermission("system:wfNodeInstance:edit")
+    @SaCheckPermission("workflow:wfNodeInstance:edit")
     @Log(title = "流程结点", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class WfNodeInstanceController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfNodeInstance:remove")
+    @SaCheckPermission("workflow:wfNodeInstance:remove")
     @Log(title = "流程结点", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfn",operationId = "WfNodeInstance_remove")

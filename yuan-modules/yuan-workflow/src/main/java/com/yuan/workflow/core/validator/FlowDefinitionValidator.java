@@ -52,12 +52,12 @@ public class FlowDefinitionValidator {
                 errors.add("存在节点 id 为空");
                 continue;
             }
-            if (n.getType() == null) {
+            if (n.getProperties().getWfType() == null) {
                 errors.add("节点[" + n.getId() + "] type 为空");
                 continue;
             }
-            if (!ALLOWED_NODE_TYPES.contains(n.getType())) {
-                errors.add("节点[" + n.getId() + "] type 不支持: " + n.getType());
+            if (!ALLOWED_NODE_TYPES.contains(n.getProperties().getWfType())) {
+                errors.add("节点[" + n.getId() + "] type 不支持: " + n.getProperties().getWfType());
             }
             if (nodeMap.containsKey(n.getId())) {
                 errors.add("节点 id 重复: " + n.getId());
@@ -72,10 +72,10 @@ public class FlowDefinitionValidator {
 
         // 3) start/end 规则：必须且只能 1 个
         List<LfNode> starts = nodeMap.values().stream()
-                .filter(n -> NodeType.START.equals(n.getType()))
+                .filter(n -> NodeType.START.getCode().equals(n.getProperties().getWfType()))
                 .toList();
         List<LfNode> ends = nodeMap.values().stream()
-                .filter(n -> NodeType.END.equals(n.getType()))
+                .filter(n -> NodeType.END.getCode().equals(n.getProperties().getWfType()))
                 .toList();
 
         if (starts.size() != 1) errors.add("start 节点必须且只能 1 个，当前: " + starts.size());

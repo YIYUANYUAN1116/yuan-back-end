@@ -68,7 +68,6 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                     lqw.eq(bo.getDefinitionId() != null, WfInstance::getDefinitionId, bo.getDefinitionId());
                     lqw.eq(StringUtils.isNotBlank(bo.getDefinitionKey()), WfInstance::getDefinitionKey, bo.getDefinitionKey());
                     lqw.eq(bo.getVersion() != null, WfInstance::getVersion, bo.getVersion());
-                    lqw.eq(StringUtils.isNotBlank(bo.getBusinessKey()), WfInstance::getBusinessKey, bo.getBusinessKey());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfInstance::getStatus, bo.getStatus());
                     lqw.eq(bo.getStartUserId() != null, WfInstance::getStartUserId, bo.getStartUserId());
                     lqw.eq(bo.getStartTime() != null, WfInstance::getStartTime, bo.getStartTime());
@@ -125,13 +124,6 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setDefinitionId(def.getId());
         instance.setDefinitionKey(def.getDefinitionKey());
         instance.setVersion(def.getVersion());
-
-        if (cmd.getBizType() != null && cmd.getBizId() != null) {
-            instance.setBusinessKey(cmd.getBizType() + ":" + cmd.getBizId());
-        } else {
-            instance.setBusinessKey(cmd.getBizType());
-        }
-
         instance.setStatus(InstanceStatus.RUNNING.getCode());
         instance.setStartUserId(cmd.getStarterUserId());
         instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));

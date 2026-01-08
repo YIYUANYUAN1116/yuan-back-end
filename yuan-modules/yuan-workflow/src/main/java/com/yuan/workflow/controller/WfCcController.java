@@ -45,7 +45,7 @@ public class WfCcController extends BaseController {
 /**
  * 查询wfcc列表
  */
-@SaCheckPermission("system:wfCc:list")
+@SaCheckPermission("workflow:wfCc:list")
 @GetMapping("/list")
 @Operation(summary = "查询wfcc列表",operationId = "WfCc_list")
     public TableDataInfo<WfCcVo> list(WfCcBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class WfCcController extends BaseController {
     /**
      * 导出wfcc列表
      */
-    @SaCheckPermission("system:wfCc:export")
+    @SaCheckPermission("workflow:wfCc:export")
     @Log(title = "流程抄送", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfcc列表",operationId = "WfCc_export")
@@ -69,7 +69,7 @@ public class WfCcController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfCc:query")
+    @SaCheckPermission("workflow:wfCc:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wfcc详细信息",operationId = "WfCc_getInfo")
     public R<WfCcVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class WfCcController extends BaseController {
     /**
      * 新增wfcc
      */
-    @SaCheckPermission("system:wfCc:add")
+    @SaCheckPermission("workflow:wfCc:add")
     @Log(title = "流程抄送", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class WfCcController extends BaseController {
     /**
      * 修改wfcc
      */
-    @SaCheckPermission("system:wfCc:edit")
+    @SaCheckPermission("workflow:wfCc:edit")
     @Log(title = "流程抄送", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class WfCcController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfCc:remove")
+    @SaCheckPermission("workflow:wfCc:remove")
     @Log(title = "流程抄送", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfcc",operationId = "WfCc_remove")

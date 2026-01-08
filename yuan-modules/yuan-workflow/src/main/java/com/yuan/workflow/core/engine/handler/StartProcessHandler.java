@@ -17,6 +17,7 @@ import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
     private final AssigneeResolver assigneeResolver;
 
     @Override
+    @Transactional
     public Long handle(StartProcessCmd cmd) {
         String tenantId = cmd.getTenantId();
 
@@ -55,7 +57,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
         LfNode firstApproveNode = flowParser.getNextNode(def, startNode, cmd.getVariables());
 
         // 6) 创建审批节点 + 任务
-        if (firstApproveNode != null && !NodeType.END.equals(firstApproveNode.getType())) {
+        if (firstApproveNode != null && !NodeType.END.getCode().equals(firstApproveNode.getProperties().getWfType())) {
             WfNodeInstance nodeInstance = wfNodeInstanceService.createNodeInstance(instance.getId(), firstApproveNode, NodeStatus.WAIT, 2);
             List<Long> userIds = assigneeResolver.resolve(firstApproveNode, instance);
             wfTaskService.createTasks(instance, nodeInstance,userIds);

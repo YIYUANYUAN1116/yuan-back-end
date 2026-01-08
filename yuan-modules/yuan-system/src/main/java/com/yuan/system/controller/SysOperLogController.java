@@ -45,7 +45,7 @@ public class SysOperLogController extends BaseController {
 /**
  * 查询oprelog列表
  */
-@SaCheckPermission("system:sysOperLog:list")
+@SaCheckPermission("system:operlog:list")
 @GetMapping("/list")
 @Operation(summary = "查询oprelog列表",operationId = "SysOperLog_list")
     public TableDataInfo<SysOperLogVo> list(SysOperLogBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class SysOperLogController extends BaseController {
     /**
      * 导出oprelog列表
      */
-    @SaCheckPermission("system:sysOperLog:export")
+    @SaCheckPermission("system:operlog:export")
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出oprelog列表",operationId = "SysOperLog_export")
@@ -69,7 +69,7 @@ public class SysOperLogController extends BaseController {
      *
      * @param operId 主键
      */
-    @SaCheckPermission("system:sysOperLog:query")
+    @SaCheckPermission("system:operlog:query")
     @GetMapping("/{operId}")
     @Operation(summary = "获取oprelog详细信息",operationId = "SysOperLog_getInfo")
     public R<SysOperLogVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class SysOperLogController extends BaseController {
     /**
      * 新增oprelog
      */
-    @SaCheckPermission("system:sysOperLog:add")
+    @SaCheckPermission("system:operlog:add")
     @Log(title = "操作日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class SysOperLogController extends BaseController {
     /**
      * 修改oprelog
      */
-    @SaCheckPermission("system:sysOperLog:edit")
+    @SaCheckPermission("system:operlog:edit")
     @Log(title = "操作日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class SysOperLogController extends BaseController {
      *
      * @param operIds 主键串
      */
-    @SaCheckPermission("system:sysOperLog:remove")
+    @SaCheckPermission("system:operlog:remove")
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{operIds}")
     @Operation(summary = "删除oprelog",operationId = "SysOperLog_remove")

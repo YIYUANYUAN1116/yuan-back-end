@@ -46,7 +46,7 @@ public class FlowAdvanceService {
         LfNode next = flowParser.getNextNode(def, currentFlowNode, vars);
 
         // 没有下一个节点或 next 是 END -> 结束
-        if (next == null || NodeType.END.equals(next.getType())) {
+        if (next == null || NodeType.END.getCode().equals(next.getProperties().getWfType())) {
             instanceLifecycle.finishApproved(instance.getId(),operatorId);
             return;
         }

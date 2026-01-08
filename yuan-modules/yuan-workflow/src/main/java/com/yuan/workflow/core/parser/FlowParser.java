@@ -26,7 +26,7 @@ public class FlowParser {
     public LfNode getStartNode(WfDefinition def) {
         LfGraph json = parse(def);
         return json.getNodes().stream()
-                .filter(n->n.getType() == NodeType.START)
+                .filter(n-> Objects.equals(n.getProperties().getWfType(), NodeType.START.getCode()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("未找到 START 节点"));
     }
@@ -53,7 +53,7 @@ public class FlowParser {
         }
 
         // 2. 非网关：只有一条出边
-        if (currentNode.getType() != NodeType.GATEWAY) {
+        if (!Objects.equals(currentNode.getProperties().getWfType(), NodeType.GATEWAY.getCode())) {
             String nextId = outEdges.get(0).getTargetNodeId();
             return getNode(def, nextId);
         }

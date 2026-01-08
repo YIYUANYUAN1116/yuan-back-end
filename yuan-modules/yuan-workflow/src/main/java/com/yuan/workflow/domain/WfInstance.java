@@ -3,7 +3,6 @@ package com.yuan.workflow.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
 import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,13 +45,8 @@ public class WfInstance extends TenantEntity {
     /**
      * 流程版本
      */
-        @Version
     private Integer version;
 
-    /**
-     * 业务单号(请假单ID等)
-     */
-    private String businessKey;
 
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)

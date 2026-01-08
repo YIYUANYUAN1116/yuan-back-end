@@ -120,7 +120,7 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         WfNodeInstance ni = new WfNodeInstance();
         ni.setInstanceId(instanceId);
         ni.setNodeKey(lfNode.getId());
-        ni.setNodeType(lfNode.getType().getCode());
+        ni.setNodeType(lfNode.getProperties().getWfType());
         ni.setStatus(nodeStatus.getCode());
         ni.setOrderNo(orderNo);
         baseMapper.insert(ni);

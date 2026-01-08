@@ -25,6 +25,7 @@ public class WfBizRef extends BaseEntity {
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    private String tenantId;
     /**
      * 业务类型，如 LEAVE/REIMBURSE
      */

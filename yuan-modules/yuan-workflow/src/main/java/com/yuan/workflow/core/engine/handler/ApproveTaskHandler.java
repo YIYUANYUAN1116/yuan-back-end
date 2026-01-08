@@ -14,6 +14,7 @@ import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
@@ -28,6 +29,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
     private final FlowAdvanceService flowAdvanceService;
 
     @Override
+    @Transactional
     public Void handle(ApproveTaskCmd cmd) {
         Long operatorId = cmd.getOperatorUserId();
 

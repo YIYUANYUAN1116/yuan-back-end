@@ -47,7 +47,7 @@ public class SysPostController extends BaseController {
 /**
  * 查询岗位列表
  */
-@SaCheckPermission("system:sysPost:list")
+@SaCheckPermission("system:post:list")
 @GetMapping("/list")
 @Operation(summary = "查询岗位列表",operationId = "SysPost_list")
     public TableDataInfo<SysPostVo> list(SysPostBo bo, PageQuery pageQuery) {
@@ -57,7 +57,7 @@ public class SysPostController extends BaseController {
     /**
      * 导出岗位列表
      */
-    @SaCheckPermission("system:sysPost:export")
+    @SaCheckPermission("system:post:export")
     @Log(title = "post", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出岗位列表",operationId = "SysPost_export")
@@ -71,7 +71,7 @@ public class SysPostController extends BaseController {
      *
      * @param postId 主键
      */
-    @SaCheckPermission("system:sysPost:query")
+    @SaCheckPermission("system:post:query")
     @GetMapping("/{postId}")
     @Operation(summary = "获取岗位详细信息",operationId = "SysPost_getInfo")
     public R<SysPostVo> getInfo(@NotNull(message = "主键不能为空")
@@ -82,7 +82,7 @@ public class SysPostController extends BaseController {
     /**
      * 新增post
      */
-    @SaCheckPermission("system:sysPost:add")
+    @SaCheckPermission("system:post:add")
     @Log(title = "post", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -99,7 +99,7 @@ public class SysPostController extends BaseController {
     /**
      * 修改post
      */
-    @SaCheckPermission("system:sysPost:edit")
+    @SaCheckPermission("system:post:edit")
     @Log(title = "post", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -118,7 +118,7 @@ public class SysPostController extends BaseController {
      *
      * @param postIds 主键串
      */
-    @SaCheckPermission("system:sysPost:remove")
+    @SaCheckPermission("system:post:remove")
     @Log(title = "post", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
     @Operation(summary = "删除岗位",operationId = "SysPost_remove")
@@ -130,14 +130,14 @@ public class SysPostController extends BaseController {
     /**
      * 查询已分配用户岗位列表
      */
-    @SaCheckPermission("system:sysPost:list")
+    @SaCheckPermission("system:post:list")
     @GetMapping("/allocatedList")
     @Operation(summary = "获取岗位已分配用户列表",operationId = "postAllocatedUserList")
     public TableDataInfo<SysUserVo> allocatedUserList(SysUserBo bo, PageQuery pageQuery) {
         return sysPostService.selectAllocatedUserList(bo, pageQuery);
     }
 
-    @SaCheckPermission("system:sysPost:query")
+    @SaCheckPermission("system:post:query")
     @GetMapping("/byUser/{userId}")
     @Operation(summary = "获取用户岗位详细信息",operationId = "SysPost_getByUserId")
     public R<List<SysPostVo>> getByUserId(@NotNull(message = "主键不能为空")
@@ -145,7 +145,7 @@ public class SysPostController extends BaseController {
         return R.ok(sysPostService.queryByUserId(userId));
     }
 
-    @SaCheckPermission("system:sysPost:query")
+    @SaCheckPermission("system:post:query")
     @GetMapping("/dept/{deptId}")
     @Operation(summary = "根据部门获取岗位",operationId = "SysPost_getByDeptId")
     public R<List<SysPostVo>> getByDeptId(@NotNull(message = "主键不能为空")
@@ -159,7 +159,7 @@ public class SysPostController extends BaseController {
      * @param postId  用户Id
      * @param roleIds 角色ID串
      */
-    @SaCheckPermission("system:sysPost:edit")
+    @SaCheckPermission("system:post:edit")
     @Log(title = "岗位管理", businessType = BusinessType.GRANT)
     @PutMapping("/insertPostRole")
     @Operation(summary = "岗位授权角色",operationId = "sysPost_insertPostRole")

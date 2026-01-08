@@ -1,9 +1,13 @@
 package com.yuan.common.web.config;
 
 
+import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.router.SaRouter;
+import cn.dev33.satoken.stp.StpUtil;
+import com.yuan.common.core.utils.SpringUtils;
+import com.yuan.common.web.handler.AllUrlHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -21,7 +25,26 @@ public class ResourcesConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
+// 注册路由拦截器，自定义验证规则
+        registry.addInterceptor(new SaInterceptor(handler -> {
+                    AllUrlHandler allUrlHandler = SpringUtils.getBean(AllUrlHandler.class);
+                    // 登录验证 -- 排除多个路径
+                    // 检查是否登录 是否有token
+                    SaRouter
+                            // 获取所有的
+                            .match(allUrlHandler.getUrls())
+                            .notMatch(
+                                    "/auth/login",
+                                    "/auth/logout",
+                                    "/swagger-ui/**",
+                                    "/v3/api-docs/**",
+                                    "/doc.html/**"
+                            )
+                            // 对未排除的路径进行检查
+                            .check(StpUtil::checkLogin);
+                })).addPathPatterns("/**")
+                // 排除不需要拦截的路径
+                .excludePathPatterns();
     }
 
     @Override

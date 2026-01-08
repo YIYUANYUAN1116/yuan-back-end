@@ -120,6 +120,7 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         WfBizRef ref = new WfBizRef();
         ref.setBizType(cmd.getBizType());
         ref.setBizId(cmd.getBizId());
+
         ref.setInstanceId(instanceId);
         ref.setStatus(InstanceStatus.RUNNING.getCode());
         ref.setCreateBy(cmd.getStarterUserId());

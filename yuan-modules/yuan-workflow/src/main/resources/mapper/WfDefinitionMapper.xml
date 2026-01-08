@@ -7,7 +7,7 @@
     <select id="selectLatestPublished" resultType="com.yuan.workflow.domain.WfDefinition">
         select wfd.*
         from wf_definition wfd
-        where wfd.tenant_id = #{tenantId} and wfd.process_key = #{processKey}
+        where wfd.tenant_id = #{tenantId} and wfd.definition_key = #{definitionKey}
         order by wfd.version desc
         limit 1
     </select>

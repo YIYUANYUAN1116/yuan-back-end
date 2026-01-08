@@ -1,11 +1,8 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.api.cmd.RejectTaskCmd;
-import com.yuan.workflow.api.enums.InstanceStatus;
-import com.yuan.workflow.api.enums.NodeStatus;
 import com.yuan.workflow.api.enums.TaskAction;
 import com.yuan.workflow.api.enums.TaskStatus;
-import com.yuan.workflow.api.enums.WfEndReason;
 import com.yuan.workflow.api.event.WfEventContext;
 import com.yuan.workflow.api.event.WfEventFactory;
 import com.yuan.workflow.core.engine.support.InstanceLifecycle;
@@ -23,9 +20,9 @@ import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.mapper.WfTaskMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -43,6 +40,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
     private final InstanceLifecycle instanceLifecycle;
 
     @Override
+    @Transactional
     public Void handle(RejectTaskCmd cmd) {
         Long operatorId = cmd.getOperatorUserId();
 

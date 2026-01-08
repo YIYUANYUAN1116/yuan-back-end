@@ -56,7 +56,7 @@ public class WfInstanceController extends BaseController {
 /**
  * 查询wfi列表
  */
-@SaCheckPermission("system:wfInstance:list")
+@SaCheckPermission("workflow:wfInstance:list")
 @GetMapping("/list")
 @Operation(summary = "查询wfi列表",operationId = "WfInstance_list")
     public TableDataInfo<WfInstanceVo> list(WfInstanceBo bo, PageQuery pageQuery) {
@@ -66,7 +66,7 @@ public class WfInstanceController extends BaseController {
     /**
      * 导出wfi列表
      */
-    @SaCheckPermission("system:wfInstance:export")
+    @SaCheckPermission("workflow:wfInstance:export")
     @Log(title = "流程实例", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfi列表",operationId = "WfInstance_export")
@@ -80,7 +80,7 @@ public class WfInstanceController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfInstance:query")
+    @SaCheckPermission("workflow:wfInstance:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wfi详细信息",operationId = "WfInstance_getInfo")
     public R<WfInstanceVo> getInfo(@NotNull(message = "主键不能为空")
@@ -91,7 +91,7 @@ public class WfInstanceController extends BaseController {
     /**
      * 新增wfi
      */
-    @SaCheckPermission("system:wfInstance:add")
+    @SaCheckPermission("workflow:wfInstance:add")
     @Log(title = "流程实例", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -103,7 +103,7 @@ public class WfInstanceController extends BaseController {
     /**
      * 修改wfi
      */
-    @SaCheckPermission("system:wfInstance:edit")
+    @SaCheckPermission("workflow:wfInstance:edit")
     @Log(title = "流程实例", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -117,7 +117,7 @@ public class WfInstanceController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfInstance:remove")
+    @SaCheckPermission("workflow:wfInstance:remove")
     @Log(title = "流程实例", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfi",operationId = "WfInstance_remove")

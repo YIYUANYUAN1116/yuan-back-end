@@ -51,7 +51,7 @@ public class SysUserPostController extends BaseController {
 /**
  * 查询post-user列表
  */
-@SaCheckPermission("system:sysUserPost:list")
+@SaCheckPermission("system:userpost:list")
 @GetMapping("/list")
 @Operation(summary = "查询post-user列表",operationId = "SysUserPost_list")
     public TableDataInfo<SysUserPostVo> list(SysUserPostBo bo, PageQuery pageQuery) {
@@ -61,7 +61,7 @@ public class SysUserPostController extends BaseController {
     /**
      * 导出post-user列表
      */
-    @SaCheckPermission("system:sysUserPost:export")
+    @SaCheckPermission("system:userpost:export")
     @Log(title = "post-user", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出post-user列表",operationId = "SysUserPost_export")
@@ -75,7 +75,7 @@ public class SysUserPostController extends BaseController {
      *
      * @param postId 主键
      */
-    @SaCheckPermission("system:sysUserPost:query")
+    @SaCheckPermission("system:userpost:query")
     @GetMapping("/{postId}")
     @Operation(summary = "获取post-user详细信息",operationId = "SysUserPost_getInfo")
     public R<SysUserPostVo> getInfo(@NotNull(message = "主键不能为空")
@@ -86,7 +86,7 @@ public class SysUserPostController extends BaseController {
     /**
      * 新增post-user
      */
-    @SaCheckPermission("system:sysUserPost:add")
+    @SaCheckPermission("system:userpost:add")
     @Log(title = "post-user", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -98,7 +98,7 @@ public class SysUserPostController extends BaseController {
     /**
      * 修改post-user
      */
-    @SaCheckPermission("system:sysUserPost:edit")
+    @SaCheckPermission("system:userpost:edit")
     @Log(title = "post-user", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -112,7 +112,7 @@ public class SysUserPostController extends BaseController {
      *
      * @param postIds 主键串
      */
-    @SaCheckPermission("system:sysUserPost:remove")
+    @SaCheckPermission("system:userpost:remove")
     @Log(title = "post-user", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
     @Operation(summary = "删除post-user",operationId = "SysUserPost_remove")

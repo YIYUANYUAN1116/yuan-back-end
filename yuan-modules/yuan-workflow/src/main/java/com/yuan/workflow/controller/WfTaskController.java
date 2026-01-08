@@ -55,7 +55,7 @@ public class WfTaskController extends BaseController {
 /**
  * 查询wft列表
  */
-@SaCheckPermission("system:wfTask:list")
+@SaCheckPermission("workflow:wfTask:list")
 @GetMapping("/list")
 @Operation(summary = "查询wft列表",operationId = "WfTask_list")
     public TableDataInfo<WfTaskVo> list(WfTaskBo bo, PageQuery pageQuery) {
@@ -65,7 +65,7 @@ public class WfTaskController extends BaseController {
     /**
      * 导出wft列表
      */
-    @SaCheckPermission("system:wfTask:export")
+    @SaCheckPermission("workflow:wfTask:export")
     @Log(title = "流程任务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wft列表",operationId = "WfTask_export")
@@ -79,7 +79,7 @@ public class WfTaskController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfTask:query")
+    @SaCheckPermission("workflow:wfTask:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wft详细信息",operationId = "WfTask_getInfo")
     public R<WfTaskVo> getInfo(@NotNull(message = "主键不能为空")
@@ -90,7 +90,7 @@ public class WfTaskController extends BaseController {
     /**
      * 新增wft
      */
-    @SaCheckPermission("system:wfTask:add")
+    @SaCheckPermission("workflow:wfTask:add")
     @Log(title = "流程任务", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -102,7 +102,7 @@ public class WfTaskController extends BaseController {
     /**
      * 修改wft
      */
-    @SaCheckPermission("system:wfTask:edit")
+    @SaCheckPermission("workflow:wfTask:edit")
     @Log(title = "流程任务", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -116,7 +116,7 @@ public class WfTaskController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfTask:remove")
+    @SaCheckPermission("workflow:wfTask:remove")
     @Log(title = "流程任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wft",operationId = "WfTask_remove")
@@ -128,7 +128,7 @@ public class WfTaskController extends BaseController {
 
     @PostMapping("/approve")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
-    @Operation(summary = "流程发起",operationId = "WfInstance_start")
+    @Operation(summary = "审批通过",operationId = "WfTask_approve")
     public R<Long> start(@RequestBody ApproveTaskCmd cmd) {
         workflowService.approveTask(cmd);
         return R.ok();

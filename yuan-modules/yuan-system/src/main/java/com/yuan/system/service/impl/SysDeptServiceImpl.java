@@ -133,22 +133,19 @@ public class SysDeptServiceImpl implements SysDeptService {
 
         // 2. 查询所有菜单
 //        List<SysDeptVo> allDepts = baseMapper.selectVoList();
-        List<SysDeptVo> allDepts = baseMapper.selectDeptList(new QueryWrapper<>());
-
+        List<SysDeptVo> allDepts = baseMapper.selectDeptList(buildQueryWrapper(new SysDeptBo()));
         List<SysDeptVo> resultDept = null;
-        if (!Objects.equals(allDepts.size(), matchedDepts.size())) {
-            // 3. 构建子菜单集合（只保留匹配的菜单及其子菜单）
-            Set<Long> includedIds = new HashSet<>();
-            for (SysDeptVo sysDept : matchedDepts) {
-                collectChildren(sysDept.getDeptId(), allDepts, includedIds);
-            }
 
-            resultDept = allDepts.stream()
-                    .filter(m -> includedIds.contains(m.getDeptId()))
-                    .collect(Collectors.toList());
+        // 3. 构建子菜单集合（只保留匹配的菜单及其子菜单）
+        Set<Long> includedIds = new HashSet<>();
+        for (SysDeptVo sysDept : matchedDepts) {
+            collectChildren(sysDept.getDeptId(), allDepts, includedIds);
         }
 
-        resultDept = resultDept == null ? matchedDepts : resultDept;
+        resultDept = allDepts.stream()
+                .filter(m -> includedIds.contains(m.getDeptId()))
+                .collect(Collectors.toList());
+
         // 构建树
         return CommonTreeUtils.buildTree(
                 resultDept,

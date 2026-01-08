@@ -45,7 +45,7 @@ public class WfTaskLogController extends BaseController {
 /**
  * 查询wftl列表
  */
-@SaCheckPermission("system:wfTaskLog:list")
+@SaCheckPermission("workflow:wfTaskLog:list")
 @GetMapping("/list")
 @Operation(summary = "查询wftl列表",operationId = "WfTaskLog_list")
     public TableDataInfo<WfTaskLogVo> list(WfTaskLogBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class WfTaskLogController extends BaseController {
     /**
      * 导出wftl列表
      */
-    @SaCheckPermission("system:wfTaskLog:export")
+    @SaCheckPermission("workflow:wfTaskLog:export")
     @Log(title = "流程任务日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wftl列表",operationId = "WfTaskLog_export")
@@ -69,7 +69,7 @@ public class WfTaskLogController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfTaskLog:query")
+    @SaCheckPermission("workflow:wfTaskLog:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wftl详细信息",operationId = "WfTaskLog_getInfo")
     public R<WfTaskLogVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class WfTaskLogController extends BaseController {
     /**
      * 新增wftl
      */
-    @SaCheckPermission("system:wfTaskLog:add")
+    @SaCheckPermission("workflow:wfTaskLog:add")
     @Log(title = "流程任务日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class WfTaskLogController extends BaseController {
     /**
      * 修改wftl
      */
-    @SaCheckPermission("system:wfTaskLog:edit")
+    @SaCheckPermission("workflow:wfTaskLog:edit")
     @Log(title = "流程任务日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class WfTaskLogController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfTaskLog:remove")
+    @SaCheckPermission("workflow:wfTaskLog:remove")
     @Log(title = "流程任务日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wftl",operationId = "WfTaskLog_remove")

@@ -48,7 +48,7 @@ public class SysRoleController extends BaseController {
     /**
      * 查询角色列表
      */
-    @SaCheckPermission("system:sysRole:list")
+    @SaCheckPermission("system:role:list")
     @GetMapping("/list")
     @Operation(summary = "查询角色列表",operationId = "sysRole_list")
     public TableDataInfo<SysRoleVo> list(SysRoleBo bo, PageQuery pageQuery) {
@@ -58,7 +58,7 @@ public class SysRoleController extends BaseController {
     /**
      * 导出角色列表
      */
-    @SaCheckPermission("system:sysRole:export")
+    @SaCheckPermission("system:role:export")
     @Log(title = "角色", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出角色列表",operationId = "sysRole_export")
@@ -72,7 +72,7 @@ public class SysRoleController extends BaseController {
      *
      * @param roleId 主键
      */
-    @SaCheckPermission("system:sysRole:query")
+    @SaCheckPermission("system:role:query")
     @GetMapping("/{roleId}")
     @Operation(summary = "获取角色详细信息",operationId = "sysRole_getInfo")
     public R<SysRoleVo> getInfo(@NotNull(message = "主键不能为空")
@@ -83,7 +83,7 @@ public class SysRoleController extends BaseController {
     /**
      * 新增角色
      */
-    @SaCheckPermission("system:sysRole:add")
+    @SaCheckPermission("system:role:add")
     @Log(title = "角色", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -100,7 +100,7 @@ public class SysRoleController extends BaseController {
     /**
      * 修改角色
      */
-    @SaCheckPermission("system:sysRole:edit")
+    @SaCheckPermission("system:role:edit")
     @Log(title = "角色", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -119,7 +119,7 @@ public class SysRoleController extends BaseController {
      *
      * @param roleIds 主键串
      */
-    @SaCheckPermission("system:sysRole:remove")
+    @SaCheckPermission("system:role:remove")
     @Log(title = "角色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{roleIds}")
     @Operation(summary = "删除角色",operationId = "sysRole_remove")

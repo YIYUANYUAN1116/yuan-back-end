@@ -45,7 +45,7 @@ public class SysLogininforController extends BaseController {
 /**
  * 查询loginlog列表
  */
-@SaCheckPermission("system:sysLogininfor:list")
+@SaCheckPermission("system:loginfor:list")
 @GetMapping("/list")
 @Operation(summary = "查询loginlog列表",operationId = "SysLogininfor_list")
     public TableDataInfo<SysLogininforVo> list(SysLogininforBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class SysLogininforController extends BaseController {
     /**
      * 导出loginlog列表
      */
-    @SaCheckPermission("system:sysLogininfor:export")
+    @SaCheckPermission("system:loginfor:export")
     @Log(title = "登录日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出loginlog列表",operationId = "SysLogininfor_export")
@@ -69,7 +69,7 @@ public class SysLogininforController extends BaseController {
      *
      * @param infoId 主键
      */
-    @SaCheckPermission("system:sysLogininfor:query")
+    @SaCheckPermission("system:loginfor:query")
     @GetMapping("/{infoId}")
     @Operation(summary = "获取loginlog详细信息",operationId = "SysLogininfor_getInfo")
     public R<SysLogininforVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class SysLogininforController extends BaseController {
     /**
      * 新增loginlog
      */
-    @SaCheckPermission("system:sysLogininfor:add")
+    @SaCheckPermission("system:loginfor:add")
     @Log(title = "登录日志", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class SysLogininforController extends BaseController {
     /**
      * 修改loginlog
      */
-    @SaCheckPermission("system:sysLogininfor:edit")
+    @SaCheckPermission("system:loginfor:edit")
     @Log(title = "登录日志", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class SysLogininforController extends BaseController {
      *
      * @param infoIds 主键串
      */
-    @SaCheckPermission("system:sysLogininfor:remove")
+    @SaCheckPermission("system:loginfor:remove")
     @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
     @Operation(summary = "删除loginlog",operationId = "SysLogininfor_remove")

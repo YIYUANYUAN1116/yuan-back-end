@@ -16,11 +16,11 @@
     <update id="cancelOtherTodoTasks">
         UPDATE wf_task
         SET
-            status = #{canceledStatus},
+            status = #{status},
             finish_time = NOW()
         WHERE node_instance_id = #{nodeInstanceId}
           AND id != #{keepTaskId}
-          AND status = #{todoStatus}
+          AND status = 'TODO';
     </update>
     <select id="countTodoByNode" resultType="java.lang.Integer">
 

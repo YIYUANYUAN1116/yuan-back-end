@@ -52,7 +52,7 @@ public class SysMenuController extends BaseController {
     /**
      * 查询菜单列表
      */
-    @SaCheckPermission("system:sysMenu:list")
+    @SaCheckPermission("system:menu:list")
     @GetMapping("/list")
     @Operation(summary = "查询菜单列表", operationId = "sysMenu_list")
     public TableDataInfo<SysMenuVo> list(SysMenuBo bo, PageQuery pageQuery) {
@@ -62,7 +62,7 @@ public class SysMenuController extends BaseController {
     /**
      * 导出菜单列表
      */
-    @SaCheckPermission("system:sysMenu:export")
+    @SaCheckPermission("system:menu:export")
     @Log(title = "菜单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出菜单列表", operationId = "sysMenu_export")
@@ -76,7 +76,7 @@ public class SysMenuController extends BaseController {
      *
      * @param menuId 主键
      */
-    @SaCheckPermission("system:sysMenu:query")
+    @SaCheckPermission("system:menu:query")
     @GetMapping("/{menuId}")
     @Operation(summary = "获取菜单详细信息", operationId = "sysMenu_getInfo")
     public R<SysMenuVo> getInfo(@NotNull(message = "主键不能为空")
@@ -87,7 +87,7 @@ public class SysMenuController extends BaseController {
     /**
      * 新增菜单
      */
-    @SaCheckPermission("system:sysMenu:add")
+    @SaCheckPermission("system:menu:add")
     @Log(title = "菜单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -99,7 +99,7 @@ public class SysMenuController extends BaseController {
     /**
      * 修改菜单
      */
-    @SaCheckPermission("system:sysMenu:edit")
+    @SaCheckPermission("system:menu:edit")
     @Log(title = "菜单", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -113,7 +113,7 @@ public class SysMenuController extends BaseController {
      *
      * @param menuIds 主键串
      */
-    @SaCheckPermission("system:sysMenu:remove")
+    @SaCheckPermission("system:menu:remove")
     @Log(title = "菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{menuIds}")
     @Operation(summary = "删除菜单", operationId = "sysMenu_remove")
@@ -158,7 +158,7 @@ public class SysMenuController extends BaseController {
     /**
      * 查询树型菜单列表
      */
-    @SaCheckPermission("system:sysMenu:list")
+    @SaCheckPermission("system:menu:list")
     @GetMapping("/listTree")
     @Operation(summary = "查询树型菜单列表", operationId = "sysMenu_listTree")
     public TableDataInfo<SysMenuVo> listTree(SysMenuBo bo) {

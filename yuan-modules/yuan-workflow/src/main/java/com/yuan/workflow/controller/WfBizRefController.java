@@ -36,7 +36,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/wfBizRef")
+@RequestMapping("/workflow/wfBizRef")
 @Tag(name = "WfBizRefController",description = "wfref")
 public class WfBizRefController extends BaseController {
 
@@ -45,7 +45,7 @@ public class WfBizRefController extends BaseController {
 /**
  * 查询wfref列表
  */
-@SaCheckPermission("system:wfBizRef:list")
+@SaCheckPermission("workflow:wfBizRef:list")
 @GetMapping("/list")
 @Operation(summary = "查询wfref列表",operationId = "WfBizRef_list")
     public TableDataInfo<WfBizRefVo> list(WfBizRefBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class WfBizRefController extends BaseController {
     /**
      * 导出wfref列表
      */
-    @SaCheckPermission("system:wfBizRef:export")
+    @SaCheckPermission("workflow:wfBizRef:export")
     @Log(title = "流程业务关联", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfref列表",operationId = "WfBizRef_export")
@@ -69,7 +69,7 @@ public class WfBizRefController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfBizRef:query")
+    @SaCheckPermission("workflow:wfBizRef:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wfref详细信息",operationId = "WfBizRef_getInfo")
     public R<WfBizRefVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class WfBizRefController extends BaseController {
     /**
      * 新增wfref
      */
-    @SaCheckPermission("system:wfBizRef:add")
+    @SaCheckPermission("workflow:wfBizRef:add")
     @Log(title = "流程业务关联", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class WfBizRefController extends BaseController {
     /**
      * 修改wfref
      */
-    @SaCheckPermission("system:wfBizRef:edit")
+    @SaCheckPermission("workflow:wfBizRef:edit")
     @Log(title = "流程业务关联", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class WfBizRefController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfBizRef:remove")
+    @SaCheckPermission("workflow:wfBizRef:remove")
     @Log(title = "流程业务关联", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfref",operationId = "WfBizRef_remove")

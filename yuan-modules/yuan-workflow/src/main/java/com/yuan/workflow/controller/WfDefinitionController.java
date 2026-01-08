@@ -1,5 +1,6 @@
 package com.yuan.workflow.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.validate.AddGroup;
@@ -40,6 +41,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/workflow/wfDefinition")
 @Tag(name = "WfDefinitionController",description = "wfd")
+@SaCheckLogin
 public class WfDefinitionController extends BaseController {
 
     private final WfDefinitionService wfDefinitionService;
@@ -47,7 +49,7 @@ public class WfDefinitionController extends BaseController {
 /**
  * 查询wfd列表
  */
-@SaCheckPermission("system:wfDefinition:list")
+@SaCheckPermission("workflow:wfDefinition:list")
 @GetMapping("/list")
 @Operation(summary = "查询wfd列表",operationId = "WfDefinition_list")
     public TableDataInfo<WfDefinitionVo> list(WfDefinitionBo bo, PageQuery pageQuery) {
@@ -57,7 +59,7 @@ public class WfDefinitionController extends BaseController {
     /**
      * 导出wfd列表
      */
-    @SaCheckPermission("system:wfDefinition:export")
+    @SaCheckPermission("workflow:wfDefinition:export")
     @Log(title = "流程定义", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出wfd列表",operationId = "WfDefinition_export")
@@ -71,7 +73,7 @@ public class WfDefinitionController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:wfDefinition:query")
+    @SaCheckPermission("workflow:wfDefinition:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取wfd详细信息",operationId = "WfDefinition_getInfo")
     public R<WfDefinitionVo> getInfo(@NotNull(message = "主键不能为空")
@@ -82,7 +84,7 @@ public class WfDefinitionController extends BaseController {
     /**
      * 新增wfd
      */
-    @SaCheckPermission("system:wfDefinition:add")
+    @SaCheckPermission("workflow:wfDefinition:add")
     @Log(title = "流程定义", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -94,7 +96,7 @@ public class WfDefinitionController extends BaseController {
     /**
      * 修改wfd
      */
-    @SaCheckPermission("system:wfDefinition:edit")
+    @SaCheckPermission("workflow:wfDefinition:edit")
     @Log(title = "流程定义", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -108,7 +110,7 @@ public class WfDefinitionController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:wfDefinition:remove")
+    @SaCheckPermission("workflow:wfDefinition:remove")
     @Log(title = "流程定义", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除wfd",operationId = "WfDefinition_remove")
@@ -121,7 +123,7 @@ public class WfDefinitionController extends BaseController {
     /**
      * 修改wfd
      */
-    @SaCheckPermission("system:wfDefinition:edit")
+    @SaCheckPermission("workflow:wfDefinition:edit")
     @Log(title = "流程定义", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping("/dto")
@@ -133,7 +135,7 @@ public class WfDefinitionController extends BaseController {
     /**
      * 修改wfd
      */
-    @SaCheckPermission("system:wfDefinition:edit")
+    @SaCheckPermission("workflow:wfDefinition:edit")
     @Log(title = "流程定义", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/{id}/{action}")

@@ -114,6 +114,11 @@ public class GlobalExceptionHandler {
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
         return R.fail(e.getDefaultMessage());
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public R<Void> handleIllegalArgument(IllegalArgumentException e) {
+        log.warn("参数或状态非法: {}", e.getMessage());
+        return R.fail(HttpStatus.HTTP_BAD_REQUEST, e.getMessage());
+    }
 
     /**
      * 拦截未知的运行时异常
@@ -123,6 +128,11 @@ public class GlobalExceptionHandler {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
         return R.fail(e.getMessage());
+    }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public R<Void> handleNoResourceFound(Exception e) {
+        return R.warn(e.getMessage());
     }
 
     /**

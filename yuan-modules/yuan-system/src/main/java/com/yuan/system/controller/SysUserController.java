@@ -57,7 +57,7 @@ public class SysUserController extends BaseController {
     /**
      * 查询用户列表
      */
-    @SaCheckPermission("system:sysUser:list")
+    @SaCheckPermission("system:user:list")
     @GetMapping("/list")
     @Operation(summary = "查询用户列表",operationId = "sysUser_list")
     public TableDataInfo<SysUserVo> list(SysUserBo bo, PageQuery pageQuery) {
@@ -67,7 +67,7 @@ public class SysUserController extends BaseController {
     /**
      * 导出用户列表
      */
-    @SaCheckPermission("system:sysUser:export")
+    @SaCheckPermission("system:user:export")
     @Log(title = "用户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出用户列表",operationId = "sysUser_export")
@@ -81,7 +81,7 @@ public class SysUserController extends BaseController {
      *
      * @param userId 主键
      */
-    @SaCheckPermission("system:sysUser:query")
+    @SaCheckPermission("system:user:query")
     @GetMapping("/{userId}")
     @Operation(summary = "获取用户详细信息",operationId = "sysUser_getInfo")
     public R<SysUserInfoVo> getInfo(@NotNull(message = "主键不能为空")
@@ -101,7 +101,7 @@ public class SysUserController extends BaseController {
     /**
      * 新增用户
      */
-    @SaCheckPermission("system:sysUser:add")
+    @SaCheckPermission("system:user:add")
     @Log(title = "用户", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -129,7 +129,7 @@ public class SysUserController extends BaseController {
     /**
      * 修改用户
      */
-    @SaCheckPermission("system:sysUser:edit")
+    @SaCheckPermission("system:user:edit")
     @Log(title = "用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -150,7 +150,7 @@ public class SysUserController extends BaseController {
      *
      * @param userIds 主键串
      */
-    @SaCheckPermission("system:sysUser:remove")
+    @SaCheckPermission("system:user:remove")
     @Log(title = "用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
     @Operation(summary = "删除用户",operationId = "sysUser_remove")

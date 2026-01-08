@@ -33,6 +33,7 @@ public class WfBizRefVo implements Serializable {
      */
     @ExcelProperty(value = "业务主键")
     private String bizId;
+    private String tenantId;
     /**
      * 流程实例ID
      */

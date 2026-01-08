@@ -24,6 +24,8 @@ public class WfBizRefBo implements Serializable {
 
     private Long id;
 
+    private String tenantId;
+
     /**
      * 业务类型，如 LEAVE/REIMBURSE
      */

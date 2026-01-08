@@ -40,10 +40,7 @@ public class WfInstanceBo implements Serializable {
      * 流程版本
      */
     private Integer version;
-    /**
-     * 业务单号(请假单ID等)
-     */
-    private String businessKey;
+
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
      */

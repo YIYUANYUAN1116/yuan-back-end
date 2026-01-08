@@ -45,7 +45,7 @@ public class SysTenantController extends BaseController {
 /**
  * 查询多租户列表
  */
-@SaCheckPermission("system:sysTenant:list")
+@SaCheckPermission("system:tenant:list")
 @GetMapping("/list")
 @Operation(summary = "查询多租户列表",operationId = "sysTenant_list")
     public TableDataInfo<SysTenantVo> list(SysTenantBo bo, PageQuery pageQuery) {
@@ -55,7 +55,7 @@ public class SysTenantController extends BaseController {
     /**
      * 导出多租户列表
      */
-    @SaCheckPermission("system:sysTenant:export")
+    @SaCheckPermission("system:tenant:export")
     @Log(title = "多租户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @Operation(summary = "导出多租户列表",operationId = "sysTenant_export")
@@ -69,7 +69,7 @@ public class SysTenantController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:sysTenant:query")
+    @SaCheckPermission("system:tenant:query")
     @GetMapping("/{id}")
     @Operation(summary = "获取多租户详细信息",operationId = "sysTenant_getInfo")
     public R<SysTenantVo> getInfo(@NotNull(message = "主键不能为空")
@@ -80,7 +80,7 @@ public class SysTenantController extends BaseController {
     /**
      * 新增多租户
      */
-    @SaCheckPermission("system:sysTenant:add")
+    @SaCheckPermission("system:tenant:add")
     @Log(title = "多租户", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -92,7 +92,7 @@ public class SysTenantController extends BaseController {
     /**
      * 修改多租户
      */
-    @SaCheckPermission("system:sysTenant:edit")
+    @SaCheckPermission("system:tenant:edit")
     @Log(title = "多租户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -106,7 +106,7 @@ public class SysTenantController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:sysTenant:remove")
+    @SaCheckPermission("system:tenant:remove")
     @Log(title = "多租户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除多租户",operationId = "sysTenant_remove")
