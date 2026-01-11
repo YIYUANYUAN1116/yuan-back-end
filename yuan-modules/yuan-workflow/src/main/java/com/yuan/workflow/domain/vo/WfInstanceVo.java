@@ -38,6 +38,7 @@ public class WfInstanceVo implements Serializable {
      */
     @ExcelProperty(value = "流程业务标识")
     private String definitionKey;
+
     /**
      * 流程版本
      */
@@ -52,8 +53,19 @@ public class WfInstanceVo implements Serializable {
     /**
      * 发起人
      */
-    @ExcelProperty(value = "发起人")
+    @ExcelProperty(value = "发起人Id")
     private Long startUserId;
+    @ExcelProperty(value = "发起人")
+    private String startUserName;
+
+    @ExcelProperty(value = "发起人部门Id")
+    private Long startDeptId;
+    @ExcelProperty(value = "发起人部门")
+    private String startDeptName;
+    @ExcelProperty(value = "操作人Id")
+    private Long operatorUserId;
+    @ExcelProperty(value = "操作人")
+    private String operatorUserName;
     /**
      * startTime
      */
@@ -65,6 +77,9 @@ public class WfInstanceVo implements Serializable {
     @ExcelProperty(value = "结束时间")
     private LocalDateTime endTime;
 
+    private String bizType;
+    private String definitionName;
+    private String bizNo;
     private String variables;
 
 }

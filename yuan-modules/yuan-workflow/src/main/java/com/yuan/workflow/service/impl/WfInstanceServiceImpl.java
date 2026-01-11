@@ -1,6 +1,6 @@
 package com.yuan.workflow.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
@@ -11,12 +11,12 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.api.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfDefinition;
-import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfInstanceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * wfiService业务层处理
  *
- 
  * @date Sun Dec 28 11:26:34 CST 2025
  */
 @RequiredArgsConstructor
@@ -42,36 +41,41 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         return baseMapper.selectVoById(id);
     }
 
-        /**
-         * 查询wfi列表
-         */
-        @Override
-        public TableDataInfo<WfInstanceVo> queryPageList(WfInstanceBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
-            Page<WfInstanceVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-            return TableDataInfo.build(result);
-        }
+    /**
+     * 查询wfi列表
+     */
+    @Override
+    public TableDataInfo<WfInstanceVo> queryPageList(WfInstanceBo bo, PageQuery pageQuery) {
+        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
+        Page<WfInstanceVo> result = baseMapper.selectWfInstanceVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
 
     /**
      * 查询wfi列表
      */
     @Override
     public List<WfInstanceVo> queryList(WfInstanceBo bo) {
-        LambdaQueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
+        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<WfInstance> buildQueryWrapper(WfInstanceBo bo) {
-        LambdaQueryWrapper<WfInstance> lqw = Wrappers.lambdaQuery();
-                    lqw.eq(bo.getId() != null, WfInstance::getId, bo.getId());
-                    lqw.eq(bo.getTenantId() != null, WfInstance::getTenantId, bo.getTenantId());
-                    lqw.eq(bo.getDefinitionId() != null, WfInstance::getDefinitionId, bo.getDefinitionId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDefinitionKey()), WfInstance::getDefinitionKey, bo.getDefinitionKey());
-                    lqw.eq(bo.getVersion() != null, WfInstance::getVersion, bo.getVersion());
-                    lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfInstance::getStatus, bo.getStatus());
-                    lqw.eq(bo.getStartUserId() != null, WfInstance::getStartUserId, bo.getStartUserId());
-                    lqw.eq(bo.getStartTime() != null, WfInstance::getStartTime, bo.getStartTime());
-                    lqw.eq(bo.getEndTime() != null, WfInstance::getEndTime, bo.getEndTime());
+    private QueryWrapper<WfInstance> buildQueryWrapper(WfInstanceBo bo) {
+        QueryWrapper<WfInstance> lqw = Wrappers.query();
+                lqw.eq(bo.getId() != null, "wi.id", bo.getId());
+                lqw.eq(bo.getTenantId() != null, "wi.tenant_id", bo.getTenantId());
+                lqw.eq(bo.getDefinitionId() != null, "wi.definition_id", bo.getDefinitionId());
+                lqw.like(StringUtils.isNotBlank(bo.getDefinitionKey()), "wi.definition_key", bo.getDefinitionKey());
+                lqw.eq(bo.getVersion() != null, "wi.version", bo.getVersion());
+                lqw.eq(StringUtils.isNotBlank(bo.getStatus()), "wi.status", bo.getStatus());
+                lqw.eq(bo.getStartUserId() != null, "wi.start_user_id", bo.getStartUserId());
+                lqw.like(StringUtils.isNotBlank(bo.getStartUserName()), "wi.start_user_name", bo.getStartUserName());
+                lqw.like(StringUtils.isNotBlank(bo.getStartDeptName()), "wi.start_dept_name", bo.getStartDeptName());
+                lqw.eq(bo.getStartTime() != null, "wi.start_time", bo.getStartTime());
+                lqw.eq(bo.getEndTime() != null, "wi.end_time", bo.getEndTime());
+                lqw.like(StringUtils.isNotBlank(bo.getBizNo()), "wr.biz_no", bo.getBizNo());
+                lqw.eq(StringUtils.isNotBlank(bo.getBizType()), "wr.biz_type", bo.getBizType());
+                lqw.like(StringUtils.isNotBlank(bo.getDefinitionName()), "wi.definition_name", bo.getDefinitionName());
         return lqw;
     }
 
@@ -80,7 +84,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
      */
     @Override
     public Boolean insertByBo(WfInstanceBo bo) {
-        WfInstance add = MapstructUtils.convert(bo, WfInstance. class);
+        WfInstance add = MapstructUtils.convert(bo, WfInstance.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -94,7 +98,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
      */
     @Override
     public Boolean updateByBo(WfInstanceBo bo) {
-        WfInstance update = MapstructUtils.convert(bo, WfInstance. class);
+        WfInstance update = MapstructUtils.convert(bo, WfInstance.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
@@ -126,6 +130,12 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setVersion(def.getVersion());
         instance.setStatus(InstanceStatus.RUNNING.getCode());
         instance.setStartUserId(cmd.getStarterUserId());
+        instance.setStartUserName(cmd.getStarterUserName());
+        instance.setOperatorUserId(cmd.getOperatorUserId());
+        instance.setOperatorUserName(cmd.getOperatorUserName());
+        instance.setStartDeptId(cmd.getStarterDeptId());
+        instance.setStartDeptName(cmd.getStarterDeptName());
+        instance.setDefinitionName(def.getDefinitionName());
         instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
         baseMapper.insert(instance);
         return instance;

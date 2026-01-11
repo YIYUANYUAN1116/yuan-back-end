@@ -1,4 +1,4 @@
-package com.yuan.workflow.domain.bo;
+package com.yuan.workflow.domain.dto;
 
 import lombok.Data;
 

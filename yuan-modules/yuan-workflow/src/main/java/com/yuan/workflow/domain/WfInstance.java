@@ -42,6 +42,8 @@ public class WfInstance extends TenantEntity {
      */
     private String definitionKey;
 
+    private String definitionName;
+
     /**
      * 流程版本
      */
@@ -50,6 +52,7 @@ public class WfInstance extends TenantEntity {
 
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
+     * @see com.yuan.workflow.api.enums.InstanceStatus
      */
     private String status;
 
@@ -57,6 +60,16 @@ public class WfInstance extends TenantEntity {
      * 发起人
      */
     private Long startUserId;
+
+    private String startUserName;
+
+    private Long startDeptId;
+
+    private String startDeptName;
+
+    private Long operatorUserId;
+
+    private String operatorUserName;
 
     /**
      * startTime

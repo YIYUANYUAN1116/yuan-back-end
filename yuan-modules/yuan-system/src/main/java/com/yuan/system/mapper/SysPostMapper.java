@@ -3,6 +3,7 @@ package com.yuan.system.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.system.domain.SysPost;
 import com.yuan.system.domain.SysUser;
 import com.yuan.system.domain.vo.SysPostVo;
@@ -33,4 +34,6 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
     List<SysPostVo> selectByUserId(@Param("userId") Long userId);
 
     List<SysPostVo> selectByDeptId(@Param("deptId") Long deptId);
+
+    List<SelectModel> sysPostSelect();
 }

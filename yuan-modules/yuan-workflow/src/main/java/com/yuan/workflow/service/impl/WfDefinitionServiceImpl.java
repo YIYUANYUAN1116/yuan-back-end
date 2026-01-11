@@ -12,7 +12,7 @@ import com.yuan.workflow.api.enums.DefinitionAction;
 import com.yuan.workflow.api.enums.DefinitionStatus;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
-import com.yuan.workflow.domain.bo.WfDefinitionDto;
+import com.yuan.workflow.domain.dto.WfDefinitionDto;
 import com.yuan.workflow.domain.vo.WfDefinitionVo;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.service.WfDefinitionService;
@@ -160,9 +160,9 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
      * @param current
      */
     private void disable(WfDefinition definition, DefinitionStatus current) {
-        if (current != DefinitionStatus.PUBLISHED) {
-            throw new BaseException("只有已发布流程才能停用");
-        }
+//        if (current != DefinitionStatus.PUBLISHED) {
+//            throw new BaseException("只有已发布流程才能停用");
+//        }
         // 校验流程合法性
         disableHandler(definition);
 
@@ -175,9 +175,9 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
      * @param current
      */
     private void publish(WfDefinition definition, DefinitionStatus current) {
-        if (current != DefinitionStatus.DRAFT) {
-            throw new BaseException("只有草稿状态才能发布");
-        }
+//        if (current != DefinitionStatus.DRAFT) {
+//            throw new BaseException("只有草稿状态才能发布");
+//        }
 
         // 校验流程合法性
         publishedHandler(definition);

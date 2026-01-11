@@ -10,6 +10,8 @@ public abstract class WorkflowCmd {
     /** 操作人（当前用户） */
     private Long operatorUserId;
 
+    private String operatorUserName;
+
     private String tenantId;
 
     /** 备注 / 审批意见 */

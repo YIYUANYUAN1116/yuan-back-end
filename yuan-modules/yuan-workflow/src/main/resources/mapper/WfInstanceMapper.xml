@@ -4,4 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.workflow.mapper.WfInstanceMapper">
 
+    <select id="selectWfInstanceVoPage" resultType="com.yuan.workflow.domain.vo.WfInstanceVo">
+        select wi.*,
+               wr.biz_type,
+               wr.biz_no
+        from wf_instance wi
+        left join wf_biz_ref wr on wr.instance_id = wi.id and  wr.ref_type = 'PRIMARY'
+            ${ew.getCustomSqlSegment}
+    </select>
 </mapper>

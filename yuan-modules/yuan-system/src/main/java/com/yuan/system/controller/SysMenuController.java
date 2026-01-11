@@ -129,7 +129,7 @@ public class SysMenuController extends BaseController {
             TenantConstants.SUPER_ADMIN_ROLE_KEY,
             TenantConstants.TENANT_ADMIN_ROLE_KEY
     }, mode = SaMode.OR)
-    @SaCheckPermission("system:menu:query")
+    @SaCheckPermission("system:menu:list")
     @GetMapping("/treeselect")
     @Operation(summary = "获取菜单下拉树列表", operationId = "sysMenu_treeselect")
     public R<TreeSelectVo> treeselect(SysMenuBo bo, @PathId Long roleId) {
@@ -144,7 +144,7 @@ public class SysMenuController extends BaseController {
             TenantConstants.SUPER_ADMIN_ROLE_KEY,
             TenantConstants.TENANT_ADMIN_ROLE_KEY
     }, mode = SaMode.OR)
-    @SaCheckPermission("system:menu:query")
+    @SaCheckPermission("system:menu:list")
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     @Operation(summary = "获取角色菜单树", operationId = "sysMenu_roleMenuTreeselect")
     public R<TreeSelectVo> roleMenuTreeselect(@PathVariable("roleId") @PathId Long roleId) {

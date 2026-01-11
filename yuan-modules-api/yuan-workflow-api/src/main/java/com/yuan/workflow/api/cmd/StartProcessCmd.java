@@ -11,7 +11,11 @@ public class StartProcessCmd extends WorkflowCmd{
     private String definitionKey;
     private String bizType;
     private Long bizId;
+    private String bizNo;
     /** 业务发起人（可选，代发场景用） */
     private Long starterUserId;
+    private String starterUserName;
+    private Long starterDeptId;
+    private String starterDeptName;
     private Map<String, Object> variables;
 }

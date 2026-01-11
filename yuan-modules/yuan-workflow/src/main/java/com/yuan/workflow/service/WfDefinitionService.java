@@ -4,7 +4,7 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.enums.DefinitionAction;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
-import com.yuan.workflow.domain.bo.WfDefinitionDto;
+import com.yuan.workflow.domain.dto.WfDefinitionDto;
 import com.yuan.workflow.domain.vo.WfDefinitionVo;
 
 import java.util.Collection;

@@ -10,14 +10,18 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class WfCmdFiller {
-  public void fill(WorkflowCmd cmd) {
-    LoginUser u = LoginHelper.getLoginUser();
-    cmd.setTenantId(u.getTenantId());
-    cmd.setOperatorUserId(u.getUserId());
-    if (cmd instanceof StartProcessCmd startProcessCmd) {
-        if (startProcessCmd.getStarterUserId() == null ){
-          startProcessCmd.setStarterUserId(u.getUserId());
+    public void fill(WorkflowCmd cmd) {
+        LoginUser u = LoginHelper.getLoginUser();
+        cmd.setTenantId(u.getTenantId());
+        cmd.setOperatorUserId(u.getUserId());
+        cmd.setOperatorUserName(u.getNickName());
+        if (cmd instanceof StartProcessCmd startProcessCmd) {
+            if (startProcessCmd.getStarterUserId() == null) {
+                startProcessCmd.setStarterUserId(u.getUserId());
+                startProcessCmd.setStarterUserName(u.getNickName());
+                startProcessCmd.setStarterDeptId(u.getDeptId());
+                startProcessCmd.setStarterDeptName(u.getDeptName());
+            }
         }
     }
-  }
 }

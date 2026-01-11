@@ -13,5 +13,8 @@ public class Expression {
     private ConditionOperator operator;
 
     /** 比较值（运行时解析） */
-    private Object value;
+    private String  value;
+
+    /** 预留：number/string/date/enum...（可空） */
+    private String valueType;
 }

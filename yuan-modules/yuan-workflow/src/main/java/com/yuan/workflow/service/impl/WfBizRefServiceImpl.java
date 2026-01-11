@@ -112,7 +112,7 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteBatchIds(ids) > 0;
+        return baseMapper.deleteByIds(ids) > 0;
     }
 
     @Override
@@ -120,10 +120,11 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         WfBizRef ref = new WfBizRef();
         ref.setBizType(cmd.getBizType());
         ref.setBizId(cmd.getBizId());
-
+        ref.setBizNo(cmd.getBizNo());
         ref.setInstanceId(instanceId);
         ref.setStatus(InstanceStatus.RUNNING.getCode());
         ref.setCreateBy(cmd.getStarterUserId());
+        ref.setRef_type("PRIMARY");
         ref.setCreateTime(new Date());
         ref.setUpdateTime(new Date());
         baseMapper.insert(ref);

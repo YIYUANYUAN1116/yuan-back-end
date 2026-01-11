@@ -1,9 +1,13 @@
 package com.yuan.workflow.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.core.mapper.BaseMapperPlus;
-import org.apache.ibatis.annotations.Mapper;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * wfiMapper接口
@@ -14,4 +18,5 @@ import com.yuan.workflow.domain.vo.WfInstanceVo;
 @Mapper
 public interface WfInstanceMapper extends BaseMapperPlus<WfInstance, WfInstanceVo> {
 
+    Page<WfInstanceVo> selectWfInstanceVoPage(@Param("page") Page<WfInstance> build,@Param(Constants.WRAPPER) Wrapper<WfInstance> lqw);
 }

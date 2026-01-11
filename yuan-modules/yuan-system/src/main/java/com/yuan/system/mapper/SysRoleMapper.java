@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.annotation.DataColumn;
 import com.yuan.annotation.DataPermission;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.core.mapper.BaseMapperPlus;
 import com.yuan.system.domain.SysRole;
 import com.yuan.system.domain.SysUser;
@@ -61,4 +62,5 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
      */
     List<SysRoleVo> selectRoleVoByRoleUser(Long userId);
 
+    List<SelectModel> sysRoleSelect();
 }

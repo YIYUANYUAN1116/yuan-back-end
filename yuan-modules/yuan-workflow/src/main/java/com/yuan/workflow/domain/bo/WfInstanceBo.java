@@ -36,6 +36,8 @@ public class WfInstanceBo implements Serializable {
      * 流程业务标识
      */
     private String definitionKey;
+
+    private String definitionName;
     /**
      * 流程版本
      */
@@ -62,4 +64,15 @@ public class WfInstanceBo implements Serializable {
 
     private String variables;
 
+
+    private String startUserName;
+
+    private String startDeptName;
+
+    private Long operatorUserId;
+
+    private String operatorUserName;
+
+    private String bizType;
+    private String bizNo;
 }

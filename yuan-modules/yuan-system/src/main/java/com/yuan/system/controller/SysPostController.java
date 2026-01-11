@@ -2,6 +2,7 @@ package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -17,6 +18,7 @@ import com.yuan.system.domain.bo.SysPostBo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysPostVo;
 import com.yuan.system.domain.vo.SysUserVo;
+import com.yuan.system.mapper.SysPostMapper;
 import com.yuan.system.service.SysPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,6 +45,7 @@ import java.util.List;
 public class SysPostController extends BaseController {
 
     private final SysPostService sysPostService;
+    private final SysPostMapper sysPostMapper;
 
 /**
  * 查询岗位列表
@@ -166,5 +169,12 @@ public class SysPostController extends BaseController {
     public R<Void> insertPostRole(@PathId Long postId,@PathIds Long[] roleIds) {
         sysPostService.insertPostRole(postId, roleIds);
         return R.ok();
+    }
+
+    @SaCheckPermission("system:post:query")
+    @GetMapping("/posts")
+    @Operation(summary = "获取角色选择框列表",operationId = "sysPostSelect")
+    public R<List<SelectModel>> sysPostSelect() {
+        return R.ok(sysPostMapper.sysPostSelect());
     }
 }

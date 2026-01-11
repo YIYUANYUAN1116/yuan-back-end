@@ -36,6 +36,9 @@ public class WfBizRefBo implements Serializable {
      */
     @NotBlank(message = "业务主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private String bizId;
+
+    @NotBlank(message = "业务单号不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String bizNo;
     /**
      * 流程实例ID
      */
@@ -60,5 +63,7 @@ public class WfBizRefBo implements Serializable {
      */
     @NotNull(message = "updatedTime不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date updateTime;
+
+    private String ref_type;
 
 }

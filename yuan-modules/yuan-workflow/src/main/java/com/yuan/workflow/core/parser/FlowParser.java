@@ -2,15 +2,16 @@ package com.yuan.workflow.core.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.workflow.api.enums.NodeType;
+import com.yuan.workflow.core.evaluator.SimpleConditionEvaluator;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.model.Expression;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
+import com.yuan.workflow.model.logicflow.LfProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,18 +53,29 @@ public class FlowParser {
             return null; // 无后续，流程结束
         }
 
+
         // 2. 非网关：只有一条出边
         if (!Objects.equals(currentNode.getProperties().getWfType(), NodeType.GATEWAY.getCode())) {
             String nextId = outEdges.get(0).getTargetNodeId();
-            return getNode(def, nextId);
+            LfNode node = getNode(def, nextId);
+            if (node.getProperties().getWfType().equals(NodeType.GATEWAY.getCode())) {
+                //下一个节点时网关时，继续找网关的下一个节点
+                return getNextNode(def, node, variables);
+            }
+            return node;
         }
 
         // 3. 网关：按条件判断
         for (LfEdge outEdge : outEdges) {
-            Map<String, Object> properties = outEdge.getProperties();
-            Expression expression = (Expression) properties.get("condition");
-            if (match(expression, variables)) {
-                return getNode(def, outEdge.getTargetNodeId());
+            LfProperties properties = outEdge.getProperties();
+            Expression condition = properties.getCondition();
+            if (SimpleConditionEvaluator.match(condition, variables)) {
+                LfNode node = getNode(def, outEdge.getTargetNodeId());
+                if (node.getProperties().getWfType().equals(NodeType.GATEWAY.getCode())) {
+                    //下一个节点时网关时，继续找网关的下一个节点
+                    return getNextNode(def, node, variables);
+                }
+                return node;
             }
         }
 
@@ -72,26 +84,6 @@ public class FlowParser {
 
     }
 
-    private boolean match(Expression exp, Map<String, Object> vars) {
-        Object actual = vars.get(exp.getField());
-        Object expected = exp.getValue();
-
-        if (actual == null) {
-            return false;
-        }
-
-        return switch (exp.getOperator()) {
-            case EQ -> Objects.equals(actual, expected);
-            case GT -> ((Number) actual).doubleValue() > Double.parseDouble(expected.toString());
-            case GE -> ((Number) actual).doubleValue() >= Double.parseDouble(expected.toString());
-            case LT -> ((Number) actual).doubleValue() < Double.parseDouble(expected.toString());
-            case LE -> ((Number) actual).doubleValue() <= Double.parseDouble(expected.toString());
-            case IN -> ((Collection<?>) expected).contains(actual);
-            case NOT_IN -> !((Collection<?>) expected).contains(actual);
-            case NE -> !Objects.equals(actual, expected);
-        };
-
-    }
 
     private LfGraph parse(WfDefinition def) {
         String key = def.getId()+"-"+def.getVersion();

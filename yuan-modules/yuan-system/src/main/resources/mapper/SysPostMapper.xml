@@ -59,5 +59,11 @@
         from sys_post sp
         where sp.dept_id = #{deptId}
     </select>
+    <select id="sysPostSelect" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select sp.post_id as value,
+               sp.post_name as label
+        from sys_post sp
+        where sp.status = '0' and sp.del_Flag = '0'
+    </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -18,6 +19,7 @@ import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SelectRolesVo;
 import com.yuan.system.domain.vo.SysRoleVo;
 import com.yuan.system.domain.vo.SysUserVo;
+import com.yuan.system.mapper.SysRoleMapper;
 import com.yuan.system.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,6 +46,7 @@ import java.util.List;
 public class SysRoleController extends BaseController {
 
     private final SysRoleService sysRoleService;
+    private final SysRoleMapper sysRoleMapper;
 
     /**
      * 查询角色列表
@@ -137,6 +140,16 @@ public class SysRoleController extends BaseController {
     @Operation(summary = "获取角色选择框列表",operationId = "sysRolePostSelect")
     public R<SelectRolesVo> rolePostSelect(@RequestParam @PathId Long postId) {
         return R.ok(sysRoleService.selectPostRolesVo(postId));
+    }
+
+    /**
+     * 获取角色选择框列表
+     */
+    @SaCheckPermission("system:role:query")
+    @GetMapping("/roles")
+    @Operation(summary = "获取角色选择框列表",operationId = "sysRoleSelect")
+    public R<List<SelectModel>> sysRoleSelect() {
+        return R.ok(sysRoleMapper.sysRoleSelect());
     }
 
     /**

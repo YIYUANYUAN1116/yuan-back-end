@@ -1,5 +1,6 @@
 package com.yuan.workflow.model.logicflow;
 
+import com.yuan.workflow.model.Expression;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,4 +13,5 @@ public class LfProperties {
     private String height;
     private String wfType;
     private LfAssignee assignee;
+    private Expression condition;
 }

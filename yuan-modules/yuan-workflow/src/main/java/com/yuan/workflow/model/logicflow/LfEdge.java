@@ -2,8 +2,6 @@ package com.yuan.workflow.model.logicflow;
 
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 public class LfEdge {
   //边Id
@@ -17,5 +15,5 @@ public class LfEdge {
   //文字
   private LfText text;
   //参数
-  private Map<String, Object> properties; // condition.expression
+  private LfProperties properties; // condition.expression
 }
