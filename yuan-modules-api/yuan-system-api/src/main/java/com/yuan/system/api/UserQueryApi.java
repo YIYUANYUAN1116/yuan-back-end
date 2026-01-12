@@ -2,18 +2,18 @@ package com.yuan.system.api;
 
 import com.yuan.system.dto.SysUserDTO;
 
-import java.util.List;
+import java.util.Set;
 
 public interface UserQueryApi {
     /**
      * 根据角色查询用户ID
      */
-    List<Long> findUserIdsByRole(String roleKey, String tenantId);
+    Set<Long> findUserIdsByRoleIds(Set<Long> roleId);
 
     /**
      * 根据部门查询用户ID
      */
-    List<Long> findUserIdsByDept(Long deptId, String tenantId);
+    Set<Long> findUserIdsByDeptIds(Set<Long> deptId);
 
     /**
      * 查询用户
@@ -24,4 +24,9 @@ public interface UserQueryApi {
      * 查询发起人上级
      */
     Long findLeaderUserId(Long userId);
+
+    /**
+     * 根据岗位查询
+     */
+    Set<Long> findUserIdsByPostIds(Set<Long> postId);
 }

@@ -57,6 +57,7 @@ public class SysUser extends TenantEntity {
      */
     private String userType;
 
+    private Long deptId;
     /**
      * 用户套餐
      */

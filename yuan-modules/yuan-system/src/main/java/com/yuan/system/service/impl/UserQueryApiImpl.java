@@ -9,7 +9,7 @@ import com.yuan.system.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +19,13 @@ public class UserQueryApiImpl implements UserQueryApi {
     private final SysDeptMapper deptMapper;
 
     @Override
-    public List<Long> findUserIdsByRole(String roleKey, String tenantId) {
-        return userMapper.selectUserIdsByRole(roleKey, tenantId);
+    public Set<Long> findUserIdsByRoleIds(Set<Long> roleId) {
+        return userMapper.selectUserIdsByRoleIds(roleId);
     }
 
     @Override
-    public List<Long> findUserIdsByDept(Long deptId, String tenantId) {
-        return userMapper.selectUserIdsByDept(deptId, tenantId);
+    public Set<Long> findUserIdsByDeptIds(Set<Long> deptId) {
+        return userMapper.selectUserIdsByDeptIds(deptId);
     }
 
     @Override
@@ -39,6 +39,11 @@ public class UserQueryApiImpl implements UserQueryApi {
         if (user == null) return null;
         SysDept dept = deptMapper.selectByUserId(user.getUserId());
         return dept != null ? dept.getLeaderId() : null;
+    }
+
+    @Override
+    public Set<Long> findUserIdsByPostIds(Set<Long> postId) {
+        return userMapper.selectUserIdsByPostIds(postId);
     }
 }
 

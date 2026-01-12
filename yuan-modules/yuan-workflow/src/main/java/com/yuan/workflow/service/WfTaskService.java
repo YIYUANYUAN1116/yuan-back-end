@@ -9,6 +9,7 @@ import com.yuan.workflow.domain.vo.WfTaskVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wftService接口
@@ -48,5 +49,5 @@ public interface WfTaskService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    void createTasks(WfInstance instance, WfNodeInstance nodeInstance, List<Long> userIds);
+    void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds);
 }

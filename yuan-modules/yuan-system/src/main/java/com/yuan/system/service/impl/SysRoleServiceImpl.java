@@ -82,7 +82,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * 新增角色
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Boolean insertByBo(SysRoleBo bo) {
         SysRole add = MapstructUtils.convert(bo, SysRole.class);
         validEntityBeforeSave(add);
@@ -98,7 +98,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * 修改角色
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Boolean updateByBo(SysRoleBo bo) {
         SysRole update = MapstructUtils.convert(bo, SysRole.class);
         validEntityBeforeSave(update);

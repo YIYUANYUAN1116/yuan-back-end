@@ -65,7 +65,8 @@
 
                        SELECT sur.role_id
                        FROM sys_user_role sur
-                       WHERE sur.user_id = #{userId}) r ON r.role_id = rm.role_id
+                       WHERE sur.user_id = #{userId})
+                     r ON r.role_id = rm.role_id
         WHERE m.status = '0'
     </select>
     <select id="selectScopesBymenuIds" resultType="java.lang.String">

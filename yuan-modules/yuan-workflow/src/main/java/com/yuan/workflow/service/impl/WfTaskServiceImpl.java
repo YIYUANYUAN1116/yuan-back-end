@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wftService业务层处理
@@ -118,7 +119,7 @@ public class WfTaskServiceImpl implements WfTaskService {
     }
 
     @Override
-    public void createTasks(WfInstance instance, WfNodeInstance nodeInstance, List<Long> userIds) {
+    public void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds) {
         for (Long uid : userIds) {
             WfTask task = new WfTask();
             task.setTenantId(instance.getTenantId());

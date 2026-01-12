@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -54,7 +54,7 @@ public class FlowAdvanceService {
         WfNodeInstance nextNodeIns =
                 nodeInstanceService.createNodeInstance(instance.getId(), next, NodeStatus.WAIT, currentNode.getOrderNo() + 1);
 
-        List<Long> userIds = assigneeResolver.resolve(next, instance);
+        Set<Long> userIds = assigneeResolver.resolve(next, instance);
         wfTaskService.createTasks(instance, nextNodeIns,userIds);
 
     }

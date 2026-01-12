@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -23,7 +24,6 @@ import java.util.List;
  */
 @Mapper
 public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
-
     SysUserVo selectUserByUserName(String username);
 
     SysUserVo selectTenantUserByUserName(String username, String tenantId);
@@ -33,15 +33,16 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     @InterceptorIgnore(tenantLine = "true")
     SysUserVo selectUserByUsernameByLogin(String username);
 
-    List<Long> selectUserIdsByRole(@Param("roleKey") String roleKey, @Param("tenantId") String tenantId);
-
-    List<Long> selectUserIdsByDept(@Param("deptId") Long deptId, @Param("tenantId") String tenantId);
-
     SysUserDTO selectDtoById(@Param("userId") Long userId);
-
-    List<Long> selectUserIdsBydeptId(@Param("deptId") Long deptId);
 
     List<SysUserVo> selectUserList(QueryWrapper<SysUser> lqw);
 
     SysUserVo selectVoByUserId(Long userId);
+
+    Set<Long> selectUserIdsByRoleIds(@Param("roleIds") Set<Long> roleIds);
+
+    Set<Long> selectUserIdsByDeptIds(@Param("deptIds") Set<Long> deptIds);
+
+    Set<Long> selectUserIdsByPostIds(@Param("postIds") Set<Long> postIds);
+
 }

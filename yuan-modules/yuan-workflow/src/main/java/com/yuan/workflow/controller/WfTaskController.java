@@ -14,6 +14,7 @@ import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.ApproveTaskCmd;
+import com.yuan.workflow.api.cmd.RejectTaskCmd;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.service.WfTaskService;
@@ -133,4 +134,13 @@ public class WfTaskController extends BaseController {
         workflowService.approveTask(cmd);
         return R.ok();
     }
+
+    @PostMapping("/reject")
+    @Log(title = "wfi", businessType = BusinessType.INSERT)
+    @Operation(summary = "审批拒绝",operationId = "WfTask_reject")
+    public R<Long> start(@RequestBody RejectTaskCmd cmd) {
+        workflowService.rejectTask(cmd);
+        return R.ok();
+    }
+
 }

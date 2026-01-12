@@ -3,6 +3,7 @@ package com.yuan.generator.util;
 import com.yuan.common.core.constant.Constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.velocity.app.Velocity;
 
 import java.util.Properties;
 

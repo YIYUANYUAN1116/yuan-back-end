@@ -82,7 +82,7 @@
                         sd.dept_name
         from sys_user u
             left join sys_post sp on sp.post_id = u.primary_post_id
-            left join sys_dept sd on sd.dept_id = sp.dept_id
+            left join sys_dept sd on sd.dept_id = u.dept_id
             ${ew.getCustomSqlSegment}
     </select>
     <select id="selectUserByUsernameByLogin" resultType="com.yuan.system.domain.vo.SysUserVo">
@@ -95,29 +95,30 @@
              left join sys_dept sd on sd.dept_id = sp.dept_id
         where u.user_name = #{username} and u.status = '0' and u.del_flag = '0'
     </select>
-    <select id="selectUserIdsByRole" resultType="java.lang.Long">
-        select *
-        from sys_role sr
-        join sys_user_role sur on sur.role_id = sr.role_id
-        join sys_user su on su.user_id = sur.user_id
-        where sr.tenant_id= #{tenantId} and sr.role_key = #{roleKey}
+    <select id="selectUserIdsByRoleIds" resultType="java.lang.Long">
+        select su.user_id
+        from sys_user su
+        join sys_post sp on sp.post_id = su.primary_post_id
+        join sys_role_post srp on srp.post_id = sp.post_id
+        join sys_role sr on sr.role_id = srp.role_id
+        where  su.status = '0' and sr.status = '0' and sr.role_id in
+        <foreach collection="roleIds" open="(" close=")" separator="," item="roleId">
+            #{roleId}
+        </foreach>
+
     </select>
-    <select id="selectUserIdsByDept" resultType="java.lang.Long">
-        select *
-        from sys_dept sd
-                 join sys_user su on su.dept_id = sd.dept_id
-        where sd.tenant_id= #{tenantId} and sd.dept_id = #{deptId}
+    <select id="selectUserIdsByDeptIds" resultType="java.lang.Long">
+        select su.user_id
+        from sys_user su
+        where  su.status = '0' and su.del_flag = '0' and su.dept_id in
+        <foreach collection="deptIds" item="deptId" open="(" close=")" separator=",">
+            #{deptId}
+        </foreach>
     </select>
     <select id="selectDtoById" resultType="com.yuan.system.dto.SysUserDTO">
         select *
         from sys_user
         where user_id = #{userId}
-    </select>
-    <select id="selectUserIdsBydeptId" resultType="java.lang.Long">
-        select su.user_id
-        from sys_dept sd
-                 join sys_user su on su.dept_id = sd.dept_id
-        where sd.dept_id = #{deptId} and su.del_flag = 0
     </select>
     <select id="selectUserList" resultType="com.yuan.system.domain.vo.SysUserVo">
         select u.*,
@@ -150,5 +151,13 @@
                  left join sys_post sp on sp.post_id = u.primary_post_id
                  left join sys_dept sd on sd.dept_id = sp.dept_id
         where u.user_id = #{userId}
+    </select>
+    <select id="selectUserIdsByPostIds" resultType="java.lang.Long">
+        select su.user_id
+        from sys_user su
+        where  su.status = '0' and su.del_flag = '0' and su.primary_post_id in
+        <foreach collection="postIds" open="(" separator=","  close=")" item="postId">
+            #{postId}
+        </foreach>
     </select>
 </mapper>
