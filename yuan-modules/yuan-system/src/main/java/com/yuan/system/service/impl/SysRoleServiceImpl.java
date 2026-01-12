@@ -104,7 +104,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         validEntityBeforeSave(update);
         boolean flag = baseMapper.updateById(update) > 0;
         if (flag) {
-            roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, bo.getRoleId()));
             insertRoleMenu(bo);
         }
         return flag;
@@ -225,6 +224,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         // 新增用户与角色管理
         Set<Long> menus = menuService.addParentIds(role.getMenuIds());
         checkMenuScop(role.getRoleId(),menus);
+        roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getRoleId, role.getRoleId()));
         List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
         for (Long menuId : menus) {
             SysRoleMenu rm = new SysRoleMenu();
