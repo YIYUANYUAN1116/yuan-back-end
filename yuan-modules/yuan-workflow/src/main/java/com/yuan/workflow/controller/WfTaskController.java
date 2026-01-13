@@ -13,8 +13,7 @@ import com.yuan.common.log.enums.BusinessType;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.api.cmd.ApproveTaskCmd;
-import com.yuan.workflow.api.cmd.RejectTaskCmd;
+import com.yuan.workflow.api.cmd.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.service.WfTaskService;
@@ -26,14 +25,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -138,8 +130,32 @@ public class WfTaskController extends BaseController {
     @PostMapping("/reject")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "审批拒绝",operationId = "WfTask_reject")
-    public R<Long> start(@RequestBody RejectTaskCmd cmd) {
+    public R<Long> reject(@RequestBody RejectTaskCmd cmd) {
         workflowService.rejectTask(cmd);
+        return R.ok();
+    }
+
+    @PostMapping("/withdraw")
+    @Log(title = "wfi", businessType = BusinessType.INSERT)
+    @Operation(summary = "撤回申请",operationId = "WfTaskWithdraw")
+    public R<Long> withdraw(@RequestBody WithdrawCmd cmd) {
+        workflowService.withdraw(cmd);
+        return R.ok();
+    }
+
+    @PostMapping("/transfer")
+    @Log(title = "wfi", businessType = BusinessType.INSERT)
+    @Operation(summary = "转交",operationId = "WfTaskTransfer")
+    public R<Long> transfer(@RequestBody TransferTaskCmd cmd) {
+        workflowService.transfer(cmd);
+        return R.ok();
+    }
+
+    @PostMapping("/rollbackTo")
+    @Log(title = "wfi", businessType = BusinessType.INSERT)
+    @Operation(summary = "退回指定节点",operationId = "WfTaskRollbackTo")
+    public R<Long> rollbackTo(@RequestBody RollbackToActivityCmd cmd) {
+        workflowService.rollbackTo(cmd);
         return R.ok();
     }
 
