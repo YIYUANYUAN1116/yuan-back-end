@@ -1,24 +1,26 @@
 package com.yuan.workflow.core.engine.support;
 
-import com.yuan.workflow.api.enums.NodeStatus;
-import com.yuan.workflow.api.enums.NodeType;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.domain.exception.RollbackTargetInvalidException;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FlowAdvanceService {
@@ -27,35 +29,38 @@ public class FlowAdvanceService {
     private final VariableService variableService;
     private final FlowParser flowParser;
     private final InstanceLifecycle instanceLifecycle;
-    private final TaskLifecycle taskLifecycle;
     private final WfNodeInstanceService nodeInstanceService;
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
 
     public void advance(WfNodeInstance currentNode,Long operatorId) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
-        Assert.notNull(instance, "实例不存在");
 
         WfDefinition def = definitionMapper.selectById(instance.getDefinitionId());
-        Assert.notNull(def, "流程定义不存在");
 
         LfNode currentFlowNode = flowParser.getNode(def, currentNode.getNodeKey());
 
         // 用最新变量（approve 时已 mergeAndSave）
         Map<String, Object> vars = variableService.getVars(instance);
         LfNode next = flowParser.getNextNode(def, currentFlowNode, vars);
+        advanceToTarget(instance,currentNode,next,operatorId);
+    }
 
-        // 没有下一个节点或 next 是 END -> 结束
-        if (next == null || NodeType.END.getCode().equals(next.getProperties().getWfType())) {
-            instanceLifecycle.finishApproved(instance.getId(),operatorId);
+    public void advanceToTarget(WfInstance instance,WfNodeInstance nodeInstance,LfNode lfNode,Long operatorId) {
+        if (lfNode == null) {
+            throw new RollbackTargetInvalidException(); // 或 WF_NODE_NOT_FOUND
+        }
+
+        if (NodeType.END.getCode().equals(lfNode.getProperties().getWfType())) {
+            instanceLifecycle.finishApproved(instance, operatorId);
             return;
         }
-        // 创建下一个节点 + 任务
+
+        int nextOrderNo = nodeInstanceService.nextOrderNo(instance.getId());
         WfNodeInstance nextNodeIns =
-                nodeInstanceService.createNodeInstance(instance.getId(), next, NodeStatus.WAIT, currentNode.getOrderNo() + 1);
+                nodeInstanceService.createNodeInstance(instance.getId(), lfNode, NodeStatus.WAIT, nextOrderNo);
 
-        Set<Long> userIds = assigneeResolver.resolve(next, instance);
-        wfTaskService.createTasks(instance, nextNodeIns,userIds);
-
+        Set<Long> userIds = assigneeResolver.resolve(lfNode, instance);
+        wfTaskService.createTasks(instance, nextNodeIns, userIds);
     }
 }

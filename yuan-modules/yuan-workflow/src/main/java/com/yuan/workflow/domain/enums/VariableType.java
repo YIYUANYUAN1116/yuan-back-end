@@ -1,4 +1,4 @@
-package com.yuan.workflow.api.enums;
+package com.yuan.workflow.domain.enums;
 
 import com.yuan.common.core.enums.BaseEnum;
 import lombok.AllArgsConstructor;

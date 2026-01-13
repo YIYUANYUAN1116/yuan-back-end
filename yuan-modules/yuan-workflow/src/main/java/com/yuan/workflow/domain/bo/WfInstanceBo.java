@@ -73,6 +73,13 @@ public class WfInstanceBo implements Serializable {
 
     private String operatorUserName;
 
+    private String endReason;
+    private String endComment;
+    private Long endBy;
+
+
+
     private String bizType;
     private String bizNo;
+
 }

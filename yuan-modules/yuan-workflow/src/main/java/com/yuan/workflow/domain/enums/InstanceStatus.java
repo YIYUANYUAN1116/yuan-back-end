@@ -1,5 +1,6 @@
-package com.yuan.workflow.api.enums;
+package com.yuan.workflow.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.yuan.common.core.enums.BaseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public enum InstanceStatus implements BaseEnum {
     REJECTED("REJECTED", "已驳回"),
     CANCELED("CANCELED", "已撤销");
 
+    @EnumValue
     private final String code;
     private final String desc;
 }

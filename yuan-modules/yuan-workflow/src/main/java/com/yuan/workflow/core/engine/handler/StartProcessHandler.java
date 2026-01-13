@@ -1,14 +1,15 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.api.cmd.StartProcessCmd;
-import com.yuan.workflow.api.enums.NodeStatus;
-import com.yuan.workflow.api.enums.NodeType;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.core.engine.support.InstanceLifecycle;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfBizRefService;
@@ -18,7 +19,6 @@ import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.Set;
 
@@ -33,6 +33,8 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
     private final InstanceLifecycle instanceLifecycle;
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
+    private final WfOperationGuard wfOperationGuard;
+
 
     @Override
     @Transactional
@@ -41,7 +43,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
 
         // 1) 查最新已发布定义
         WfDefinition def = definitionMapper.selectLatestPublished(tenantId, cmd.getDefinitionKey());
-        Assert.notNull(def, "流程未发布");
+        wfOperationGuard.assertStartInstance(def);
 
         // 2) 创建实例
         WfInstance instance =  wfInstanceService.createInstance(cmd, def);
@@ -63,7 +65,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
             wfTaskService.createTasks(instance, nodeInstance,userIds);
         } else {
             // 没有审批节点，直接结束
-            instanceLifecycle.finishApproved(instance.getId(), cmd.getOperatorUserId());
+            instanceLifecycle.finishApproved(instance, cmd.getOperatorUserId());
         }
 
         return instance.getId();

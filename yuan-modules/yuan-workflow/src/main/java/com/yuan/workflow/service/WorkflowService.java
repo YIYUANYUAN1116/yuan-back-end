@@ -2,7 +2,7 @@ package com.yuan.workflow.service;
 
 import com.yuan.workflow.api.cmd.ApproveTaskCmd;
 import com.yuan.workflow.api.cmd.RejectTaskCmd;
-import com.yuan.workflow.api.cmd.RollbackToCmd;
+import com.yuan.workflow.api.cmd.RollbackToActivityCmd;
 import com.yuan.workflow.api.cmd.RollbackToPrevCmd;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.api.cmd.TransferTaskCmd;
@@ -15,7 +15,7 @@ public interface WorkflowService {
     void rejectTask(RejectTaskCmd rejectTaskCmd);
 
     void rollbackToPrev(RollbackToPrevCmd rollbackToPrevCmd);
-    void rollbackTo(RollbackToCmd rollbackToCmd);
+    void rollbackTo(RollbackToActivityCmd rollbackToCmd);
 
     void withdraw(WithdrawCmd withdrawCmd);
     void transfer(TransferTaskCmd transferTaskCmd);

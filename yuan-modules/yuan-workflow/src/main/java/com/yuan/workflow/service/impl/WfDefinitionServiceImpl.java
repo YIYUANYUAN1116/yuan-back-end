@@ -8,8 +8,8 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.api.enums.DefinitionAction;
-import com.yuan.workflow.api.enums.DefinitionStatus;
+import com.yuan.workflow.domain.enums.DefinitionAction;
+import com.yuan.workflow.domain.enums.DefinitionStatus;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.bo.WfDefinitionBo;
 import com.yuan.workflow.domain.dto.WfDefinitionDto;
@@ -139,7 +139,7 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         if (definition == null) {
             throw new BaseException("流程定义不存在");
         }
-        DefinitionStatus current = DefinitionStatus.fromCode(definition.getStatus());
+        DefinitionStatus current = definition.getStatus();
         switch (action) {
             case PUBLISH:
                 publish(definition, current);
@@ -166,7 +166,7 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         // 校验流程合法性
         disableHandler(definition);
 
-        definition.setStatus(DefinitionStatus.DISABLED.getCode());
+        definition.setStatus(DefinitionStatus.DISABLED);
     }
 
     /**
@@ -182,7 +182,7 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         // 校验流程合法性
         publishedHandler(definition);
 
-        definition.setStatus(DefinitionStatus.PUBLISHED.getCode());
+        definition.setStatus(DefinitionStatus.PUBLISHED);
     }
 
     private void disableHandler(WfDefinition definition) {

@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.evaluator;
 
-import com.yuan.workflow.api.enums.ConditionOperator;
+import com.yuan.workflow.domain.enums.ConditionOperator;
 import com.yuan.workflow.model.Expression;
 
 import java.math.BigDecimal;

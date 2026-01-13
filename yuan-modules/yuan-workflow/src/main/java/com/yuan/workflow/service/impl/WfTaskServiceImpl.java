@@ -7,7 +7,7 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.api.enums.TaskStatus;
+import com.yuan.workflow.domain.enums.TaskStatus;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import lombok.RequiredArgsConstructor;
@@ -126,7 +126,7 @@ public class WfTaskServiceImpl implements WfTaskService {
             task.setInstanceId(instance.getId());
             task.setNodeInstanceId(nodeInstance.getId());
             task.setAssigneeId(uid);
-            task.setStatus(TaskStatus.TODO.getCode());
+            task.setStatus(TaskStatus.TODO);
             baseMapper.insert(task);
         }
     }

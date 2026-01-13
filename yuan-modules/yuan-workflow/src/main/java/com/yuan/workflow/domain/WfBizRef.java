@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.core.domain.BaseEntity;
+import com.yuan.workflow.domain.enums.InstanceStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -45,7 +46,7 @@ public class WfBizRef extends BaseEntity {
     /**
      * RUNNING/APPROVED/REJECTED/CANCELED
      */
-    private String status;
+    private InstanceStatus status;
     /**
      * PRIMARY/RELATED  多个业务对一个流程时，区分主业务和关联业务
      */

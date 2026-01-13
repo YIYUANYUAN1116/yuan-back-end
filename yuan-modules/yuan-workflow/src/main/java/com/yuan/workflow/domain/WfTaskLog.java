@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
+import com.yuan.workflow.domain.enums.TaskAction;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -40,7 +41,7 @@ public class WfTaskLog extends TenantEntity {
     /**
      * 操作(APPROVE/REJECT/TRANSFER)
      */
-    private String action;
+    private TaskAction action;
 
     /**
      * 操作人

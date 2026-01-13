@@ -9,19 +9,30 @@
         SET status = #{status},
             finish_time = NOW()
         WHERE instance_id = #{instanceId}
-          AND status = 'TODO';
+          AND status = 'TODO'
     </update>
 
 
-    <update id="cancelOtherTodoTasks">
+    <update id="updateOtherTodoTasks">
         UPDATE wf_task
         SET
-            status = #{status},
+            status = #{toStatus},
+            action = #{action},
             finish_time = NOW()
         WHERE node_instance_id = #{nodeInstanceId}
           AND id != #{keepTaskId}
-          AND status = 'TODO';
+          AND status = #{fromStatus}
     </update>
+    <update id="updateAllTodoTasks">
+        UPDATE wf_task
+        SET
+            status = #{toStatus},
+            action = #{action},
+            finish_time = NOW()
+        WHERE node_instance_id = #{nodeInstanceId}
+          AND status = #{fromStatus}
+    </update>
+
     <select id="countTodoByNode" resultType="java.lang.Integer">
 
     </select>
