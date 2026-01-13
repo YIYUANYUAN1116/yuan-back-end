@@ -1,7 +1,6 @@
 package com.yuan.workflow.core.resolver;
 
 import com.yuan.system.api.UserQueryApi;
-import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.model.enums.AssigneeKind;
 import com.yuan.workflow.model.enums.AssigneeType;
 import com.yuan.workflow.model.logicflow.LfAssignee;
@@ -18,7 +17,7 @@ public class AssigneeResolver {
 
     private final UserQueryApi userQueryApi;
 
-    public Set<Long> resolve(LfNode node, WfInstance instance) {
+    public Set<Long> resolve(LfNode node) {
         LfProperties properties = node.getProperties();
         LfAssignee assignee = properties.getAssignee();
         AssigneeKind kind = assignee.getKind();

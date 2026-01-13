@@ -1,11 +1,7 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.api.cmd.ApproveTaskCmd;
-import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.NodeInstanceLifeCycle;
-import com.yuan.workflow.core.engine.support.TaskLifecycle;
-import com.yuan.workflow.core.engine.support.VariableService;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
+import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
@@ -26,7 +22,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
     private final TaskLifecycle taskLifecycle;
     private final FlowAdvanceService flowAdvanceService;
     private final WfOperationGuard wfOperationGuard;
-    private final NodeInstanceLifeCycle nodeLifeCycle;
+    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
 
     @Override
     @Transactional
@@ -45,14 +41,11 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
         // 3) 合并变量
         variableService.mergeAndSave(instance, cmd.getVariables());
 
-        // 4) 完成任务 + 日志
+        // 4) 完成任务,节点
         taskLifecycle.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
 
-        // 5) 或签：取消同节点其他待处理任务
-        taskLifecycle.cancelOtherTodoTasks(node.getId(), task.getId(),TaskAction.ANY_APPROVE);
-
         // 6) 完成节点
-        nodeLifeCycle.finishDone(node);
+        nodeInstanceLifeCycle.finishDone(task.getNodeInstanceId());
 
         // 7) 推进
         flowAdvanceService.advance(node,cmd.getOperatorUserId());

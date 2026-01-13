@@ -17,11 +17,13 @@ import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long>{
@@ -61,10 +63,11 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
         // 6) 创建审批节点 + 任务
         if (firstApproveNode != null && !NodeType.END.getCode().equals(firstApproveNode.getProperties().getWfType())) {
             WfNodeInstance nodeInstance = wfNodeInstanceService.createNodeInstance(instance.getId(), firstApproveNode, NodeStatus.WAIT, 2);
-            Set<Long> userIds = assigneeResolver.resolve(firstApproveNode, instance);
+            Set<Long> userIds = assigneeResolver.resolve(firstApproveNode);
             wfTaskService.createTasks(instance, nodeInstance,userIds);
         } else {
             // 没有审批节点，直接结束
+            log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
             instanceLifecycle.finishApproved(instance, cmd.getOperatorUserId());
         }
 

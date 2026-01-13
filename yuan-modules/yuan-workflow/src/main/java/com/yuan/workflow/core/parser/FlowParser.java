@@ -34,7 +34,7 @@ public class FlowParser {
                 .filter(n-> Objects.equals(n.getProperties().getWfType(), NodeType.START.getCode()))
                 .findFirst()
                 .orElseThrow(() -> {
-                    log.error("getStartNode error, start node not found,definitionId={}, name={}, version={}", def.getId(), def.getDefinitionName(), def.getVersion());
+                    log.error("[getStartNode] error, start node not found,definitionId={}, name={}, version={}", def.getId(), def.getDefinitionName(), def.getVersion());
                     return  new ProcessDefinitionParseException(
                             WorkflowErrorCode.WF_DEFINITION_NO_START_NODE,
                             def.getId(),
@@ -44,18 +44,18 @@ public class FlowParser {
     }
 
 
-    public LfNode getNode(WfDefinition def, String id) {
+    public LfNode getNode(WfDefinition def, String nodeKey) {
         LfGraph json = parse(def);
         return json.getNodes().stream()
-                .filter(n-> Objects.equals(n.getId(), id))
+                .filter(n-> Objects.equals(n.getId(), nodeKey))
                 .findFirst()
                 .orElseThrow(() -> {
-                    log.error("getNode error, node not found: definitionId={}, name={}, version={},node={}", def.getId(), def.getDefinitionName(), def.getVersion(),nodeKey);
+                    log.error("[getNode] error, node not found: definitionId={}, name={}, version={},nodeId={}", def.getId(), def.getDefinitionName(), def.getVersion(),nodeKey);
                     return  new ProcessDefinitionParseException(
                             WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND,
                             def.getId(),
                             def.getVersion(),
-                            id
+                            nodeKey
                     );
                 });
     }

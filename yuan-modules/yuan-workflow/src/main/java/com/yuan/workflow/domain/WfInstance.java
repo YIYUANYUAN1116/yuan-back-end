@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.WfEndReason;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -84,7 +85,7 @@ public class WfInstance extends TenantEntity {
 
     private String variables;
 
-    private String endReason;
+    private WfEndReason endReason;
     private String endComment;
     private Long endBy;
 

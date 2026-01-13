@@ -78,7 +78,7 @@ public class WfInstanceBo implements Serializable {
     private Long endBy;
 
 
-
+    /*******************非数据库字段********************/
     private String bizType;
     private String bizNo;
 

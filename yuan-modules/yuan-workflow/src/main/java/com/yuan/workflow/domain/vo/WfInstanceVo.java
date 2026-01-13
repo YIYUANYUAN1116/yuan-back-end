@@ -80,6 +80,7 @@ public class WfInstanceVo implements Serializable {
     private String endComment;
     private Long endBy;
 
+    /*******************非数据库字段********************/
     private String bizType;
     private String definitionName;
     private String bizNo;

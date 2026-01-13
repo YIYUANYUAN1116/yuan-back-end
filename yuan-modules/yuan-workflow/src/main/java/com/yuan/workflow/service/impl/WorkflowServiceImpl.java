@@ -4,7 +4,6 @@ import com.yuan.workflow.annotation.FillWfCmd;
 import com.yuan.workflow.api.cmd.ApproveTaskCmd;
 import com.yuan.workflow.api.cmd.RejectTaskCmd;
 import com.yuan.workflow.api.cmd.RollbackToActivityCmd;
-import com.yuan.workflow.api.cmd.RollbackToCmd;
 import com.yuan.workflow.api.cmd.RollbackToPrevCmd;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.api.cmd.TransferTaskCmd;

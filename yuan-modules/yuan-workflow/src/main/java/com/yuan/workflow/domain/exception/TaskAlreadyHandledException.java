@@ -13,4 +13,10 @@ public class TaskAlreadyHandledException extends WorkflowException {
         this.taskId = taskId;
         this.operatorId = operatorId;
     }
+
+    public TaskAlreadyHandledException() {
+        super(WorkflowErrorCode.WF_TASK_ALREADY_HANDLED);
+        this.taskId = null;
+        this.operatorId = null;
+    }
 }

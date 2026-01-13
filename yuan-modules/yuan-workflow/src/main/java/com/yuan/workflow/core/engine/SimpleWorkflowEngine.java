@@ -7,10 +7,7 @@ import com.yuan.workflow.api.cmd.RollbackToPrevCmd;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.api.cmd.TransferTaskCmd;
 import com.yuan.workflow.api.cmd.WithdrawCmd;
-import com.yuan.workflow.core.engine.handler.ApproveTaskHandler;
-import com.yuan.workflow.core.engine.handler.RejectTaskHandler;
-import com.yuan.workflow.core.engine.handler.RollbackToActivityHandler;
-import com.yuan.workflow.core.engine.handler.StartProcessHandler;
+import com.yuan.workflow.core.engine.handler.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +21,8 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     private final ApproveTaskHandler approveTaskHandler;
     private final RejectTaskHandler rejectTaskHandler;
     private final RollbackToActivityHandler rollbackToActivityHandler;
-
+    private final WithdrawHandler withdrawHandler;
+    private final TransferHandler transferHandler;
 
     /**
      * start
@@ -37,7 +35,7 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     }
 
     /**
-     * approve
+     * finish
      * @param cmd
      */
     @Override
@@ -58,7 +56,11 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     @Override public void rollbackToActivity(RollbackToActivityCmd cmd) {
         rollbackToActivityHandler.handle(cmd);
     }
-    @Override public void withdraw(WithdrawCmd cmd) { }
-    @Override public void transfer(TransferTaskCmd cmd) { }
+    @Override public void withdraw(WithdrawCmd cmd) {
+        withdrawHandler.handle(cmd);
+    }
+    @Override public void transfer(TransferTaskCmd cmd) {
+        transferHandler.handle(cmd);
+    }
 
 }

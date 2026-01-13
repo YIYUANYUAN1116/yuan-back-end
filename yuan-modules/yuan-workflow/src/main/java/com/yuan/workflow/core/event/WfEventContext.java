@@ -1,4 +1,4 @@
-package com.yuan.workflow.api.event;
+package com.yuan.workflow.core.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

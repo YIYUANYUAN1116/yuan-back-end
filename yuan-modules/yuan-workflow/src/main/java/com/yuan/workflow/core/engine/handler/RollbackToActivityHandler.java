@@ -63,13 +63,10 @@ public class RollbackToActivityHandler implements CommandHandler<RollbackToActiv
         //完成当前任务
         taskLifecycle.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorUserId());
 
-        //清理活跃任务
-        taskLifecycle.cancelOtherTodoTasks(currentNode.getId(), task.getId(),TaskAction.ROLLBACK);
-
         //修改节点状态
-        nodeInstanceLifeCycle.finishCancel(currentNode);
+        nodeInstanceLifeCycle.finishCancel(currentNode.getId());
 
-        flowAdvanceService.advanceToTarget(instance,currentNode,target,cmd.getOperatorUserId());
+        flowAdvanceService.advanceToTarget(instance,target,cmd.getOperatorUserId());
 
         return null;
     }

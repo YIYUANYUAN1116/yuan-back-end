@@ -1,14 +1,14 @@
 package com.yuan.workflow.core.engine.support;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yuan.workflow.api.enums.WfEndReason;
-import com.yuan.workflow.api.event.WfEventContext;
-import com.yuan.workflow.api.event.WfEventFactory;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
+import com.yuan.workflow.core.event.WfEventContext;
+import com.yuan.workflow.core.event.WfEventFactory;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.TaskAction;
+import com.yuan.workflow.domain.enums.WfEndReason;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.mapper.WfBizRefMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
@@ -79,7 +79,6 @@ public class InstanceLifecycle {
     @Transactional
     public void finishWithDraw(WfInstance instance, Long operatorId, String comment) {
 
-
         // 取消所有待办任务（实例级）
         taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW);
 
@@ -89,8 +88,10 @@ public class InstanceLifecycle {
         //更新实例
         instance.setStatus(InstanceStatus.CANCELED);
         instance.setEndTime(LocalDateTime.now());
+        instance.setEndComment(comment);
+        instance.setEndBy(operatorId);
+        instance.setEndReason(WfEndReason.WITHDRAWN);
         instanceMapper.updateById(instance);
-
 
         afterFinishProcess(instance.getId(), InstanceStatus.CANCELED);
         // 发结束事件

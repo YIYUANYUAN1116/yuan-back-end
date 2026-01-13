@@ -9,6 +9,7 @@ import com.yuan.workflow.mapper.WfInstanceMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 撤回申请
@@ -16,12 +17,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WithdrawCmdHandler implements  CommandHandler<WithdrawCmd,Void>{
+public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
     private final WfInstanceMapper wfInstanceMapper;
     private final WfOperationGuard wfOperationGuard;
     private final InstanceLifecycle instanceLifecycle;
 
     @Override
+    @Transactional
     public Void handle(WithdrawCmd cmd) {
         Long instanceId = cmd.getInstanceId();
         WfInstance wfInstance = wfInstanceMapper.selectById(instanceId);

@@ -1,8 +1,8 @@
-package com.yuan.workflow.api.event;
+package com.yuan.workflow.core.event;
 
 import com.yuan.workflow.api.enums.WfDecision;
-import com.yuan.workflow.api.enums.WfEndReason;
 import com.yuan.workflow.api.enums.WfEventType;
+import com.yuan.workflow.domain.enums.WfEndReason;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -40,7 +40,7 @@ public final class WfEventFactory {
     }
 
     public static WfEvent buildRollbackTo(WfEventContext ctx, String targetNodeId, String targetNodeName,
-                                         String comment, Map<String, Object> ext) {
+                                          String comment, Map<String, Object> ext) {
         return base(ctx)
                 .eventType(WfEventType.TASK_ROLLBACK_TO)
                 .decision(WfDecision.ROLLBACK_TO)

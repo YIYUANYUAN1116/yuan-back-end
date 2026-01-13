@@ -40,13 +40,13 @@ public class FlowAdvanceService {
 
         LfNode currentFlowNode = flowParser.getNode(def, currentNode.getNodeKey());
 
-        // 用最新变量（approve 时已 mergeAndSave）
+        // 用最新变量（finish 时已 mergeAndSave）
         Map<String, Object> vars = variableService.getVars(instance);
         LfNode next = flowParser.getNextNode(def, currentFlowNode, vars);
-        advanceToTarget(instance,currentNode,next,operatorId);
+        advanceToTarget(instance,next,operatorId);
     }
 
-    public void advanceToTarget(WfInstance instance,WfNodeInstance nodeInstance,LfNode lfNode,Long operatorId) {
+    public void advanceToTarget(WfInstance instance,LfNode lfNode,Long operatorId) {
         if (lfNode == null) {
             throw new RollbackTargetInvalidException(); // 或 WF_NODE_NOT_FOUND
         }
@@ -60,7 +60,7 @@ public class FlowAdvanceService {
         WfNodeInstance nextNodeIns =
                 nodeInstanceService.createNodeInstance(instance.getId(), lfNode, NodeStatus.WAIT, nextOrderNo);
 
-        Set<Long> userIds = assigneeResolver.resolve(lfNode, instance);
+        Set<Long> userIds = assigneeResolver.resolve(lfNode);
         wfTaskService.createTasks(instance, nextNodeIns, userIds);
     }
 }

@@ -1,5 +1,6 @@
-package com.yuan.workflow.api.enums;
+package com.yuan.workflow.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.yuan.common.core.enums.BaseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public enum WfEndReason implements BaseEnum {
     WITHDRAWN("WITHDRAWN","撤回导致结束"),   // 撤回导致结束
     TERMINATED("TERMINATED","管理员强制终止");   // 管理员强制终止（预留）
 
+    @EnumValue
     private final String code;
     private final String desc;
 }

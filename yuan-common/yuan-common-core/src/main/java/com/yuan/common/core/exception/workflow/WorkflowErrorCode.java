@@ -23,6 +23,9 @@ public enum WorkflowErrorCode {
     WF_TASK_NOT_TODO("WF_TASK_NOT_TODO", "任务不是待办状态"),
     WF_TASK_ASSIGNEE_EMPTY("WF_TASK_ASSIGNEE_EMPTY", "任务未指派处理人"),
 
+    // ===== Task Log=====
+    WF_TASK_LOG_FAITH("WF_TASK_LOG_FAITH", "保存任务日志失败"),
+
     // ===== Instance =====
     WF_INSTANCE_NOT_FOUND("WF_INSTANCE_NOT_FOUND", "流程实例不存在"),
     WF_INSTANCE_ALREADY_FINISHED("WF_INSTANCE_ALREADY_FINISHED", "流程实例已结束"),

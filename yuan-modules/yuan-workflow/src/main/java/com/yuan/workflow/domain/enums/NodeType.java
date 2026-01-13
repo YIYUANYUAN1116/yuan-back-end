@@ -2,6 +2,7 @@ package com.yuan.workflow.domain.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.yuan.common.core.enums.BaseEnum;
+import com.yuan.common.core.exception.base.BaseException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,4 +18,13 @@ public enum NodeType implements BaseEnum {
     @EnumValue
     private final String code;
     private final String desc;
+
+    public static NodeType of(String code) {
+        for (NodeType nodeType : NodeType.values()) {
+            if (nodeType.getCode().equals(code)) {
+                return nodeType;
+            }
+        }
+        throw new BaseException("非法节点类型: " + code);
+    }
 }

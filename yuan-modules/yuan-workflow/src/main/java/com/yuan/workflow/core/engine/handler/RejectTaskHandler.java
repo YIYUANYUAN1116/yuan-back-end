@@ -1,19 +1,15 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.api.cmd.RejectTaskCmd;
-import com.yuan.workflow.core.engine.support.NodeInstanceLifeCycle;
-import com.yuan.workflow.domain.WfNodeInstance;
-import com.yuan.workflow.domain.enums.TaskAction;
-import com.yuan.workflow.api.event.WfEventContext;
-import com.yuan.workflow.api.event.WfEventFactory;
-import com.yuan.workflow.core.engine.support.InstanceLifecycle;
-import com.yuan.workflow.core.engine.support.TaskLifecycle;
-import com.yuan.workflow.core.engine.support.VariableService;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
+import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
+import com.yuan.workflow.core.event.WfEventContext;
+import com.yuan.workflow.core.event.WfEventFactory;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
+import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -56,10 +52,9 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
         // 完成任务
         taskLifecycle.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
 
-        taskLifecycle.cancelOtherTodoTasks(node.getId(), task.getId(),TaskAction.ANY_APPROVE);
+        // 完成节点
+        nodeLifeCycle.finishCancel(node.getId());
 
-        // 6) 完成节点
-        nodeLifeCycle.finishCancel(node);
 
         // 发布“任务驳回”事件 afterCommit
         WfEventContext wfEventContext = buildEventContextByTask(instance,wfBizRef,task);

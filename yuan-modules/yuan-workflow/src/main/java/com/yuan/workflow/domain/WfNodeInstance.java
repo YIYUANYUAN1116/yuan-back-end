@@ -34,7 +34,7 @@ public class WfNodeInstance extends TenantEntity {
     private Long instanceId;
 
     /**
-     * 节点标识(start/approve_1)
+     * lgFlow的ID
      */
     private String nodeKey;
 
