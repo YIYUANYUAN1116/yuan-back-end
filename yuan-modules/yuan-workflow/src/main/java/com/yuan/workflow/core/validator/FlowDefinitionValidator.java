@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.validator;
 
-import com.yuan.workflow.api.enums.NodeType;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;

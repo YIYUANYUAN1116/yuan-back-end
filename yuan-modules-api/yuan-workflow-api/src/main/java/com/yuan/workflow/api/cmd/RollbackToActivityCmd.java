@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class RollbackToCmd extends WorkflowCmd {
+public class RollbackToActivityCmd extends WorkflowCmd {
     @NotNull(message = "任务Id不能为空")
     private Long taskId;
 
     @NotBlank(message = "目标节点不能为空")
-    private String targetNodeId;
+    private String targetActivityId;
 }

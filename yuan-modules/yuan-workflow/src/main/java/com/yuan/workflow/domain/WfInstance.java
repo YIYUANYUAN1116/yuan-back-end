@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
+import com.yuan.workflow.domain.enums.InstanceStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -52,9 +53,9 @@ public class WfInstance extends TenantEntity {
 
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
-     * @see com.yuan.workflow.api.enums.InstanceStatus
+     * @see InstanceStatus
      */
-    private String status;
+    private InstanceStatus status;
 
     /**
      * 发起人
@@ -82,5 +83,9 @@ public class WfInstance extends TenantEntity {
     private LocalDateTime endTime;
 
     private String variables;
+
+    private String endReason;
+    private String endComment;
+    private Long endBy;
 
 }

@@ -9,7 +9,7 @@ import com.yuan.common.json.utils.JsonUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
-import com.yuan.workflow.api.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
@@ -128,7 +128,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setDefinitionId(def.getId());
         instance.setDefinitionKey(def.getDefinitionKey());
         instance.setVersion(def.getVersion());
-        instance.setStatus(InstanceStatus.RUNNING.getCode());
+        instance.setStatus(InstanceStatus.RUNNING);
         instance.setStartUserId(cmd.getStarterUserId());
         instance.setStartUserName(cmd.getStarterUserName());
         instance.setOperatorUserId(cmd.getOperatorUserId());

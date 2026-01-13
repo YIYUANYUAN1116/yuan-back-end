@@ -10,4 +10,9 @@
         WHERE instance_id = #{instanceId}
           AND status = 'WAIT';
     </update>
+    <select id="nextOrderNo" resultType="java.lang.Integer">
+        select max(orderNo)+1
+        from wf_node_instance
+        WHERE instance_id = #{instanceId}
+    </select>
 </mapper>

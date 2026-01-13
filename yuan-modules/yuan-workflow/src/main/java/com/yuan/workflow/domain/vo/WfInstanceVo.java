@@ -76,6 +76,9 @@ public class WfInstanceVo implements Serializable {
      */
     @ExcelProperty(value = "结束时间")
     private LocalDateTime endTime;
+    private String endReason;
+    private String endComment;
+    private Long endBy;
 
     private String bizType;
     private String definitionName;

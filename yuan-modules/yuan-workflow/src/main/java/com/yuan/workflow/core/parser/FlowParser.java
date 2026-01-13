@@ -1,8 +1,10 @@
 package com.yuan.workflow.core.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yuan.workflow.api.enums.NodeType;
+import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.core.evaluator.SimpleConditionEvaluator;
+import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.model.Expression;
 import com.yuan.workflow.model.logicflow.LfEdge;
@@ -10,6 +12,7 @@ import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.model.logicflow.LfProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FlowParser {
@@ -29,16 +33,31 @@ public class FlowParser {
         return json.getNodes().stream()
                 .filter(n-> Objects.equals(n.getProperties().getWfType(), NodeType.START.getCode()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("未找到 START 节点"));
+                .orElseThrow(() -> {
+                    log.error("getStartNode error, start node not found,definitionId={}, name={}, version={}", def.getId(), def.getDefinitionName(), def.getVersion());
+                    return  new ProcessDefinitionParseException(
+                            WorkflowErrorCode.WF_DEFINITION_NO_START_NODE,
+                            def.getId(),
+                            def.getVersion()
+                    );
+                });
     }
 
 
-    public LfNode getNode(WfDefinition def, String nodeKey) {
+    public LfNode getNode(WfDefinition def, String id) {
         LfGraph json = parse(def);
         return json.getNodes().stream()
-                .filter(n-> Objects.equals(n.getId(), nodeKey))
+                .filter(n-> Objects.equals(n.getId(), id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("节点不存在: " + nodeKey));
+                .orElseThrow(() -> {
+                    log.error("getNode error, node not found: definitionId={}, name={}, version={},node={}", def.getId(), def.getDefinitionName(), def.getVersion(),nodeKey);
+                    return  new ProcessDefinitionParseException(
+                            WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND,
+                            def.getId(),
+                            def.getVersion(),
+                            id
+                    );
+                });
     }
 
     public LfNode getNextNode(WfDefinition def, LfNode currentNode, Map<String, Object> variables) {
@@ -79,9 +98,15 @@ public class FlowParser {
             }
         }
 
-        throw new IllegalStateException(
-                "网关节点未命中任何条件，且无 defaultTarget: " + currentNode.getId());
-
+        log.error(
+                "Gateway node [{}] matched no condition and has no default target",
+                currentNode.getId()
+        );
+        throw new ProcessDefinitionParseException(
+                WorkflowErrorCode.WF_DEFINITION_NO_DEFAULT_GATEWAY,
+                def.getId(),
+                def.getVersion()
+        );
     }
 
 
@@ -92,7 +117,14 @@ public class FlowParser {
                 return objectMapper.readValue(
                         def.getFlowJson(), LfGraph.class);
             } catch (Exception e) {
-                throw new IllegalStateException("流程 JSON 解析失败", e);
+                log.error(
+                        "Failed to parse workflow definition. definitionId={}, name={}, version={}",
+                        def.getId(),
+                        def.getDefinitionName(),
+                        def.getVersion(),
+                        e
+                );
+                throw new ProcessDefinitionParseException(def.getId(),def.getVersion());
             }
         });
     }

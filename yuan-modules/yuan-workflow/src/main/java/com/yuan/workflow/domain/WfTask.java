@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
-import com.yuan.workflow.api.enums.TaskAction;
-import com.yuan.workflow.api.enums.TaskStatus;
+import com.yuan.workflow.domain.enums.TaskAction;
+import com.yuan.workflow.domain.enums.TaskStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -48,13 +48,13 @@ public class WfTask extends TenantEntity {
      * 状态(TODO/DONE/TRANSFERRED)
      * @see TaskStatus
      */
-    private String status;
+    private TaskStatus status;
 
     /**
      * 操作(APPROVE/REJECT/TRANSFER)
      * @see TaskAction
      */
-    private String action;
+    private TaskAction action;
 
     /**
      * 审批意见

@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+/**
+ * 通过任务ID加载相关wf信息
+ */
 @Component
 @RequiredArgsConstructor
 public class WfContextLoader {

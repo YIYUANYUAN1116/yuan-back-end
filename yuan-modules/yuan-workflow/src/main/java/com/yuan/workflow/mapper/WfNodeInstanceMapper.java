@@ -16,4 +16,6 @@ import org.apache.ibatis.annotations.Param;
 public interface WfNodeInstanceMapper extends BaseMapperPlus<WfNodeInstance, WfNodeInstanceVo> {
 
     void finishAll(@Param("instanceId") Long instanceId,@Param("status") String status);
+
+    int nextOrderNo(@Param("instanceId") Long instanceId);
 }

@@ -1,4 +1,4 @@
-package com.yuan.workflow.api.enums;
+package com.yuan.workflow.domain.enums;
 
 import com.yuan.common.core.enums.BaseEnum;
 import com.yuan.common.core.exception.base.BaseException;
@@ -11,10 +11,12 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum TaskAction implements BaseEnum {
 
-    APPROVE("APPROVE", "同意"),
+    ANY_APPROVE("ANY_APPROVE", "或签同意"),
     REJECT("REJECT", "驳回"),
+    ROLLBACK("ROLLBACK", "退回"),
     TRANSFER("TRANSFER", "转签"),
     ADD_SIGN("ADD_SIGN", "加签"),
+    ALL_APPROVE("ALL_APPROVE","会签同意"),
     WITHDRAW("WITHDRAW", "撤回");
 
     private final String code;

@@ -9,7 +9,7 @@ public interface WorkflowEngine {
     void rejectTask(RejectTaskCmd rejectTaskCmd);
 
     void rollbackToPrev(RollbackToPrevCmd rollbackToPrevCmd);
-    void rollbackTo(RollbackToCmd rollbackToCmd);
+    void rollbackToActivity(RollbackToActivityCmd rollbackToCmd);
 
     void withdraw(WithdrawCmd withdrawCmd);
     void transfer(TransferTaskCmd transferTaskCmd);

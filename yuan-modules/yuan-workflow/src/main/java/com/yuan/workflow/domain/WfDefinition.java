@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.yuan.common.tenant.core.TenantEntity;
+import com.yuan.workflow.domain.enums.DefinitionStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -44,7 +45,7 @@ public class WfDefinition extends TenantEntity {
     /**
      * 状态(DRAFT/PUBLISHED)
      */
-    private String status;
+    private DefinitionStatus status;
 
     /**
      * 表单定义(JSON Schema)

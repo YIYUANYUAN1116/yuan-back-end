@@ -1,5 +1,6 @@
-package com.yuan.workflow.api.enums;
+package com.yuan.workflow.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.yuan.common.core.enums.BaseEnum;
 import com.yuan.common.core.exception.base.BaseException;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ public enum DefinitionStatus implements BaseEnum {
     PUBLISHED("PUBLISHED", "已发布"),
     DISABLED("DISABLED", "已停用");
 
+    @EnumValue
     private final String code;
     private final String desc;
 

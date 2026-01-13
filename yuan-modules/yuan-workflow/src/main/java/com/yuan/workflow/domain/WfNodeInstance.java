@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
+import com.yuan.workflow.domain.enums.AssigneeType;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -38,12 +41,12 @@ public class WfNodeInstance extends TenantEntity {
     /**
      * 节点类型(START/APPROVAL/GATEWAY/END)
      */
-    private String nodeType;
+    private NodeType nodeType;
 
     /**
      * 审批人类型(USER/ROLE/DEPT)
      */
-    private String assigneeType;
+    private AssigneeType assigneeType;
 
     /**
      * 审批人值
@@ -53,7 +56,7 @@ public class WfNodeInstance extends TenantEntity {
     /**
      * 状态(WAIT/DONE)
      */
-    private String status;
+    private NodeStatus status;
 
     /**
      * 执行顺序
