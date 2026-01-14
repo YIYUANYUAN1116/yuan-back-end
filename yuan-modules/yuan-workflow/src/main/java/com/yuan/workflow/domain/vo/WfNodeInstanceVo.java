@@ -33,6 +33,8 @@ public class WfNodeInstanceVo implements Serializable {
      */
     @ExcelProperty(value = "节点标识(start/approve_1)")
     private String nodeKey;
+    @ExcelProperty(value = "节点标识名称")
+    private String nodeName;
     /**
      * 节点类型(START/APPROVAL/GATEWAY/END)
      */

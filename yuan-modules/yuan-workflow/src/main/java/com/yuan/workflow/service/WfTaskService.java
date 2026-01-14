@@ -6,6 +6,7 @@ import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
+import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,4 +51,8 @@ public interface WfTaskService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds);
+
+    TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery);
+
+    TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery);
 }

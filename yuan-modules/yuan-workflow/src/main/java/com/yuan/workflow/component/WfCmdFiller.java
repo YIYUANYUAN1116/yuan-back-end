@@ -13,14 +13,14 @@ public class WfCmdFiller {
     public void fill(WorkflowCmd cmd) {
         LoginUser u = LoginHelper.getLoginUser();
         cmd.setTenantId(u.getTenantId());
-        cmd.setOperatorUserId(u.getUserId());
-        cmd.setOperatorUserName(u.getNickName());
+        cmd.setOperatorId(u.getUserId());
+        cmd.setOperatorName(u.getNickName());
         if (cmd instanceof StartProcessCmd startProcessCmd) {
-            if (startProcessCmd.getStarterUserId() == null) {
-                startProcessCmd.setStarterUserId(u.getUserId());
-                startProcessCmd.setStarterUserName(u.getNickName());
-                startProcessCmd.setStarterDeptId(u.getDeptId());
-                startProcessCmd.setStarterDeptName(u.getDeptName());
+            if (startProcessCmd.getStartId() == null) {
+                startProcessCmd.setStartId(u.getUserId());
+                startProcessCmd.setStartName(u.getNickName());
+                startProcessCmd.setStartDeptId(u.getDeptId());
+                startProcessCmd.setStartDeptName(u.getDeptName());
             }
         }
     }

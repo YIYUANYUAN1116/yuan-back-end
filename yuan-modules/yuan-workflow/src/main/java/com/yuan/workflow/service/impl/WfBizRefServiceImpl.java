@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wfrefService业务层处理
@@ -123,10 +124,15 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         ref.setBizNo(cmd.getBizNo());
         ref.setInstanceId(instanceId);
         ref.setStatus(InstanceStatus.RUNNING);
-        ref.setCreateBy(cmd.getStarterUserId());
+        ref.setCreateBy(cmd.getStartId());
         ref.setRef_type("PRIMARY");
         ref.setCreateTime(new Date());
         ref.setUpdateTime(new Date());
         baseMapper.insert(ref);
+    }
+
+    @Override
+    public List<WfBizRef> listByInstanceIds(Set<Long> instanceIds) {
+        return baseMapper.selectList(Wrappers.<WfBizRef>lambdaQuery().in(WfBizRef::getInstanceId, instanceIds));
     }
 }

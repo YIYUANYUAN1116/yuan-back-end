@@ -1,5 +1,6 @@
 package com.yuan.system.service.impl;
 
+import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.system.api.UserQueryApi;
 import com.yuan.system.domain.SysDept;
 import com.yuan.system.domain.SysUser;
@@ -9,6 +10,8 @@ import com.yuan.system.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -44,6 +47,12 @@ public class UserQueryApiImpl implements UserQueryApi {
     @Override
     public Set<Long> findUserIdsByPostIds(Set<Long> postId) {
         return userMapper.selectUserIdsByPostIds(postId);
+    }
+
+    @Override
+    public Map<Long, String> getUserNameMap(Set<Long> userIds) {
+        List<SysUser> sysUsers = userMapper.selectByIds(userIds);
+        return StreamUtils.toMap(sysUsers,SysUser::getUserId,SysUser::getNickName);
     }
 }
 

@@ -1,5 +1,7 @@
 package com.yuan.workflow.core.engine.support;
 
+import com.yuan.workflow.api.cmd.ApproveTaskCmd;
+import com.yuan.workflow.api.cmd.WorkflowCmd;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
@@ -33,7 +35,7 @@ public class FlowAdvanceService {
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
 
-    public void advance(WfNodeInstance currentNode,Long operatorId) {
+    public void advance(WfNodeInstance currentNode, ApproveTaskCmd cmd) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
 
         WfDefinition def = definitionMapper.selectById(instance.getDefinitionId());
@@ -43,16 +45,16 @@ public class FlowAdvanceService {
         // 用最新变量（finish 时已 mergeAndSave）
         Map<String, Object> vars = variableService.getVars(instance);
         LfNode next = flowParser.getNextNode(def, currentFlowNode, vars);
-        advanceToTarget(instance,next,operatorId);
+        advanceToTarget(instance,next,cmd);
     }
 
-    public void advanceToTarget(WfInstance instance,LfNode lfNode,Long operatorId) {
+    public void advanceToTarget(WfInstance instance, LfNode lfNode, WorkflowCmd cmd) {
         if (lfNode == null) {
             throw new RollbackTargetInvalidException(); // 或 WF_NODE_NOT_FOUND
         }
 
         if (NodeType.END.getCode().equals(lfNode.getProperties().getWfType())) {
-            instanceLifecycle.finishApproved(instance, operatorId);
+            instanceLifecycle.finishApproved(instance, cmd);
             return;
         }
 

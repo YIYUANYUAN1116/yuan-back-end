@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.json.utils.JsonUtils;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
@@ -14,6 +15,7 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
+import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfInstanceService;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +68,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                 lqw.eq(bo.getTenantId() != null, "wi.tenant_id", bo.getTenantId());
                 lqw.eq(bo.getDefinitionId() != null, "wi.definition_id", bo.getDefinitionId());
                 lqw.like(StringUtils.isNotBlank(bo.getDefinitionKey()), "wi.definition_key", bo.getDefinitionKey());
-                lqw.eq(bo.getVersion() != null, "wi.version", bo.getVersion());
+                lqw.eq(bo.getDefinitionVersion() != null, "wi.version", bo.getDefinitionVersion());
                 lqw.eq(StringUtils.isNotBlank(bo.getStatus()), "wi.status", bo.getStatus());
                 lqw.eq(bo.getStartUserId() != null, "wi.start_user_id", bo.getStartUserId());
                 lqw.like(StringUtils.isNotBlank(bo.getStartUserName()), "wi.start_user_name", bo.getStartUserName());
@@ -129,15 +131,23 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setDefinitionKey(def.getDefinitionKey());
         instance.setVersion(def.getVersion());
         instance.setStatus(InstanceStatus.RUNNING);
-        instance.setStartUserId(cmd.getStarterUserId());
-        instance.setStartUserName(cmd.getStarterUserName());
-        instance.setOperatorUserId(cmd.getOperatorUserId());
-        instance.setOperatorUserName(cmd.getOperatorUserName());
-        instance.setStartDeptId(cmd.getStarterDeptId());
-        instance.setStartDeptName(cmd.getStarterDeptName());
+        instance.setStartId(cmd.getStartId());
+        instance.setStartName(cmd.getStartName());
+        instance.setLastOperatorId(cmd.getOperatorId());
+        instance.setLastOperatorName(cmd.getOperatorName());
+        instance.setStartDeptId(cmd.getStartDeptId());
+        instance.setStartDeptName(cmd.getStartDeptName());
         instance.setDefinitionName(def.getDefinitionName());
         instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
         baseMapper.insert(instance);
         return instance;
+    }
+
+    @Override
+    public TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery) {
+        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
+        lqw.eq("wi.start_user_id", LoginHelper.getUserId());
+        Page<WfInstanceVo> result = baseMapper.selectWfInstanceVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
     }
 }

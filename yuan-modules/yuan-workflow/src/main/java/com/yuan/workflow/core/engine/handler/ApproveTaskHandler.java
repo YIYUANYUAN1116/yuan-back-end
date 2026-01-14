@@ -27,7 +27,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
     @Override
     @Transactional
     public Void handle(ApproveTaskCmd cmd) {
-        Long operatorId = cmd.getOperatorUserId();
+        Long operatorId = cmd.getOperatorId();
 
         // 1) load 上下文（task/node/instance/def/bizRef）
         WfContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
@@ -48,7 +48,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
         nodeInstanceLifeCycle.finishDone(task.getNodeInstanceId());
 
         // 7) 推进
-        flowAdvanceService.advance(node,cmd.getOperatorUserId());
+        flowAdvanceService.advance(node,cmd);
 
         return null;
     }

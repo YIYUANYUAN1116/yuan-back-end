@@ -22,6 +22,6 @@ public class WfEventContext {
     private Long nodeId;
     private String nodeName;
 
-    private Long starterUserId;
-    private Long operatorUserId;
+    private Long starterId;
+    private Long operatorId;
 }

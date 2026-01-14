@@ -90,7 +90,7 @@ public final class WfEventFactory {
                 .taskId(ctx.getTaskId())
                 .nodeId(ctx.getNodeId())
                 .nodeName(ctx.getNodeName())
-                .starterId(ctx.getStarterUserId())
-                .operatorId(ctx.getOperatorUserId());
+                .starterId(ctx.getStarterId())
+                .operatorId(ctx.getOperatorId());
     }
 }

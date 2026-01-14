@@ -16,6 +16,7 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
+import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.service.WfTaskService;
 import com.yuan.workflow.service.WorkflowService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -159,4 +160,17 @@ public class WfTaskController extends BaseController {
         return R.ok();
     }
 
+    @SaCheckPermission("workflow:wfTask:list")
+    @GetMapping("/my-task")
+    @Operation(summary = "我的代办",operationId = "WfTask_MyTask")
+    public TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery) {
+        return wfTaskService.myTask(bo, pageQuery);
+    }
+
+    @SaCheckPermission("workflow:wfTask:list")
+    @GetMapping("/my-approval")
+    @Operation(summary = "我的已办",operationId = "WfTask_MyApprovals")
+    public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
+        return wfTaskService.myApproval(bo, pageQuery);
+    }
 }

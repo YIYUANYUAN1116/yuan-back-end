@@ -4,23 +4,33 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
+import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.domain.enums.TaskStatus;
+import com.yuan.system.api.UserQueryApi;
+import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
-import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.enums.TaskStatus;
 import com.yuan.workflow.domain.vo.WfTaskVo;
+import com.yuan.workflow.domain.vo.WorkItemRowVO;
+import com.yuan.workflow.mapper.WfInstanceMapper;
+import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.mapper.WfTaskMapper;
+import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfTaskService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * wftService业务层处理
@@ -33,6 +43,10 @@ import java.util.Set;
 public class WfTaskServiceImpl implements WfTaskService {
 
     private final WfTaskMapper baseMapper;
+    private final WfInstanceMapper instanceMapper;
+    private final WfNodeInstanceMapper nodeInstanceMapper;
+    private final WfBizRefService wfBizRefService;
+    private final UserQueryApi userQueryApi;
 
     /**
      * 查询wft
@@ -129,5 +143,94 @@ public class WfTaskServiceImpl implements WfTaskService {
             task.setStatus(TaskStatus.TODO);
             baseMapper.insert(task);
         }
+    }
+
+    @Override
+    public TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
+        lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+        lqw.eq(WfTask::getStatus,TaskStatus.TODO);
+        Page<WfTaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(enrichFromTaskPage(result));
+    }
+
+    @Override
+    public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
+        lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+        lqw.eq(WfTask::getStatus,TaskStatus.DONE);
+        Page<WfTaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(enrichFromTaskPage(result));
+    }
+
+    private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTaskVo> taskPage){
+        List<WfTaskVo> tasks = taskPage.getRecords();
+        if (tasks.isEmpty()) {
+            return new Page<>(taskPage.getCurrent(), taskPage.getSize(), taskPage.getTotal());
+        }
+
+        Set<Long> instanceIds = tasks.stream().map(WfTaskVo::getInstanceId).collect(Collectors.toSet());
+        Set<Long> nodeInsIds  = tasks.stream().map(WfTaskVo::getNodeInstanceId).collect(Collectors.toSet());
+        Set<Long> userIds     = tasks.stream().map(WfTaskVo::getAssigneeId).collect(Collectors.toSet());
+
+        List<WfInstance> instances = instanceMapper.selectByIds(instanceIds);
+        Map<Long, WfInstance> instanceMap = StreamUtils.toMap(instances, WfInstance::getId);
+
+        List<WfNodeInstance> nodeInsList = nodeInstanceMapper.selectByIds(nodeInsIds);
+        Map<Long, WfNodeInstance> nodeMap = StreamUtils.toMap(nodeInsList, WfNodeInstance::getId);
+
+        List<WfBizRef> bizRefs = wfBizRefService.listByInstanceIds(instanceIds);
+        Map<Long, WfBizRef> bizMap = StreamUtils.toMap(bizRefs, WfBizRef::getInstanceId);
+
+        // starterId 需要从 instance 取
+        instances.forEach(i -> userIds.add(i.getStartUserId()));
+
+        Map<Long, String> userNameMap = userQueryApi.getUserNameMap(userIds);
+
+        List<WorkItemRowVO> rows = tasks.stream().map(t -> {
+            WorkItemRowVO vo = new WorkItemRowVO();
+            vo.setTaskId(t.getId());
+            vo.setInstanceId(t.getInstanceId());
+            vo.setNodeInstanceId(t.getNodeInstanceId());
+
+            vo.setTaskStatus(t.getStatus());
+            vo.setTaskAction(t.getAction());
+            vo.setTaskComment(t.getComment());
+            vo.setTaskCreateTime(t.getCreateTime());
+            vo.setTaskFinishTime(t.getFinishTime());
+
+            WfInstance ins = instanceMap.get(t.getInstanceId());
+            if (ins != null) {
+                vo.setInstanceStatus(ins.getStatus().getCode());
+                vo.setInstanceStartTime(ins.getStartTime());
+                vo.setInstanceEndTime(ins.getEndTime());
+                vo.setInstanceEndReason(ins.getEndReason().getCode());
+                vo.setInstanceEndComment(ins.getEndComment());
+                vo.setStarterId(ins.getStartUserId());
+                vo.setStarterName(userNameMap.get(ins.getStartUserId()));
+            }
+
+            WfNodeInstance ni = nodeMap.get(t.getNodeInstanceId());
+            if (ni != null) {
+                vo.setNodeKey(ni.getNodeKey());
+                // 如果你有 nodeNameSnapshot，就取它；没有就先用 nodeKey
+                vo.setNodeName(ni.getNodeKey());
+            }
+
+            WfBizRef br = bizMap.get(t.getInstanceId());
+            if (br != null) {
+                vo.setBizType(br.getBizType());
+                vo.setBizId(br.getBizId());
+                vo.setBizNo(br.getBizNo());
+            }
+
+            vo.setAssigneeId(t.getAssigneeId());
+            vo.setAssigneeName(userNameMap.get(t.getAssigneeId()));
+            return vo;
+        }).toList();
+
+        Page<WorkItemRowVO> voPage = new Page<>(taskPage.getCurrent(), taskPage.getSize(), taskPage.getTotal());
+        voPage.setRecords(rows);
+        return voPage;
     }
 }

@@ -41,18 +41,14 @@ public class WfInstanceBo implements Serializable {
     /**
      * 流程版本
      */
-    private Integer version;
+    private Integer definitionVersion;
 
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
      */
 
     private String status;
-    /**
-     * 发起人
-     */
 
-    private Long startUserId;
     /**
      * startTime
      */
@@ -64,14 +60,17 @@ public class WfInstanceBo implements Serializable {
 
     private String variables;
 
+    private Long startId;
 
-    private String startUserName;
+    private String startName;
+
+    private Long startDeptId;
 
     private String startDeptName;
 
-    private Long operatorUserId;
+    private Long lastOperatorId;
 
-    private String operatorUserName;
+    private String lastOperatorName;
 
     private String endReason;
     private String endComment;

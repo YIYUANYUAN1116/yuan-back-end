@@ -49,7 +49,7 @@ public class WfInstance extends TenantEntity {
     /**
      * 流程版本
      */
-    private Integer version;
+    private Integer definitionVersion;
 
 
     /**
@@ -61,17 +61,17 @@ public class WfInstance extends TenantEntity {
     /**
      * 发起人
      */
-    private Long startUserId;
+    private Long startId;
 
-    private String startUserName;
+    private String startName;
 
     private Long startDeptId;
 
     private String startDeptName;
 
-    private Long operatorUserId;
+    private Long lastOperatorId;
 
-    private String operatorUserName;
+    private String lastOperatorName;
 
     /**
      * startTime

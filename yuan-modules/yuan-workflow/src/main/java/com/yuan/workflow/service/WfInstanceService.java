@@ -7,6 +7,7 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
+import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,4 +51,6 @@ public interface WfInstanceService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     WfInstance createInstance(StartProcessCmd cmd, WfDefinition def);
+
+    TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery);
 }

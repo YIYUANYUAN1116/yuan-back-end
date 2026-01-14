@@ -28,9 +28,9 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
         Long instanceId = cmd.getInstanceId();
         WfInstance wfInstance = wfInstanceMapper.selectById(instanceId);
         //校验
-        wfOperationGuard.assertWithDraw(wfInstance,cmd.getOperatorUserId());
+        wfOperationGuard.assertWithDraw(wfInstance,cmd.getOperatorId());
 
-        instanceLifecycle.finishWithDraw(wfInstance,cmd.getOperatorUserId(),cmd.getComment());
+        instanceLifecycle.finishWithDraw(wfInstance,cmd);
 
         return null;
     }

@@ -1,6 +1,7 @@
 package com.yuan.workflow.core.engine.support;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yuan.workflow.api.cmd.TransferTaskCmd;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.WfTaskLog;
 import com.yuan.workflow.domain.enums.TaskAction;
@@ -22,17 +23,20 @@ public class TaskLifecycle {
     private final WfTaskLogMapper taskLogMapper;
 
     public void finish(WfTask task, TaskAction action, String comment, Long operatorId) {
-        task.setStatus(TaskStatus.DONE);
-        task.setAction(action);
-        task.setComment(comment);
-        task.setFinishTime(LocalDateTime.now());
-      int updated = taskMapper.updateById(task);
-      if (updated == 0) {
-        log.error("[finish] update wfTask fail. taskId={},operatorId={},action={}",task.getId(),operatorId,action.getCode());
-        throw new TaskAlreadyHandledException(task.getId(), operatorId);
-      }
-      cancelOtherTodoTasks(task.getNodeInstanceId(),task.getId(),action);
-      insertTaskLog(task, action, operatorId, comment);
+        int updated = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
+                .eq(WfTask::getId, task)
+                .eq(WfTask::getStatus, TaskStatus.TODO.getCode())
+                .set(WfTask::getStatus, TaskStatus.DONE)
+                .set(WfTask::getAction, action)
+                .set(WfTask::getFinishTime, LocalDateTime.now())
+                .set(WfTask::getOperatorId, operatorId)
+                .set(WfTask::getComment, comment));
+        if (updated == 0) {
+            log.error("[finish] update wfTask fail. taskId={},operatorId={},action={}", task.getId(), operatorId, action.getCode());
+            throw new TaskAlreadyHandledException(task.getId(), operatorId);
+        }
+        cancelOtherTodoTasks(task.getNodeInstanceId(), task.getId(), action);
+        insertTaskLog(task, action, operatorId, comment);
     }
 
     /**
@@ -44,21 +48,21 @@ public class TaskLifecycle {
                 action.getCode(),
                 TaskStatus.TODO.getCode(),
                 TaskStatus.CANCELED.getCode());
-      if (updated == 0) {
-        log.error("[cancelOtherTodoTasks] update wfTask fail. nodeInstanceId={},action={}",nodeInstanceId,action.getCode());
-        throw new TaskAlreadyHandledException();
-      }
+        if (updated == 0) {
+            log.error("[cancelOtherTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
+            throw new TaskAlreadyHandledException();
+        }
     }
 
     public void cancelAllTodoTasks(Long nodeInstanceId, TaskAction action) {
-      int updated = taskMapper.updateAllTodoTasks(nodeInstanceId,
-              action.getCode(),
-              TaskStatus.TODO.getCode(),
-              TaskStatus.CANCELED.getCode());
-      if (updated == 0) {
-        log.error("[cancelAllTodoTasks] update wfTask fail. nodeInstanceId={},action={}",nodeInstanceId,action.getCode());
-        throw new TaskAlreadyHandledException();
-      }
+        int updated = taskMapper.updateAllTodoTasks(nodeInstanceId,
+                action.getCode(),
+                TaskStatus.TODO.getCode(),
+                TaskStatus.CANCELED.getCode());
+        if (updated == 0) {
+            log.error("[cancelAllTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
+            throw new TaskAlreadyHandledException();
+        }
     }
 
     /**
@@ -72,21 +76,20 @@ public class TaskLifecycle {
      * 转交
      *
      * @param task
-     * @param toUserId
-     * @param operatorId
-     * @param comment
      */
-    public void transfer(WfTask task, Long toUserId, Long operatorId, String comment) {
+    public void transfer(WfTask task, TransferTaskCmd cmd) {
         int update = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
                 .eq(WfTask::getId, task)
                 .eq(WfTask::getStatus, TaskStatus.TODO.getCode())
-                .set(WfTask::getAssigneeId, toUserId)
-                .set(WfTask::getComment, comment));
+                .set(WfTask::getAssigneeId, cmd.getToUserId())
+                .set(WfTask::getTransferFrom, cmd.getOperatorId())
+                .set(WfTask::getTransferTime, LocalDateTime.now())
+                .set(WfTask::getComment, cmd.getComment()));
         if (update == 0) {
-            log.error("[transfer] update wfTask fail. taskId={}, toUserId={}, operatorId={}", task.getId(), toUserId, operatorId);
-            throw new TaskAlreadyHandledException(task.getId(), operatorId);
+            log.error("[transfer] update wfTask fail. taskId={}, toUserId={}, operatorId={}", task.getId(),  cmd.getToUserId(), cmd.getOperatorId());
+            throw new TaskAlreadyHandledException(task.getId(), cmd.getOperatorId());
         }
-        insertTaskLog(task, TaskAction.TRANSFER, operatorId, comment);
+        insertTaskLog(task, TaskAction.TRANSFER,  cmd.getOperatorId(), cmd.getComment());
 
     }
 

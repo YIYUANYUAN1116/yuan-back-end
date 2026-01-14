@@ -68,7 +68,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
         } else {
             // 没有审批节点，直接结束
             log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
-            instanceLifecycle.finishApproved(instance, cmd.getOperatorUserId());
+            instanceLifecycle.finishApproved(instance, cmd);
         }
 
         return instance.getId();

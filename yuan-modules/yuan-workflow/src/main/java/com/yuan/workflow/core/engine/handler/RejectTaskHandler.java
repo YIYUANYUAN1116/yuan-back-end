@@ -34,7 +34,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
     @Override
     @Transactional
     public Void handle(RejectTaskCmd cmd) {
-        Long operatorId = cmd.getOperatorUserId();
+        Long operatorId = cmd.getOperatorId();
 
         //  load 上下文
         WfContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
@@ -67,7 +67,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
         }
 
         // 结束实例
-        instanceLifecycle.finishRejected(instance,operatorId);
+        instanceLifecycle.finishRejected(instance,cmd);
         return null;
     }
 
@@ -84,8 +84,8 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
                 .instanceId(instance.getId())
                 .taskId(task.getId())
                 .nodeId(task.getNodeInstanceId())
-                .starterUserId(instance.getStartUserId())
-                .operatorUserId(task.getAssigneeId())
+                .starterId(instance.getStartId())
+                .operatorId(task.getAssigneeId())
                 .build();
     }
 }

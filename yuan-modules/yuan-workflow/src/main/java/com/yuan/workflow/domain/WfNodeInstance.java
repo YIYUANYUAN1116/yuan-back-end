@@ -38,6 +38,8 @@ public class WfNodeInstance extends TenantEntity {
      */
     private String nodeKey;
 
+    private String nodeName;
+
     /**
      * 节点类型(START/APPROVAL/GATEWAY/END)
      */

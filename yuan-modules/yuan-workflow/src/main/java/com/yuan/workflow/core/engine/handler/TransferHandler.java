@@ -22,7 +22,7 @@ public class TransferHandler implements  CommandHandler<TransferTaskCmd,Void>{
     @Override
     @Transactional
     public Void handle(TransferTaskCmd cmd) {
-        Long operatorId = cmd.getOperatorUserId();
+        Long operatorId = cmd.getOperatorId();
 
         WfContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = ctx.task();
@@ -33,9 +33,7 @@ public class TransferHandler implements  CommandHandler<TransferTaskCmd,Void>{
         // 2) 执行转交：task 只是换 assignee
         taskLifecycle.transfer(
                 task,
-                cmd.getToUserId(),
-                operatorId,
-                cmd.getComment()
+                cmd
         );
 
         return null;

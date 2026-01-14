@@ -2,6 +2,7 @@ package com.yuan.system.api;
 
 import com.yuan.system.dto.SysUserDTO;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface UserQueryApi {
@@ -29,4 +30,6 @@ public interface UserQueryApi {
      * 根据岗位查询
      */
     Set<Long> findUserIdsByPostIds(Set<Long> postId);
+
+    Map<Long, String> getUserNameMap(Set<Long> userIds);
 }

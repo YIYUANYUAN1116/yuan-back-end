@@ -56,17 +56,17 @@ public class RollbackToActivityHandler implements CommandHandler<RollbackToActiv
         }
 
         //判断当前操作人是否可操作该任务
-        wfOperationGuard.assertCanOperate(task,cmd.getOperatorUserId());
+        wfOperationGuard.assertCanOperate(task,cmd.getOperatorId());
 
         variableService.mergeAndSave(taskCtx.instance(), cmd.getVariables());
 
         //完成当前任务
-        taskLifecycle.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorUserId());
+        taskLifecycle.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorId());
 
         //修改节点状态
         nodeInstanceLifeCycle.finishCancel(currentNode.getId());
 
-        flowAdvanceService.advanceToTarget(instance,target,cmd.getOperatorUserId());
+        flowAdvanceService.advanceToTarget(instance,target,cmd);
 
         return null;
     }

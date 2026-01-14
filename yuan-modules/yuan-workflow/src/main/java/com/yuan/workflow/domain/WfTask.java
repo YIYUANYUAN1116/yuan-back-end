@@ -44,8 +44,11 @@ public class WfTask extends TenantEntity {
      */
     private Long assigneeId;
 
+    private Long operatorId;
+
+    private Long transferFrom;
+    private LocalDateTime transferTime;
     /**
-     * 状态(TODO/DONE/TRANSFERRED)
      * @see TaskStatus
      */
     private TaskStatus status;

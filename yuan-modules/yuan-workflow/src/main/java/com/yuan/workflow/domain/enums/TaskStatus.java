@@ -21,7 +21,6 @@ public enum TaskStatus implements BaseEnum {
 
     TODO("TODO", "待处理"),
     DONE("DONE", "已完成"),
-    TRANSFERRED("TRANSFERRED", "已转签"),
     CANCELED("CANCELED", "已取消");
 
     @EnumValue

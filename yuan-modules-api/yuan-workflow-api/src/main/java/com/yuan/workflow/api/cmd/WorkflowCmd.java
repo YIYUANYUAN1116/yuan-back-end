@@ -8,9 +8,9 @@ import java.util.Map;
 public abstract class WorkflowCmd {
 
     /** 操作人（当前用户） */
-    private Long operatorUserId;
+    private Long operatorId;
 
-    private String operatorUserName;
+    private String operatorName;
 
     private String tenantId;
 

@@ -34,6 +34,8 @@ public class WfNodeInstanceBo implements Serializable {
      */
     @NotBlank(message = "节点标识(start/approve_1)不能为空", groups = { AddGroup.class, EditGroup.class })
     private String nodeKey;
+
+    private String nodeName;
     /**
      * 节点类型(START/APPROVAL/GATEWAY/END)
      */
@@ -43,6 +45,7 @@ public class WfNodeInstanceBo implements Serializable {
      * 审批人类型(USER/ROLE/DEPT)
      */
     private String assigneeType;
+
     /**
      * 审批人值
      */

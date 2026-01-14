@@ -111,6 +111,10 @@ public class StreamUtils {
         return collection.stream().collect(Collectors.toMap(key, value, (l, r) -> l));
     }
 
+    public  static  <K, V> Map<K, V> toMap(List<V> list, Function<V, K> keyFn) {
+        return list.stream().collect(Collectors.toMap(keyFn, Function.identity(), (a,b)->a));
+    }
+
     /**
      * 将collection按照规则(比如有相同的班级id)分类成map<br>
      * <B>{@code Collection<E> -------> Map<K,List<E>> } </B>

@@ -1,5 +1,6 @@
 package com.yuan.workflow.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -44,6 +45,12 @@ public class WfTaskBo implements Serializable {
      */
     @NotNull(message = "审批人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long assigneeId;
+
+    private Long operatorId;
+
+    private Long transferFrom;
+
+    private LocalDateTime transferTime;
     /**
      * 状态(TODO/DONE/TRANSFERRED)
      */

@@ -43,7 +43,7 @@ public class WfInstanceVo implements Serializable {
      * 流程版本
      */
     @ExcelProperty(value = "流程版本")
-    private Integer version;
+    private Integer definitionVersion;
 
     /**
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
@@ -54,18 +54,18 @@ public class WfInstanceVo implements Serializable {
      * 发起人
      */
     @ExcelProperty(value = "发起人Id")
-    private Long startUserId;
+    private Long startId;
     @ExcelProperty(value = "发起人")
-    private String startUserName;
+    private String startName;
 
     @ExcelProperty(value = "发起人部门Id")
     private Long startDeptId;
     @ExcelProperty(value = "发起人部门")
     private String startDeptName;
     @ExcelProperty(value = "操作人Id")
-    private Long operatorUserId;
+    private Long lastOperatorId;
     @ExcelProperty(value = "操作人")
-    private String operatorUserName;
+    private String lastOperatorName;
     /**
      * startTime
      */

@@ -3,11 +3,13 @@ package com.yuan.workflow.service;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.bo.WfBizRefBo;
 import com.yuan.workflow.domain.vo.WfBizRefVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wfrefService接口
@@ -48,4 +50,6 @@ public interface WfBizRefService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     void bindWfBizRef(StartProcessCmd cmd, Long id);
+
+    List<WfBizRef> listByInstanceIds(Set<Long> instanceIds);
 }

@@ -1,6 +1,9 @@
 package com.yuan.workflow.core.engine.support;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.yuan.workflow.api.cmd.RejectTaskCmd;
+import com.yuan.workflow.api.cmd.WithdrawCmd;
+import com.yuan.workflow.api.cmd.WorkflowCmd;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
 import com.yuan.workflow.core.event.WfEventContext;
 import com.yuan.workflow.core.event.WfEventFactory;
@@ -35,49 +38,55 @@ public class InstanceLifecycle {
     private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
 
     @Transactional
-    public void finishRejected(Long instanceId, Long operatorId) {
+    public void finishRejected(Long instanceId, RejectTaskCmd cmd) {
         WfInstance instance = instanceMapper.selectById(instanceId);
         if (instance == null) throw new InstanceNotFoundException();
-        finishRejected(instance, operatorId);
+        finishRejected(instance, cmd);
     }
 
     @Transactional
-    public void finishRejected(WfInstance instance, Long operatorId) {
+    public void finishRejected(WfInstance instance, RejectTaskCmd cmd) {
         instance.setStatus(InstanceStatus.REJECTED);
         instance.setEndTime(LocalDateTime.now());
+        instance.setLastOperatorId(cmd.getOperatorId());
+        instance.setLastOperatorName(cmd.getOperatorName());
         instanceMapper.updateById(instance);
         afterFinishProcess(instance.getId(), InstanceStatus.REJECTED);
         // 发结束事件
-        WfEventContext ctx = buildWfEventContext(instance, operatorId);
+        WfEventContext ctx = buildWfEventContext(instance, cmd.getOperatorId());
         eventPublisher.publishAfterCommit(WfEventFactory.buildInstanceEnded(ctx, WfEndReason.REJECTED, Map.of()));
     }
 
     @Transactional
-    public void finishApproved(Long instanceId, Long operatorId) {
+    public void finishApproved(Long instanceId, WorkflowCmd cmd) {
         WfInstance instance = instanceMapper.selectById(instanceId);
         if (instance == null) throw new InstanceNotFoundException();
+        finishApproved(instance, cmd);
     }
 
     @Transactional
-    public void finishApproved(WfInstance instance, Long operatorId) {
+    public void finishApproved(WfInstance instance, WorkflowCmd cmd) {
         instance.setStatus(InstanceStatus.APPROVED);
+        instance.setLastOperatorId(cmd.getOperatorId());
+        instance.setLastOperatorName(cmd.getOperatorName());
+        instance.setEndBy(cmd.getOperatorId());
         instance.setEndTime(LocalDateTime.now());
         instanceMapper.updateById(instance);
         afterFinishProcess(instance.getId(), InstanceStatus.APPROVED);
         // 发结束事件
-        WfEventContext ctx = buildWfEventContext(instance, operatorId);
+        WfEventContext ctx = buildWfEventContext(instance, cmd.getOperatorId());
         eventPublisher.publishAfterCommit(WfEventFactory.buildInstanceEnded(ctx, WfEndReason.APPROVED, Map.of()));
     }
 
     @Transactional
-    public void finishWithDraw(Long instanceId, Long operatorId, String comment) {
+    public void finishWithDraw(Long instanceId, WithdrawCmd cmd) {
         WfInstance instance = instanceMapper.selectById(instanceId);
         if (instance == null) throw new InstanceNotFoundException();
-        finishWithDraw(instance, operatorId, comment);
+        finishWithDraw(instance, cmd);
     }
 
     @Transactional
-    public void finishWithDraw(WfInstance instance, Long operatorId, String comment) {
+    public void finishWithDraw(WfInstance instance, WithdrawCmd cmd) {
 
         // 取消所有待办任务（实例级）
         taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW);
@@ -88,14 +97,16 @@ public class InstanceLifecycle {
         //更新实例
         instance.setStatus(InstanceStatus.CANCELED);
         instance.setEndTime(LocalDateTime.now());
-        instance.setEndComment(comment);
-        instance.setEndBy(operatorId);
+        instance.setEndComment(cmd.getComment());
+        instance.setEndBy(cmd.getOperatorId());
         instance.setEndReason(WfEndReason.WITHDRAWN);
+        instance.setLastOperatorId(cmd.getOperatorId());
+        instance.setLastOperatorName(cmd.getOperatorName());
         instanceMapper.updateById(instance);
 
         afterFinishProcess(instance.getId(), InstanceStatus.CANCELED);
         // 发结束事件
-        WfEventContext ctx = buildWfEventContext(instance, operatorId);
+        WfEventContext ctx = buildWfEventContext(instance, cmd.getOperatorId());
         eventPublisher.publishAfterCommit(WfEventFactory.buildInstanceEnded(ctx, WfEndReason.WITHDRAWN, Map.of()));
     }
 
@@ -119,8 +130,8 @@ public class InstanceLifecycle {
                 .bizType(bizRef != null ? bizRef.getBizType() : null)
                 .definitionId(instance.getDefinitionId())
                 .instanceId(instance.getId())
-                .starterUserId(instance.getStartUserId())
-                .operatorUserId(operatorId)
+                .starterId(instance.getStartId())
+                .operatorId(operatorId)
                 .build();
     }
 }

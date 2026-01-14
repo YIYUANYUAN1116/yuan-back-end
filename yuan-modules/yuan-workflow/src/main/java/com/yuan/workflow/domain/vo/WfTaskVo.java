@@ -43,6 +43,12 @@ public class WfTaskVo implements Serializable {
      */
     @ExcelProperty(value = "审批人ID")
     private Long assigneeId;
+    @ExcelProperty(value = "操作人Id")
+    private Long operatorId;
+    @ExcelProperty(value = "转交来自")
+    private Long transferFrom;
+    @ExcelProperty(value = "转交日期")
+    private LocalDateTime transferTime;
     /**
      * 状态(TODO/DONE/TRANSFERRED)
      */
