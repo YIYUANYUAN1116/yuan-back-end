@@ -183,7 +183,7 @@ public class WfTaskServiceImpl implements WfTaskService {
         Map<Long, WfBizRef> bizMap = StreamUtils.toMap(bizRefs, WfBizRef::getInstanceId);
 
         // starterId 需要从 instance 取
-        instances.forEach(i -> userIds.add(i.getStartUserId()));
+        instances.forEach(i -> userIds.add(i.getStartId()));
 
         Map<Long, String> userNameMap = userQueryApi.getUserNameMap(userIds);
 
@@ -206,15 +206,15 @@ public class WfTaskServiceImpl implements WfTaskService {
                 vo.setInstanceEndTime(ins.getEndTime());
                 vo.setInstanceEndReason(ins.getEndReason().getCode());
                 vo.setInstanceEndComment(ins.getEndComment());
-                vo.setStarterId(ins.getStartUserId());
-                vo.setStarterName(userNameMap.get(ins.getStartUserId()));
+                vo.setStarterId(ins.getStartId());
+                vo.setStarterName(userNameMap.get(ins.getStartId()));
             }
 
             WfNodeInstance ni = nodeMap.get(t.getNodeInstanceId());
             if (ni != null) {
                 vo.setNodeKey(ni.getNodeKey());
                 // 如果你有 nodeNameSnapshot，就取它；没有就先用 nodeKey
-                vo.setNodeName(ni.getNodeKey());
+                vo.setNodeName(ni.getNodeName());
             }
 
             WfBizRef br = bizMap.get(t.getInstanceId());

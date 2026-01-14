@@ -6,14 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.json.utils.JsonUtils;
-import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
-import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
+import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
@@ -70,8 +69,8 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                 lqw.like(StringUtils.isNotBlank(bo.getDefinitionKey()), "wi.definition_key", bo.getDefinitionKey());
                 lqw.eq(bo.getDefinitionVersion() != null, "wi.version", bo.getDefinitionVersion());
                 lqw.eq(StringUtils.isNotBlank(bo.getStatus()), "wi.status", bo.getStatus());
-                lqw.eq(bo.getStartUserId() != null, "wi.start_user_id", bo.getStartUserId());
-                lqw.like(StringUtils.isNotBlank(bo.getStartUserName()), "wi.start_user_name", bo.getStartUserName());
+                lqw.eq(bo.getStartId() != null, "wi.start_id", bo.getStartId());
+                lqw.like(StringUtils.isNotBlank(bo.getStartName()), "wi.start_name", bo.getStartName());
                 lqw.like(StringUtils.isNotBlank(bo.getStartDeptName()), "wi.start_dept_name", bo.getStartDeptName());
                 lqw.eq(bo.getStartTime() != null, "wi.start_time", bo.getStartTime());
                 lqw.eq(bo.getEndTime() != null, "wi.end_time", bo.getEndTime());
@@ -129,7 +128,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setTenantId(cmd.getTenantId());
         instance.setDefinitionId(def.getId());
         instance.setDefinitionKey(def.getDefinitionKey());
-        instance.setVersion(def.getVersion());
+        instance.setDefinitionVersion(def.getVersion());
         instance.setStatus(InstanceStatus.RUNNING);
         instance.setStartId(cmd.getStartId());
         instance.setStartName(cmd.getStartName());
@@ -145,9 +144,10 @@ public class WfInstanceServiceImpl implements WfInstanceService {
 
     @Override
     public TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery) {
-        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
-        lqw.eq("wi.start_user_id", LoginHelper.getUserId());
-        Page<WfInstanceVo> result = baseMapper.selectWfInstanceVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(result);
+//        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
+//        lqw.eq("wi.start_user_id", LoginHelper.getUserId());
+//        Page<WfInstanceVo> result = baseMapper.selectWfInstanceVoPage(pageQuery.build(), lqw);
+//        return TableDataInfo.build(result);
+        return null;
     }
 }

@@ -55,7 +55,7 @@ public class WfOperationGuard {
             log.error("[assertWithDraw]:Instance is null");
             throw new InstanceNotFoundException();
         }
-        if (!Objects.equals(operatorId, instance.getOperatorUserId())) {
+        if (!Objects.equals(operatorId, instance.getStartId())) {
             throw new InstancePermissionDeniedException(instance.getId(),operatorId);
         }
     }
