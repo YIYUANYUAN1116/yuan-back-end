@@ -135,6 +135,13 @@ public class LoginHelper {
     }
 
     /**
+     * 获取部门名称
+     */
+    public static String getDeptName() {
+        return getLoginUser().getDeptName();
+    }
+
+    /**
      * 获取用户账户
      */
     public static String getUsername() {

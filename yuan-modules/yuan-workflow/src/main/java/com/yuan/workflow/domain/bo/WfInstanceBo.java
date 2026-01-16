@@ -60,13 +60,13 @@ public class WfInstanceBo implements Serializable {
 
     private String variables;
 
-    private Long startId;
+    private Long starterId;
 
-    private String startName;
+    private String starterName;
 
-    private Long startDeptId;
+    private Long starterDeptId;
 
-    private String startDeptName;
+    private String starterDeptName;
 
     private Long lastOperatorId;
 

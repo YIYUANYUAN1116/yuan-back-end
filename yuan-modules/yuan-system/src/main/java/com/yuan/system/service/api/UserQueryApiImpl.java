@@ -1,4 +1,4 @@
-package com.yuan.system.service.impl;
+package com.yuan.system.service.api;
 
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.system.api.UserQueryApi;

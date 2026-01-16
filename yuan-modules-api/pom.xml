@@ -17,6 +17,7 @@
     <modules>
         <module>yuan-system-api</module>
         <module>yuan-workflow-api</module>
+        <module>yuan-oa-api</module>
     </modules>
 
 

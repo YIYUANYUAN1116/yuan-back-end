@@ -148,30 +148,34 @@ public class WfTaskServiceImpl implements WfTaskService {
     @Override
     public TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
-        lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+        if (!LoginHelper.isSuperAdmin()){
+            lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+        }
         lqw.eq(WfTask::getStatus,TaskStatus.TODO);
-        Page<WfTaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(enrichFromTaskPage(result));
+        Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }
 
     @Override
     public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
-        lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+        if (!LoginHelper.isSuperAdmin()){
+            lqw.eq(WfTask::getOperatorId, LoginHelper.getUserId());
+        }
         lqw.eq(WfTask::getStatus,TaskStatus.DONE);
-        Page<WfTaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(enrichFromTaskPage(result));
+        Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }
 
-    private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTaskVo> taskPage){
-        List<WfTaskVo> tasks = taskPage.getRecords();
+    private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){
+        List<WfTask> tasks = taskPage.getRecords();
         if (tasks.isEmpty()) {
             return new Page<>(taskPage.getCurrent(), taskPage.getSize(), taskPage.getTotal());
         }
 
-        Set<Long> instanceIds = tasks.stream().map(WfTaskVo::getInstanceId).collect(Collectors.toSet());
-        Set<Long> nodeInsIds  = tasks.stream().map(WfTaskVo::getNodeInstanceId).collect(Collectors.toSet());
-        Set<Long> userIds     = tasks.stream().map(WfTaskVo::getAssigneeId).collect(Collectors.toSet());
+        Set<Long> instanceIds = tasks.stream().map(WfTask::getInstanceId).collect(Collectors.toSet());
+        Set<Long> nodeInsIds  = tasks.stream().map(WfTask::getNodeInstanceId).collect(Collectors.toSet());
+        Set<Long> userIds     = tasks.stream().map(WfTask::getAssigneeId).collect(Collectors.toSet());
 
         List<WfInstance> instances = instanceMapper.selectByIds(instanceIds);
         Map<Long, WfInstance> instanceMap = StreamUtils.toMap(instances, WfInstance::getId);
@@ -183,7 +187,7 @@ public class WfTaskServiceImpl implements WfTaskService {
         Map<Long, WfBizRef> bizMap = StreamUtils.toMap(bizRefs, WfBizRef::getInstanceId);
 
         // starterId 需要从 instance 取
-        instances.forEach(i -> userIds.add(i.getStartId()));
+        instances.forEach(i -> userIds.add(i.getStarterId()));
 
         Map<Long, String> userNameMap = userQueryApi.getUserNameMap(userIds);
 
@@ -201,13 +205,13 @@ public class WfTaskServiceImpl implements WfTaskService {
 
             WfInstance ins = instanceMap.get(t.getInstanceId());
             if (ins != null) {
-                vo.setInstanceStatus(ins.getStatus().getCode());
+                vo.setInstanceStatus(ins.getStatus());
                 vo.setInstanceStartTime(ins.getStartTime());
                 vo.setInstanceEndTime(ins.getEndTime());
-                vo.setInstanceEndReason(ins.getEndReason().getCode());
+                vo.setInstanceEndReason(ins.getEndReason());
                 vo.setInstanceEndComment(ins.getEndComment());
-                vo.setStarterId(ins.getStartId());
-                vo.setStarterName(userNameMap.get(ins.getStartId()));
+                vo.setStarterId(ins.getStarterId());
+                vo.setStarterName(userNameMap.get(ins.getStarterId()));
             }
 
             WfNodeInstance ni = nodeMap.get(t.getNodeInstanceId());

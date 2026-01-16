@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wfnService业务层处理
@@ -137,5 +138,13 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
     @Override
     public int nextOrderNo(Long instanceId) {
         return baseMapper.nextOrderNo(instanceId);
+    }
+
+    @Override
+    public List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds) {
+        LambdaQueryWrapper<WfNodeInstance> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(WfNodeInstance::getInstanceId, instanceIds)
+                .eq(WfNodeInstance::getStatus, NodeStatus.WAIT);
+        return baseMapper.selectList(queryWrapper);
     }
 }

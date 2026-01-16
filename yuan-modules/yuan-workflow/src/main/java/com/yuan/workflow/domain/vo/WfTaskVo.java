@@ -2,6 +2,8 @@ package com.yuan.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.workflow.domain.enums.TaskAction;
+import com.yuan.workflow.domain.enums.TaskStatus;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -49,16 +51,14 @@ public class WfTaskVo implements Serializable {
     private Long transferFrom;
     @ExcelProperty(value = "转交日期")
     private LocalDateTime transferTime;
-    /**
-     * 状态(TODO/DONE/TRANSFERRED)
-     */
-    @ExcelProperty(value = "状态(TODO/DONE/TRANSFERRED)")
-    private String status;
+
+    @ExcelProperty(value = "状态(TODO/DONE)")
+    private TaskStatus status;
     /**
      * 操作(APPROVE/REJECT/TRANSFER)
      */
     @ExcelProperty(value = "操作(APPROVE/REJECT/TRANSFER)")
-    private String action;
+    private TaskAction action;
     /**
      * 审批意见
      */

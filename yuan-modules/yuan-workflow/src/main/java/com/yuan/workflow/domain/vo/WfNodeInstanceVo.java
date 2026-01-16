@@ -2,6 +2,8 @@ package com.yuan.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -39,7 +41,7 @@ public class WfNodeInstanceVo implements Serializable {
      * 节点类型(START/APPROVAL/GATEWAY/END)
      */
     @ExcelProperty(value = "节点类型(START/APPROVAL/GATEWAY/END)")
-    private String nodeType;
+    private NodeType nodeType;
     /**
      * 审批人类型(USER/ROLE/DEPT)
      */
@@ -54,7 +56,7 @@ public class WfNodeInstanceVo implements Serializable {
      * 状态(WAIT/DONE)
      */
     @ExcelProperty(value = "状态(WAIT/DONE)")
-    private String status;
+    private NodeStatus status;
     /**
      * 执行顺序
      */

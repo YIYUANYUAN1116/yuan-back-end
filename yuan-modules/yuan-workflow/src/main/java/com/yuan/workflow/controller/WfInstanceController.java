@@ -16,7 +16,6 @@ import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
-import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WorkflowService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,14 +25,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -135,11 +127,6 @@ public class WfInstanceController extends BaseController {
         return R.ok(instanceId);
     }
 
-    @SaCheckPermission("workflow:wfInstance:list")
-    @GetMapping("/my-apply")
-    @Operation(summary = "我的申请",operationId = "WfInstance_MyApply")
-    public TableDataInfo<WorkItemRowVO> apply(WfInstanceBo bo, PageQuery pageQuery) {
-        return wfInstanceService.myApply(bo, pageQuery);
-    }
+
 
 }

@@ -1,8 +1,13 @@
 package com.yuan.workflow.domain.vo;
 
+import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.TaskAction;
+import com.yuan.workflow.domain.enums.TaskStatus;
+import com.yuan.workflow.domain.enums.WfEndReason;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class WorkItemRowVO {
@@ -10,16 +15,16 @@ public class WorkItemRowVO {
     private Long instanceId;
     private Long nodeInstanceId;
 
-    private String taskStatus;    // TODO/DONE/CANCELED
-    private String taskAction;    // APPROVE/REJECT/ROLLBACK/WITHDRAW/TRANSFER
+    private TaskStatus taskStatus;    // TODO/DONE/CANCELED
+    private TaskAction taskAction;    // APPROVE/REJECT/ROLLBACK/WITHDRAW/TRANSFER
     private String taskComment;
-    private LocalDateTime taskCreateTime;
+    private Date taskCreateTime;
     private LocalDateTime taskFinishTime;
 
-    private String instanceStatus;   // RUNNING/APPROVED/REJECTED/CANCELED...
+    private InstanceStatus instanceStatus;   // RUNNING/APPROVED/REJECTED/CANCELED...
     private LocalDateTime instanceStartTime;
     private LocalDateTime instanceEndTime;
-    private String instanceEndReason;
+    private WfEndReason instanceEndReason;
     private String instanceEndComment;
 
     private String nodeKey;

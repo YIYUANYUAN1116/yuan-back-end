@@ -84,7 +84,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
                 .instanceId(instance.getId())
                 .taskId(task.getId())
                 .nodeId(task.getNodeInstanceId())
-                .starterId(instance.getStartId())
+                .starterId(instance.getStarterId())
                 .operatorId(task.getAssigneeId())
                 .build();
     }

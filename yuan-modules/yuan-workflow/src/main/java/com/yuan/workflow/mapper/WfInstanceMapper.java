@@ -18,5 +18,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface WfInstanceMapper extends BaseMapperPlus<WfInstance, WfInstanceVo> {
 
-    Page<WfInstanceVo> selectWfInstanceVoPage(@Param("page") Page<WfInstance> build,@Param(Constants.WRAPPER) Wrapper<WfInstance> lqw);
+    Page<WfInstanceVo> selectWfInstanceVoPage(@Param("page") Page<WfInstance> page,@Param(Constants.WRAPPER) Wrapper<WfInstance> lqw);
 }

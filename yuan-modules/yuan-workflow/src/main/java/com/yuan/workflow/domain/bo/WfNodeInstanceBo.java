@@ -2,11 +2,11 @@ package com.yuan.workflow.domain.bo;
 
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
+import com.yuan.workflow.domain.WfNodeInstance;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import com.yuan.workflow.domain.WfNodeInstance;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

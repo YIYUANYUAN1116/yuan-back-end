@@ -2,6 +2,8 @@ package com.yuan.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.WfEndReason;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -49,19 +51,19 @@ public class WfInstanceVo implements Serializable {
      * 状态(RUNNING/APPROVED/REJECTED/CANCELED)
      */
     @ExcelProperty(value = "状态(RUNNING/APPROVED/REJECTED/CANCELED)")
-    private String status;
+    private InstanceStatus status;
     /**
      * 发起人
      */
     @ExcelProperty(value = "发起人Id")
-    private Long startId;
+    private Long starterId;
     @ExcelProperty(value = "发起人")
-    private String startName;
+    private String starterName;
 
     @ExcelProperty(value = "发起人部门Id")
-    private Long startDeptId;
+    private Long starterDeptId;
     @ExcelProperty(value = "发起人部门")
-    private String startDeptName;
+    private String starterDeptName;
     @ExcelProperty(value = "操作人Id")
     private Long lastOperatorId;
     @ExcelProperty(value = "操作人")
@@ -76,7 +78,7 @@ public class WfInstanceVo implements Serializable {
      */
     @ExcelProperty(value = "结束时间")
     private LocalDateTime endTime;
-    private String endReason;
+    private WfEndReason endReason;
     private String endComment;
     private Long endBy;
 

@@ -10,6 +10,7 @@ import com.yuan.workflow.model.logicflow.LfNode;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * wfnService接口
@@ -52,4 +53,6 @@ public interface WfNodeInstanceService {
     WfNodeInstance createNodeInstance(Long instanceId, LfNode lfNode, NodeStatus nodeStatus, int orderNo);
 
     int nextOrderNo(Long instanceId);
+
+    List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds);
 }

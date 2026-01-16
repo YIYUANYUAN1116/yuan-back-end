@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.system.mapper.SysBizNoSeqMapper">
+
+    <select id="selectForUpdate" resultType="com.yuan.system.domain.SysBizNoSeq">
+        select * from sys_biz_no_seq
+        where biz_prefix = #{bizPrefix}
+          and biz_date = #{bizDate}
+            for update
+    </select>
+</mapper>

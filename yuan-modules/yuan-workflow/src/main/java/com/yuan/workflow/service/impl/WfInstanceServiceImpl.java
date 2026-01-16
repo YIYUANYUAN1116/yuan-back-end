@@ -1,27 +1,39 @@
 package com.yuan.workflow.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.utils.MapstructUtils;
+import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.json.utils.JsonUtils;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.api.UserQueryApi;
 import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
+import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfInstanceService;
+import com.yuan.workflow.service.WfNodeInstanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * wfiService业务层处理
@@ -33,7 +45,9 @@ import java.util.List;
 public class WfInstanceServiceImpl implements WfInstanceService {
 
     private final WfInstanceMapper baseMapper;
-
+    private final WfBizRefService bizRefService;
+    private final WfNodeInstanceService nodeInstanceService;
+    private final UserQueryApi userQueryApi;
     /**
      * 查询wfi
      */
@@ -69,14 +83,28 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                 lqw.like(StringUtils.isNotBlank(bo.getDefinitionKey()), "wi.definition_key", bo.getDefinitionKey());
                 lqw.eq(bo.getDefinitionVersion() != null, "wi.version", bo.getDefinitionVersion());
                 lqw.eq(StringUtils.isNotBlank(bo.getStatus()), "wi.status", bo.getStatus());
-                lqw.eq(bo.getStartId() != null, "wi.start_id", bo.getStartId());
-                lqw.like(StringUtils.isNotBlank(bo.getStartName()), "wi.start_name", bo.getStartName());
-                lqw.like(StringUtils.isNotBlank(bo.getStartDeptName()), "wi.start_dept_name", bo.getStartDeptName());
-                lqw.eq(bo.getStartTime() != null, "wi.start_time", bo.getStartTime());
+                lqw.eq(bo.getStarterId() != null, "wi.starter_id", bo.getStarterId());
+                lqw.like(StringUtils.isNotBlank(bo.getStarterName()), "wi.starter_name", bo.getStarterName());
+                lqw.like(StringUtils.isNotBlank(bo.getStarterDeptName()), "wi.starter_dept_name", bo.getStarterDeptName());
+                lqw.eq(bo.getStartTime() != null, "wi.starter_time", bo.getStartTime());
                 lqw.eq(bo.getEndTime() != null, "wi.end_time", bo.getEndTime());
                 lqw.like(StringUtils.isNotBlank(bo.getBizNo()), "wr.biz_no", bo.getBizNo());
                 lqw.eq(StringUtils.isNotBlank(bo.getBizType()), "wr.biz_type", bo.getBizType());
                 lqw.like(StringUtils.isNotBlank(bo.getDefinitionName()), "wi.definition_name", bo.getDefinitionName());
+        return lqw;
+    }
+
+    private LambdaQueryWrapper<WfInstance> buildLambdaQueryWrapper(WfInstanceBo bo) {
+        LambdaQueryWrapper<WfInstance> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getId() != null, WfInstance::getId, bo.getId());
+        lqw.eq(bo.getTenantId() != null, WfInstance::getTenantId, bo.getTenantId());
+        lqw.eq(bo.getDefinitionId() != null, WfInstance::getDefinitionId, bo.getDefinitionId());
+        lqw.eq(StringUtils.isNotBlank(bo.getDefinitionKey()), WfInstance::getDefinitionKey, bo.getDefinitionKey());
+        lqw.eq(bo.getDefinitionVersion() != null, WfInstance::getDefinitionVersion, bo.getDefinitionVersion());
+        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WfInstance::getStatus, bo.getStatus());
+        lqw.eq(bo.getStarterId() != null, WfInstance::getStarterId, bo.getStarterId());
+        lqw.eq(bo.getStartTime() != null, WfInstance::getStartTime, bo.getStartTime());
+        lqw.eq(bo.getEndTime() != null, WfInstance::getEndTime, bo.getEndTime());
         return lqw;
     }
 
@@ -130,12 +158,12 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setDefinitionKey(def.getDefinitionKey());
         instance.setDefinitionVersion(def.getVersion());
         instance.setStatus(InstanceStatus.RUNNING);
-        instance.setStartId(cmd.getStartId());
-        instance.setStartName(cmd.getStartName());
+        instance.setStarterId(cmd.getStartId());
+        instance.setStarterName(cmd.getStartName());
         instance.setLastOperatorId(cmd.getOperatorId());
         instance.setLastOperatorName(cmd.getOperatorName());
-        instance.setStartDeptId(cmd.getStartDeptId());
-        instance.setStartDeptName(cmd.getStartDeptName());
+        instance.setStarterDeptId(cmd.getStartDeptId());
+        instance.setStarterDeptName(cmd.getStartDeptName());
         instance.setDefinitionName(def.getDefinitionName());
         instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
         baseMapper.insert(instance);
@@ -144,10 +172,72 @@ public class WfInstanceServiceImpl implements WfInstanceService {
 
     @Override
     public TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery) {
-//        QueryWrapper<WfInstance> lqw = buildQueryWrapper(bo);
-//        lqw.eq("wi.start_user_id", LoginHelper.getUserId());
-//        Page<WfInstanceVo> result = baseMapper.selectWfInstanceVoPage(pageQuery.build(), lqw);
-//        return TableDataInfo.build(result);
-        return null;
+        LambdaQueryWrapper<WfInstance> lqw = buildLambdaQueryWrapper(bo);
+        if (!LoginHelper.isSuperAdmin()){
+            lqw.eq(WfInstance::getStarterId, LoginHelper.getUserId());
+        }
+        Page<WfInstance> wfInstancePage = baseMapper.selectPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(enrichFromInstancePage(wfInstancePage));
     }
+
+    private Page<WorkItemRowVO> enrichFromInstancePage(Page<WfInstance> insPage) {
+        List<WfInstance> instances = insPage.getRecords();
+        if (instances.isEmpty()) {
+            return new Page<>(insPage.getCurrent(), insPage.getSize(), insPage.getTotal());
+        }
+
+        Set<Long> instanceIds = instances.stream().map(WfInstance::getId).collect(Collectors.toSet());
+
+        List<WfBizRef> bizRefs = bizRefService.listByInstanceIds(instanceIds);
+        Map<Long, WfBizRef> bizMap = StreamUtils.toMap(bizRefs, WfBizRef::getInstanceId);
+
+        // 当前节点（WAIT）
+        List<WfNodeInstance> waitNodes = nodeInstanceService.listWaitNodesByInstanceIds(instanceIds);
+        // 如果一个实例可能多个 WAIT，这里按 orderNo 最大取一个
+        Map<Long, WfNodeInstance> currentNodeMap = waitNodes.stream()
+                .collect(Collectors.toMap(
+                        WfNodeInstance::getInstanceId,
+                        Function.identity(),
+                        (a, b) -> (a.getOrderNo() >= b.getOrderNo()) ? a : b
+                ));
+
+        Set<Long> userIds = instances.stream().map(WfInstance::getStarterId).collect(Collectors.toSet());
+        Map<Long, String> userNameMap = userQueryApi.getUserNameMap(userIds);
+
+        List<WorkItemRowVO> rows = instances.stream().map(ins -> {
+            WorkItemRowVO vo = new WorkItemRowVO();
+            vo.setInstanceId(ins.getId());
+            vo.setInstanceStatus(ins.getStatus());
+            vo.setInstanceStartTime(ins.getStartTime());
+            vo.setInstanceEndTime(ins.getEndTime());
+            vo.setInstanceEndReason(ins.getEndReason());
+            vo.setInstanceEndComment(ins.getEndComment());
+
+            vo.setStarterId(ins.getStarterId());
+            vo.setStarterName(userNameMap.get(ins.getStarterId()));
+
+            WfBizRef br = bizMap.get(ins.getId());
+            if (br != null) {
+                vo.setBizType(br.getBizType());
+                vo.setBizId(br.getBizId());
+                vo.setBizNo(br.getBizNo());
+            }
+
+            WfNodeInstance cur = currentNodeMap.get(ins.getId());
+            if (cur != null) {
+                vo.setNodeInstanceId(cur.getId());
+                vo.setNodeKey(cur.getNodeKey());
+                vo.setNodeName(cur.getNodeName());
+            } else {
+                // 已结束实例可能无 WAIT 节点
+                vo.setNodeName("已结束");
+            }
+            return vo;
+        }).toList();
+
+        Page<WorkItemRowVO> voPage = new Page<>(insPage.getCurrent(), insPage.getSize(), insPage.getTotal());
+        voPage.setRecords(rows);
+        return voPage;
+    }
+
 }

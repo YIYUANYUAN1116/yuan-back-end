@@ -130,7 +130,7 @@ public class InstanceLifecycle {
                 .bizType(bizRef != null ? bizRef.getBizType() : null)
                 .definitionId(instance.getDefinitionId())
                 .instanceId(instance.getId())
-                .starterId(instance.getStartId())
+                .starterId(instance.getStarterId())
                 .operatorId(operatorId)
                 .build();
     }

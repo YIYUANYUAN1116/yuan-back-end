@@ -61,13 +61,13 @@ public class WfInstance extends TenantEntity {
     /**
      * 发起人
      */
-    private Long startId;
+    private Long starterId;
 
-    private String startName;
+    private String starterName;
 
-    private Long startDeptId;
+    private Long starterDeptId;
 
-    private String startDeptName;
+    private String starterDeptName;
 
     private Long lastOperatorId;
 
