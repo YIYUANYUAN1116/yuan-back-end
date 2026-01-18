@@ -12,7 +12,7 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
-import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -25,8 +25,10 @@ import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WfNodeInstanceService;
+import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,6 +50,8 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     private final WfBizRefService bizRefService;
     private final WfNodeInstanceService nodeInstanceService;
     private final UserQueryApi userQueryApi;
+    private final WfTaskService wfTaskService;
+
     /**
      * 查询wfi
      */
@@ -143,11 +147,15 @@ public class WfInstanceServiceImpl implements WfInstanceService {
      * 批量删除wfi
      */
     @Override
+    @Transactional
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteBatchIds(ids) > 0;
+        nodeInstanceService.deleteByInstanceIds(ids);
+        wfTaskService.deleteByInstanceIds(ids);
+
+        return baseMapper.deleteByIds(ids) > 0;
     }
 
     @Override
@@ -158,12 +166,12 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         instance.setDefinitionKey(def.getDefinitionKey());
         instance.setDefinitionVersion(def.getVersion());
         instance.setStatus(InstanceStatus.RUNNING);
-        instance.setStarterId(cmd.getStartId());
-        instance.setStarterName(cmd.getStartName());
+        instance.setStarterId(cmd.getStarterId());
+        instance.setStarterName(cmd.getStarterName());
         instance.setLastOperatorId(cmd.getOperatorId());
         instance.setLastOperatorName(cmd.getOperatorName());
-        instance.setStarterDeptId(cmd.getStartDeptId());
-        instance.setStarterDeptName(cmd.getStartDeptName());
+        instance.setStarterDeptId(cmd.getStarterDeptId());
+        instance.setStarterDeptName(cmd.getStarterDeptName());
         instance.setDefinitionName(def.getDefinitionName());
         instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
         baseMapper.insert(instance);

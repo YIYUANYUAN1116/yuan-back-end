@@ -53,5 +53,10 @@
             <artifactId>yuan-common-doc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-workflow-api</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

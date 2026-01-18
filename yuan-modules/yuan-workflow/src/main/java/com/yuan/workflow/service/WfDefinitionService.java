@@ -51,4 +51,6 @@ public interface WfDefinitionService {
     Boolean updateByDto(WfDefinitionDto dto);
 
     Boolean changeStatus(Long id, DefinitionAction action);
+
+    boolean checkDefNameUnique(WfDefinitionBo bo);
 }

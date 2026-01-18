@@ -55,4 +55,6 @@ public interface WfTaskService {
     TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery);
 
     TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery);
+
+    void deleteByInstanceIds(Collection<Long> ids);
 }

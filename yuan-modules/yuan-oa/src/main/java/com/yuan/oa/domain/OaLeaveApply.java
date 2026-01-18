@@ -2,7 +2,9 @@ package com.yuan.oa.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.common.core.enums.apply.ApplyStatus;
 import com.yuan.common.tenant.core.TenantEntity;
 import lombok.Data;
 
@@ -82,6 +84,9 @@ public class OaLeaveApply extends TenantEntity {
     /**
      * 状态：DRAFT/APPROVING/APPROVED/REJECTED/CANCELED
      */
-    private String status;
+    private ApplyStatus status;
+
+    @TableLogic
+    private String delFlag;
 
 }

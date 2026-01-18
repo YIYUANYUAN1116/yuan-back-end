@@ -74,8 +74,10 @@ public enum WorkflowErrorCode {
     WF_VARIABLE_NOT_FOUND("WF_VARIABLE_NOT_FOUND", "流程变量不存在"),
     WF_VARIABLE_TYPE_MISMATCH("WF_VARIABLE_TYPE_MISMATCH", "流程变量类型不匹配"),
     WF_VARIABLE_REQUIRED("WF_VARIABLE_REQUIRED", "流程变量不能为空"),
-    WF_EXPRESSION_EVALUATE_ERROR("WF_EXPRESSION_EVALUATE_ERROR", "条件表达式计算失败");
+    WF_EXPRESSION_EVALUATE_ERROR("WF_EXPRESSION_EVALUATE_ERROR", "条件表达式计算失败"),
 
+    // ===== biz ===== 已存在
+    WF_BIZ_ALREADY_EXISTS("WF_BIZ_ALREADY_EXISTS", "该申请已提交，请勿重复提交");
 
     private final String code;
     private final String defaultMessage;

@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.core.engine.support.InstanceLifecycle;
@@ -45,7 +45,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
 
         // 1) 查最新已发布定义
         WfDefinition def = definitionMapper.selectLatestPublished(tenantId, cmd.getDefinitionKey());
-        wfOperationGuard.assertStartInstance(def);
+        wfOperationGuard.assertStartInstance(def,cmd);
 
         // 2) 创建实例
         WfInstance instance =  wfInstanceService.createInstance(cmd, def);

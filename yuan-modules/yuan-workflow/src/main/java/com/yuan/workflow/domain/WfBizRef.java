@@ -2,6 +2,7 @@ package com.yuan.workflow.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.core.domain.BaseEntity;
 import com.yuan.workflow.domain.enums.InstanceStatus;
@@ -51,4 +52,6 @@ public class WfBizRef extends BaseEntity {
      * PRIMARY/RELATED  多个业务对一个流程时，区分主业务和关联业务
      */
     private String ref_type;
+    @TableLogic
+    private String delFlag;
 }

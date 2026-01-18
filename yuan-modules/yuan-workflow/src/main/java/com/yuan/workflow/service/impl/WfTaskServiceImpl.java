@@ -10,21 +10,20 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
-import com.yuan.workflow.domain.WfBizRef;
-import com.yuan.workflow.domain.WfInstance;
-import com.yuan.workflow.domain.WfNodeInstance;
-import com.yuan.workflow.domain.WfTask;
+import com.yuan.workflow.domain.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.enums.TaskStatus;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
+import com.yuan.workflow.mapper.WfTaskLogMapper;
 import com.yuan.workflow.mapper.WfTaskMapper;
 import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -47,6 +46,7 @@ public class WfTaskServiceImpl implements WfTaskService {
     private final WfNodeInstanceMapper nodeInstanceMapper;
     private final WfBizRefService wfBizRefService;
     private final UserQueryApi userQueryApi;
+    private final WfTaskLogMapper wfTaskLogMapper;
 
     /**
      * 查询wft
@@ -165,6 +165,15 @@ public class WfTaskServiceImpl implements WfTaskService {
         lqw.eq(WfTask::getStatus,TaskStatus.DONE);
         Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
         return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
+    }
+
+    @Override
+    @Transactional
+    public void deleteByInstanceIds(Collection<Long> ids) {
+        baseMapper.delete(Wrappers.<WfTask>lambdaQuery()
+                .in(WfTask::getInstanceId, ids));
+        wfTaskLogMapper.delete(Wrappers.<WfTaskLog>lambdaQuery()
+        .in(WfTaskLog::getInstanceId, ids));
     }
 
     private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){

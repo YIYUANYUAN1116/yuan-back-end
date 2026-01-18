@@ -1,4 +1,4 @@
-package com.yuan.workflow.api.cmd;
+package com.yuan.workflow.cmd;
 
 import lombok.Data;
 

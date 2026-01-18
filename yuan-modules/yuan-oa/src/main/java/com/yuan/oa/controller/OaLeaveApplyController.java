@@ -126,4 +126,13 @@ public class OaLeaveApplyController extends BaseController {
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(oaLeaveApplyService.deleteWithValidByIds(List.of(ids), true));
     }
+
+    @SaCheckPermission("oa:leave:submit")
+    @Log(title = "发起请假申请", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @GetMapping("/submit")
+    @Operation(summary = "发起请假申请",operationId = "OaLeaveApply_submit")
+    public R<Void> submit(@RequestParam String bizNo) {
+        return toAjax(oaLeaveApplyService.submit(bizNo));
+    }
 }

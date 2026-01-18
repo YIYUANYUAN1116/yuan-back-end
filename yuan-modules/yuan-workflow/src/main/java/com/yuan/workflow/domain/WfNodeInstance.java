@@ -2,6 +2,7 @@ package com.yuan.workflow.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.AssigneeType;
@@ -64,5 +65,6 @@ public class WfNodeInstance extends TenantEntity {
      * 执行顺序
      */
     private Integer orderNo;
-
+    @TableLogic
+    private String delFlag;
 }

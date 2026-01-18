@@ -1,7 +1,7 @@
 package com.yuan.workflow.core.engine.support;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.yuan.workflow.api.cmd.TransferTaskCmd;
+import com.yuan.workflow.cmd.TransferTaskCmd;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.WfTaskLog;
 import com.yuan.workflow.domain.enums.TaskAction;
@@ -24,8 +24,8 @@ public class TaskLifecycle {
 
     public void finish(WfTask task, TaskAction action, String comment, Long operatorId) {
         int updated = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
-                .eq(WfTask::getId, task)
-                .eq(WfTask::getStatus, TaskStatus.TODO.getCode())
+                .eq(WfTask::getId, task.getId())
+                .eq(WfTask::getStatus, TaskStatus.TODO)
                 .set(WfTask::getStatus, TaskStatus.DONE)
                 .set(WfTask::getAction, action)
                 .set(WfTask::getFinishTime, LocalDateTime.now())
@@ -48,10 +48,10 @@ public class TaskLifecycle {
                 action.getCode(),
                 TaskStatus.TODO.getCode(),
                 TaskStatus.CANCELED.getCode());
-        if (updated == 0) {
-            log.error("[cancelOtherTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
-            throw new TaskAlreadyHandledException();
-        }
+//        if (updated == 0) {
+//            log.error("[cancelOtherTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
+//            throw new TaskAlreadyHandledException();
+//        }
     }
 
     public void cancelAllTodoTasks(Long nodeInstanceId, TaskAction action) {
@@ -79,7 +79,7 @@ public class TaskLifecycle {
      */
     public void transfer(WfTask task, TransferTaskCmd cmd) {
         int update = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
-                .eq(WfTask::getId, task)
+                .eq(WfTask::getId, task.getId())
                 .eq(WfTask::getStatus, TaskStatus.TODO.getCode())
                 .set(WfTask::getAssigneeId, cmd.getToUserId())
                 .set(WfTask::getTransferFrom, cmd.getOperatorId())

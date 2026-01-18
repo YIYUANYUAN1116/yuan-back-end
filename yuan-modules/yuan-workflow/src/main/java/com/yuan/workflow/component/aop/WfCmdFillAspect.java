@@ -1,7 +1,7 @@
 package com.yuan.workflow.component.aop;
 
 import com.yuan.workflow.annotation.FillWfCmd;
-import com.yuan.workflow.api.cmd.WorkflowCmd;
+import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.component.WfCmdFiller;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -10,7 +10,9 @@ import com.yuan.common.core.exception.AuthException;
 import com.yuan.common.core.exception.GlobalException;
 import com.yuan.common.core.exception.ServiceException;
 import com.yuan.common.core.exception.base.BaseException;
+import com.yuan.common.core.exception.oa.OaException;
 import com.yuan.common.core.exception.user.UserException;
+import com.yuan.common.core.exception.workflow.WorkflowException;
 import com.yuan.common.core.utils.StreamUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -28,6 +30,32 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * OA异常
+     * @param e
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(WorkflowException.class)
+    public R<Void> handleWorkflowException(WorkflowException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',errorCode'{}'", requestURI,e.getErrorCode());
+        return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, e.getMessage());
+    }
+
+    /**
+     * OA异常
+     * @param e
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(OaException.class)
+    public R<Void> handleOaException(OaException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',errorCode'{}'", requestURI,e.getErrorCode());
+        return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, e.getMessage());
+    }
 
 
     /**

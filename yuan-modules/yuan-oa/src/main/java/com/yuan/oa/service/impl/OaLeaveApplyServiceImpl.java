@@ -5,6 +5,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.common.core.bizno.BizNoGenerator;
 import com.yuan.common.core.bizno.BizNoPrefixEnum;
+import com.yuan.common.core.constant.ApplyConstants;
+import com.yuan.common.core.enums.apply.ApplyStatus;
+import com.yuan.common.core.exception.base.BaseException;
+import com.yuan.common.core.exception.oa.OaErrorCode;
+import com.yuan.common.core.exception.oa.OaException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.satoken.utils.LoginHelper;
@@ -15,12 +20,17 @@ import com.yuan.oa.domain.bo.OaLeaveApplyBo;
 import com.yuan.oa.domain.vo.OaLeaveApplyVo;
 import com.yuan.oa.mapper.OaLeaveApplyMapper;
 import com.yuan.oa.service.OaLeaveApplyService;
+import com.yuan.workflow.api.WorkflowService;
+import com.yuan.workflow.cmd.StartProcessCmd;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * oa_leaveService业务层处理
@@ -34,6 +44,7 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
 
     private final OaLeaveApplyMapper baseMapper;
     private final BizNoGenerator bizNoGenerator;
+    private final WorkflowService workflowService;
 
     /**
      * 查询oa_leave
@@ -117,6 +128,14 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
      */
     private void validEntityBeforeSave(OaLeaveApply entity) {
         //TODO 做一些数据校验,如唯一约束
+        if (entity.getId() != null) {
+            OaLeaveApply oaLeaveApply = baseMapper.selectById(entity.getId());
+            if (!oaLeaveApply.getStatus().equals(ApplyStatus.DRAFT)){
+                throw new OaException(OaErrorCode.CANNOT_EDIT_NON_DRAFT);
+            }
+        }
+
+
     }
 
     /**
@@ -127,13 +146,58 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
+            baseMapper.selectByIds(ids).forEach(bo -> {
+                if (!bo.getStatus().equals(ApplyStatus.DRAFT)){
+                    throw new OaException(OaErrorCode.CANNOT_DELETE_NON_DRAFT);
+                }
+            });
         }
-        return baseMapper.deleteBatchIds(ids) > 0;
+        return baseMapper.deleteByIds(ids) > 0;
     }
 
     @Override
     public OaLeaveApplyVo queryByBizNo(String bizNo) {
         return baseMapper.selectVoOne(Wrappers.<OaLeaveApply>lambdaQuery().eq(OaLeaveApply::getApplyNo, bizNo));
+    }
+
+    @Override
+    @Transactional
+    public Boolean submit(String bizNo) {
+
+        // 1) 查单据
+        OaLeaveApply apply = baseMapper.selectOne(Wrappers.<OaLeaveApply>lambdaQuery().eq(OaLeaveApply::getApplyNo, bizNo));
+        if (apply == null) {
+            throw new BaseException("申请不存在");
+        }
+
+        // 2) 状态校验：只能草稿提交
+        if (!ApplyStatus.DRAFT.equals(apply.getStatus())) {
+            throw new BaseException("只能提交草稿状态的申请");
+        }
+
+        // 3) 组装发起流程命令
+        StartProcessCmd cmd = new StartProcessCmd();
+        cmd.setBizType(ApplyConstants.OA_LEAVE);
+        cmd.setBizId(apply.getId());
+        cmd.setBizNo(apply.getApplyNo());
+        cmd.setStarterId(LoginHelper.getUserId());
+        cmd.setStarterDeptId(LoginHelper.getDeptId());
+        cmd.setTitle(apply.getApplicantName() + " 请假 " + (apply.getLeaveDays() == null ? "" : apply.getLeaveDays()) + " 天");
+        cmd.setDefinitionKey(ApplyConstants.OA_LEAVE);
+        // 网关/指派需要的变量
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("days", apply.getLeaveDays());
+        cmd.setVariables(vars);
+
+        // 4) 发起流程
+        Long instanceId = workflowService.startProcess(cmd);
+
+        // 5) 回写：状态=审批中 + instanceId + submitTime
+        OaLeaveApply upd = new OaLeaveApply();
+        upd.setId(apply.getId());
+        upd.setStatus(ApplyStatus.APPROVING);
+        upd.setStartTime(LocalDateTime.now());
+        return baseMapper.updateById(upd)>0;
     }
 
     private void fillApplyBo(OaLeaveApplyBo bo) {

@@ -2,7 +2,7 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;

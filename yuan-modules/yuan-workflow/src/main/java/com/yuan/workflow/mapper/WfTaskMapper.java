@@ -18,7 +18,7 @@ public interface WfTaskMapper extends BaseMapperPlus<WfTask, WfTaskVo> {
     void finishAll(@Param("instanceId") Long instanceId,@Param("status") String status);
 
     int updateOtherTodoTasks(@Param("nodeInstanceId") Long nodeInstanceId,
-                              @Param("taskId") Long keepTaskId,
+                              @Param("keepTaskId") Long keepTaskId,
                               @Param("action")  String action,
                               @Param("fromStatus") String fromStatus,
                               @Param("toStatus") String toStatus);

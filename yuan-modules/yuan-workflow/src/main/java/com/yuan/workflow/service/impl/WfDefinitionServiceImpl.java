@@ -1,5 +1,6 @@
 package com.yuan.workflow.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -152,6 +153,14 @@ public class WfDefinitionServiceImpl implements WfDefinitionService {
         }
 
        return baseMapper.updateById(definition)>0;
+    }
+
+    @Override
+    public boolean checkDefNameUnique(WfDefinitionBo bo) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<WfDefinition>()
+                .eq(WfDefinition::getDefinitionName, bo.getDefinitionName())
+                .ne(ObjectUtil.isNotNull(bo.getId()), WfDefinition::getId, bo.getId()));
+        return !exist;
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.yuan.workflow.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.yuan.common.core.enums.BaseEnum;
 import com.yuan.common.core.exception.base.BaseException;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public enum TaskAction implements BaseEnum {
     ALL_APPROVE("ALL_APPROVE","会签同意"),
     WITHDRAW("WITHDRAW", "撤回");
 
+    @EnumValue
     private final String code;
     private final String desc;
 

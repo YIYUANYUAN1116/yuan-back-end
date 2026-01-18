@@ -90,6 +90,9 @@ public class WfDefinitionController extends BaseController {
     @PostMapping()
     @Operation(summary = "新增wfd",operationId = "WfDefinition_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody WfDefinitionBo bo) {
+        if (!wfDefinitionService.checkDefNameUnique(bo)) {
+            return R.fail("新增流程定义'" + bo.getDefinitionName() + "'失败，流程定义名称已存在");
+        }
         return toAjax(wfDefinitionService.insertByBo(bo));
     }
 
@@ -102,6 +105,9 @@ public class WfDefinitionController extends BaseController {
     @PutMapping()
     @Operation(summary = "修改wfd",operationId = "WfDefinition_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody WfDefinitionBo bo) {
+        if (!wfDefinitionService.checkDefNameUnique(bo)) {
+            return R.fail("编辑流程定义'" + bo.getDefinitionName() + "'失败，流程定义名称已存在");
+        }
         return toAjax(wfDefinitionService.updateByBo(bo));
     }
 

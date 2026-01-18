@@ -1,10 +1,10 @@
-package com.yuan.workflow.api.cmd;
+package com.yuan.workflow.cmd;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class RollbackToPrevCmd extends WorkflowCmd {
+public class ApproveTaskCmd extends WorkflowCmd {
     @NotNull(message = "任务Id不能为空")
     private Long taskId;
 }

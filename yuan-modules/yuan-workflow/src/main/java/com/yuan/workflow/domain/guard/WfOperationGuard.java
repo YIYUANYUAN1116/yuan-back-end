@@ -1,7 +1,10 @@
 package com.yuan.workflow.domain.guard;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
+import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfTask;
@@ -11,6 +14,8 @@ import com.yuan.workflow.domain.exception.InstancePermissionDeniedException;
 import com.yuan.workflow.domain.exception.TaskAlreadyHandledException;
 import com.yuan.workflow.domain.exception.TaskNotFoundException;
 import com.yuan.workflow.domain.exception.TaskPermissionDeniedException;
+import com.yuan.workflow.mapper.WfBizRefMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +23,10 @@ import java.util.Objects;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class WfOperationGuard {
+
+    private final WfBizRefMapper wfBizRefMapper;
 
     public void assertTodoTask(WfTask task, Long operatorId) {
         if (Objects.isNull(task)) {
@@ -44,9 +52,17 @@ public class WfOperationGuard {
     }
 
 
-    public void assertStartInstance(WfDefinition definition) {
+    public void assertStartInstance(WfDefinition definition, StartProcessCmd cmd) {
         if (definition == null) {
+            log.error("[assertStartInstance]: definition is null");
             throw new WorkflowException(WorkflowErrorCode.WF_DEFINITION_NOT_FOUND);
+        }
+
+        boolean exists = wfBizRefMapper.exists(Wrappers.<WfBizRef>lambdaQuery()
+                .eq(WfBizRef::getBizNo, cmd.getBizNo()));
+        if (exists){
+            log.error("[assertStartInstance]: bizNo already exists,bizNo={}", cmd.getBizNo());
+            throw new WorkflowException(WorkflowErrorCode.WF_BIZ_ALREADY_EXISTS);
         }
     }
 

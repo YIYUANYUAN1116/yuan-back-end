@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.api.cmd.RejectTaskCmd;
+import com.yuan.workflow.cmd.RejectTaskCmd;
 import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
 import com.yuan.workflow.core.event.WfEventContext;

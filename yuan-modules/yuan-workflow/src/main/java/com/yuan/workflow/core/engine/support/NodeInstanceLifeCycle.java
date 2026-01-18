@@ -23,7 +23,7 @@ public class NodeInstanceLifeCycle {
     public void finishDone(Long nodeInstanceId) {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .set(WfNodeInstance::getStatus, NodeStatus.DONE)
-                .eq(WfNodeInstance::getInstanceId, nodeInstanceId)
+                .eq(WfNodeInstance::getId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
             log.error("[finishDone]: don't finish done nodeInstanceId={},expectStatus={}", nodeInstanceId,NodeStatus.WAIT);

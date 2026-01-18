@@ -11,7 +11,8 @@ import lombok.Getter;
 public enum NodeType implements BaseEnum {
 
     START("START", "开始节点"),
-    APPROVAL("APPROVAL", "审批节点"),
+    USER_TASK("USER_TASK", "审批节点"),
+    SYSTEM_TASK("SYSTEM_TASK", "系统审批"),
     GATEWAY("GATEWAY", "条件网关"),
     END("END", "结束节点");
 

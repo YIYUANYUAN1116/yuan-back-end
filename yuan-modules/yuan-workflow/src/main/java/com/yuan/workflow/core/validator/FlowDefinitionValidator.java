@@ -22,7 +22,7 @@ public class FlowDefinitionValidator {
 
     // 允许的节点类型（你可以扩展）
     private static final Set<NodeType> ALLOWED_NODE_TYPES =
-            Set.of(NodeType.START, NodeType.APPROVAL, NodeType.GATEWAY, NodeType.END);
+            Set.of(NodeType.START, NodeType.USER_TASK,NodeType.SYSTEM_TASK, NodeType.GATEWAY, NodeType.END);
 
     public FlowValidationResult validateForPublish(LfGraph def) {
         List<String> errors = new ArrayList<>();

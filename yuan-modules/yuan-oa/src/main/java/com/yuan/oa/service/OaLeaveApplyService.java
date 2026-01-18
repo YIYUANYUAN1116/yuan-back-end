@@ -48,4 +48,6 @@ public interface OaLeaveApplyService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     OaLeaveApplyVo queryByBizNo(@NotNull(message = "主键不能为空") String bizNo);
+
+    Boolean submit(String bizNo);
 }

@@ -17,6 +17,7 @@ import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -146,5 +147,12 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         queryWrapper.in(WfNodeInstance::getInstanceId, instanceIds)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT);
         return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByInstanceIds(Collection<Long> ids) {
+        baseMapper.delete(Wrappers.<WfNodeInstance>lambdaQuery()
+                .in(WfNodeInstance::getInstanceId, ids));
     }
 }

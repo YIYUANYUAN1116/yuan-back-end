@@ -35,6 +35,7 @@ public class OaLeaveApplyVo implements Serializable {
      * 请假单号
      */
     @ExcelProperty(value = "请假单号")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String applyNo;
     /**
      * 申请人ID

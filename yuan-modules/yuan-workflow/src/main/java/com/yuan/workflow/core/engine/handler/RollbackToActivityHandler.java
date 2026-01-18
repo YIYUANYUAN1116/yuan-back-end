@@ -1,7 +1,7 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
-import com.yuan.workflow.api.cmd.RollbackToActivityCmd;
+import com.yuan.workflow.cmd.RollbackToActivityCmd;
 import com.yuan.workflow.core.engine.support.FlowAdvanceService;
 import com.yuan.workflow.core.engine.support.NodeInstanceLifeCycle;
 import com.yuan.workflow.core.engine.support.TaskLifecycle;

@@ -7,7 +7,7 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.api.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.bo.WfBizRefBo;
@@ -124,7 +124,7 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         ref.setBizNo(cmd.getBizNo());
         ref.setInstanceId(instanceId);
         ref.setStatus(InstanceStatus.RUNNING);
-        ref.setCreateBy(cmd.getStartId());
+        ref.setCreateBy(cmd.getStarterId());
         ref.setRef_type("PRIMARY");
         ref.setCreateTime(new Date());
         ref.setUpdateTime(new Date());

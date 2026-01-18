@@ -55,4 +55,6 @@ public interface WfNodeInstanceService {
     int nextOrderNo(Long instanceId);
 
     List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds);
+
+    void deleteByInstanceIds(Collection<Long> ids);
 }
