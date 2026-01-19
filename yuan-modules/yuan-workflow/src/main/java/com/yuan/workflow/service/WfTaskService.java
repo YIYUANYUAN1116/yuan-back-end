@@ -57,4 +57,6 @@ public interface WfTaskService {
     TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery);
 
     void deleteByInstanceIds(Collection<Long> ids);
+
+    List<WfTaskVo> selectVoByNodeInstanceId(Long nodeInstanceId);
 }

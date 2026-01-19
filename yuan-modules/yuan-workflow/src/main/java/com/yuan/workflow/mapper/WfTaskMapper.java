@@ -6,6 +6,8 @@ import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * wftMapper接口
  *
@@ -29,4 +31,6 @@ public interface WfTaskMapper extends BaseMapperPlus<WfTask, WfTaskVo> {
                             @Param("action")  String action,
                             @Param("fromStatus") String fromStatus,
                             @Param("toStatus") String toStatus);
+
+    List<WfTaskVo> selectVoByNodeInstanceId(@Param("nodeInstanceId") Long nodeInstanceId);
 }

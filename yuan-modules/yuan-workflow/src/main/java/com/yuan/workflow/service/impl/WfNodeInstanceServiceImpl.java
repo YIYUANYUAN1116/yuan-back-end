@@ -155,4 +155,12 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         baseMapper.delete(Wrappers.<WfNodeInstance>lambdaQuery()
                 .in(WfNodeInstance::getInstanceId, ids));
     }
+
+    @Override
+    public List<WfNodeInstanceVo> selectVoByInstanceId(Long instanceId) {
+        LambdaQueryWrapper<WfNodeInstance> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WfNodeInstance::getInstanceId, instanceId)
+                .orderByAsc(WfNodeInstance::getOrderNo);
+        return baseMapper.selectVoList(queryWrapper);
+    }
 }

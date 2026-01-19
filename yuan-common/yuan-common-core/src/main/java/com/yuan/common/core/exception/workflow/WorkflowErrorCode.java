@@ -77,8 +77,8 @@ public enum WorkflowErrorCode {
     WF_EXPRESSION_EVALUATE_ERROR("WF_EXPRESSION_EVALUATE_ERROR", "条件表达式计算失败"),
 
     // ===== biz ===== 已存在
-    WF_BIZ_ALREADY_EXISTS("WF_BIZ_ALREADY_EXISTS", "该申请已提交，请勿重复提交");
-
+    WF_BIZ_ALREADY_EXISTS("WF_BIZ_ALREADY_EXISTS", "该申请已提交，请勿重复提交"),
+    WF_BIZ_NOT_FOUND("WF_BIZ_NOT_FOUND", "该业务不存在流程关联");
     private final String code;
     private final String defaultMessage;
 }

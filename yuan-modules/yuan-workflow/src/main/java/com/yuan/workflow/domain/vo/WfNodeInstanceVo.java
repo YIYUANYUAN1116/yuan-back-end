@@ -11,6 +11,7 @@ import com.yuan.workflow.domain.WfNodeInstance;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -68,4 +69,5 @@ public class WfNodeInstanceVo implements Serializable {
     @ExcelProperty(value = "createTime")
     private LocalDateTime createTime;
 
+    List<WfTaskVo> taskVoList;
 }

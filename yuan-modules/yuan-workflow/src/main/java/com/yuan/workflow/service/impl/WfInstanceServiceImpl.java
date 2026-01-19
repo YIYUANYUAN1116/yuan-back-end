@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -19,7 +20,12 @@ import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.exception.BizRefException;
+import com.yuan.workflow.domain.exception.InstanceNotFoundException;
+import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
+import com.yuan.workflow.domain.vo.WfBizRefVo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
+import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfBizRefService;
@@ -27,6 +33,7 @@ import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,7 @@ import java.util.stream.Collectors;
  *
  * @date Sun Dec 28 11:26:34 CST 2025
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class WfInstanceServiceImpl implements WfInstanceService {
@@ -51,6 +59,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     private final WfNodeInstanceService nodeInstanceService;
     private final UserQueryApi userQueryApi;
     private final WfTaskService wfTaskService;
+    private final WfBizRefService wfBizRefService;
 
     /**
      * 查询wfi
@@ -186,6 +195,33 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         }
         Page<WfInstance> wfInstancePage = baseMapper.selectPage(pageQuery.build(), lqw);
         return TableDataInfo.build(enrichFromInstancePage(wfInstancePage));
+    }
+
+    @Override
+    public WfApprovalDetailVO getInstanceDetail(String bizNo) {
+        WfBizRefVo bizRef =  wfBizRefService.selectOneVoByBizNo(bizNo);
+        if (bizRef == null) {
+            log.warn("[WF][InstanceDetail] bizRef not found, bizNo={},tenantId={}",
+                    bizNo,LoginHelper.getTenantId());
+            throw new BizRefException(WorkflowErrorCode.WF_BIZ_NOT_FOUND);
+        }
+        WfInstanceVo wfInstance = baseMapper.selectVoById(bizRef.getInstanceId());
+        if (wfInstance == null) {
+            log.error("[WF][InstanceDetail] instance not found, bizNo={}, instanceId={},tenantId={}",
+                    bizNo, bizRef.getInstanceId(),LoginHelper.getTenantId());
+            throw new InstanceNotFoundException();
+        }
+        List<WfNodeInstanceVo> wfNodeInstances =  nodeInstanceService.selectVoByInstanceId(wfInstance.getId());
+        for (WfNodeInstanceVo wfNodeInstance : wfNodeInstances) {
+           wfNodeInstance.setTaskVoList(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
+        }
+
+        WfApprovalDetailVO detailVO = new WfApprovalDetailVO();
+        detailVO.setBiz(bizRef);
+        detailVO.setInstance(wfInstance);
+        detailVO.setTimeline(wfNodeInstances);
+
+        return detailVO;
     }
 
     private Page<WorkItemRowVO> enrichFromInstancePage(Page<WfInstance> insPage) {

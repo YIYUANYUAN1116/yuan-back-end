@@ -6,6 +6,7 @@ import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
+import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
@@ -53,4 +54,6 @@ public interface WfInstanceService {
     WfInstance createInstance(StartProcessCmd cmd, WfDefinition def);
 
     TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery);
+
+    WfApprovalDetailVO getInstanceDetail(String bizNo);
 }

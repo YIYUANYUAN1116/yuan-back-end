@@ -176,6 +176,11 @@ public class WfTaskServiceImpl implements WfTaskService {
         .in(WfTaskLog::getInstanceId, ids));
     }
 
+    @Override
+    public List<WfTaskVo> selectVoByNodeInstanceId(Long nodeInstanceId) {
+        return baseMapper.selectVoByNodeInstanceId(nodeInstanceId);
+    }
+
     private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){
         List<WfTask> tasks = taskPage.getRecords();
         if (tasks.isEmpty()) {

@@ -57,4 +57,6 @@ public interface WfNodeInstanceService {
     List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds);
 
     void deleteByInstanceIds(Collection<Long> ids);
+
+    List<WfNodeInstanceVo> selectVoByInstanceId(Long instanceId);
 }

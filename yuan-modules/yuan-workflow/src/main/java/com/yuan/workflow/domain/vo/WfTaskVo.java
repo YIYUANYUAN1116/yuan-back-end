@@ -11,6 +11,7 @@ import com.yuan.workflow.domain.WfTask;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -75,4 +76,5 @@ public class WfTaskVo implements Serializable {
     @ExcelProperty(value = "完成时间")
     private LocalDateTime finishTime;
 
+    private List<WfTaskLogVo> taskLogVoList;
 }

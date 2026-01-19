@@ -135,4 +135,10 @@ public class WfBizRefServiceImpl implements WfBizRefService {
     public List<WfBizRef> listByInstanceIds(Set<Long> instanceIds) {
         return baseMapper.selectList(Wrappers.<WfBizRef>lambdaQuery().in(WfBizRef::getInstanceId, instanceIds));
     }
+
+    @Override
+    public WfBizRefVo selectOneVoByBizNo(String bizNo) {
+        return baseMapper.selectVoOne(Wrappers.<WfBizRef>lambdaQuery()
+                .eq(WfBizRef::getBizNo,bizNo));
+    }
 }

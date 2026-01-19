@@ -3,6 +3,20 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.workflow.mapper.WfTaskMapper">
+    <resultMap id="taskVoMap" type="com.yuan.workflow.domain.vo.WfTaskVo">
+        <id column="id"/>
+        <collection property="taskLogVoList" javaType="java.util.List" resultMap="taskLogResult" />
+    </resultMap>
+    <resultMap id="taskLogResult" type="com.yuan.workflow.domain.vo.WfTaskLogVo">
+        <id column="id" property="id"/>
+    </resultMap>
+
+    <sql id="selectTaskVo">
+        select t.*,
+               tl.*
+        from wf_task t
+                 left join wf_task_log tl on tl.taskId = t.id
+    </sql>
 
     <update id="finishAll">
         UPDATE wf_task
@@ -35,6 +49,10 @@
 
     <select id="countTodoByNode" resultType="java.lang.Integer">
 
+    </select>
+    <select id="selectVoByNodeInstanceId" resultMap="taskVoMap">
+        <include refid="selectTaskVo"/>
+        where t.del_flag = '0' and tl.del_flag = '0' and t.node_instance_id = #{nodeInstanceId}
     </select>
 
 

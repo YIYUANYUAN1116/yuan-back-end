@@ -13,11 +13,12 @@ import com.yuan.common.log.enums.BusinessType;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.api.WorkflowService;
 import com.yuan.workflow.cmd.StartProcessCmd;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
+import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.service.WfInstanceService;
-import com.yuan.workflow.api.WorkflowService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +26,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -127,6 +135,14 @@ public class WfInstanceController extends BaseController {
         return R.ok(instanceId);
     }
 
-
+    @SaCheckPermission("workflow:wfInstance:query")
+    @Log(title = "流程详细", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/detail/{bizNo}")
+    @Operation(summary = "修改流程定义状态",operationId = "WfInstance_detail")
+    public R<WfApprovalDetailVO> getInstanceDetail(@PathVariable String bizNo) {
+        WfApprovalDetailVO instanceDetail = wfInstanceService.getInstanceDetail(bizNo);
+        return R.ok(instanceDetail);
+    }
 
 }

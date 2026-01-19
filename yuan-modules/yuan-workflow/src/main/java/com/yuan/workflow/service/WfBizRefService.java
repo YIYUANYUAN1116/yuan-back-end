@@ -52,4 +52,6 @@ public interface WfBizRefService {
     void bindWfBizRef(StartProcessCmd cmd, Long id);
 
     List<WfBizRef> listByInstanceIds(Set<Long> instanceIds);
+
+    WfBizRefVo selectOneVoByBizNo(String bizNo);
 }
