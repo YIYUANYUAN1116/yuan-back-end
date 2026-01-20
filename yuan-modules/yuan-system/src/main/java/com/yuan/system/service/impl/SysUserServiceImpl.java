@@ -8,11 +8,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.bizno.BizNoPrefixEnum;
 import com.yuan.common.core.constant.UserConstants;
 import com.yuan.common.core.enums.BooleanEnum;
+import com.yuan.common.core.exception.base.BaseException;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.common.oss.core.client.OssClient;
+import com.yuan.common.oss.core.domin.FileObjectKey;
+import com.yuan.common.oss.core.domin.OssScope;
+import com.yuan.common.oss.enums.NameSpace;
+import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.SysUser;
@@ -28,9 +35,12 @@ import com.yuan.system.mapper.SysUserPostMapper;
 import com.yuan.system.service.SysUserService;
 import com.yuan.system.utils.UserNameGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +49,7 @@ import java.util.List;
  *
  * @date Sun Dec 07 17:25:38 CST 2025
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SysUserServiceImpl implements SysUserService {
@@ -47,6 +58,7 @@ public class SysUserServiceImpl implements SysUserService {
     private final SysRoleMapper sysRoleMapper;
     private final SysPostMapper sysPostMapper;
     private final SysUserPostMapper userPostMapper;
+    private final OssClient ossClient;
 
 
     /**
@@ -206,6 +218,26 @@ public class SysUserServiceImpl implements SysUserService {
                         .eq(SysUser::getUserId, userId));
     }
 
+    @Override
+    public String editAvatar(MultipartFile file) {
+        try {
+            OssScope scope = OssScope.builder()
+                    .prefix(BizNoPrefixEnum.SYS.getPrefix())
+                    .tenantId(LoginHelper.getTenantId())
+                    .namespace(NameSpace.FORMAL)
+                    .build();
+            FileObjectKey object = ossClient.putObject(scope, file);
+            String objectKey = object.getObjectKey();
+            baseMapper.update(Wrappers.<SysUser>lambdaUpdate()
+                    .eq(SysUser::getUserId, LoginHelper.getTenantId())
+                    .set(SysUser::getAvatar, objectKey));
+            return ossClient.presignGet(object);
+        } catch (IOException e) {
+            log.error("[SYS][editAvatar] IO error:",e);
+            throw new BaseException();
+        }
+
+    }
 
 
     @Override

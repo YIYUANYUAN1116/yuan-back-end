@@ -29,6 +29,7 @@
         <module>yuan-common-log</module>
         <module>yuan-common-idemponent</module>
         <module>yuan-common-doc</module>
+        <module>yuan-common-oss</module>
     </modules>
 
 </project>

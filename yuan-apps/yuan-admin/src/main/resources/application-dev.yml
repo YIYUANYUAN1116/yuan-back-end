@@ -45,3 +45,14 @@ spring.data:
     # password: 123456
     # 连接超时时间
     timeout: 10S
+
+oss:
+  storage: S3_COMPATIBLE
+  bucket: hiesg
+  presign-expire-seconds: 600
+  s3:
+    endpoint: http://minio:9000   # 换成 ceph/aws 就改这里
+    access-key: xxx
+    secret-key: xxx
+    region: us-east-1
+    path-style-access: true       # minio: true / aws: false(通常)

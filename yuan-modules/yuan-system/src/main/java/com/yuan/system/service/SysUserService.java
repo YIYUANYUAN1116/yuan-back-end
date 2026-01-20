@@ -4,6 +4,7 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.vo.SysUserVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
@@ -61,4 +62,6 @@ public interface SysUserService {
     int updateUserProfile(SysUserBo user);
 
     int resetUserPwd(Long userId, String hashpw);
+
+    String editAvatar(MultipartFile file);
 }

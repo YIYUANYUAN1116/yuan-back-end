@@ -58,5 +58,10 @@
             <artifactId>yuan-workflow-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-common-oss</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

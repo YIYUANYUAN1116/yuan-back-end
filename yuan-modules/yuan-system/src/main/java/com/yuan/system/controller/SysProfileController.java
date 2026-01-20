@@ -8,6 +8,7 @@ import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.core.utils.file.MimeTypeUtils;
 import com.yuan.common.log.annotation.Log;
 import com.yuan.common.log.enums.BusinessType;
+import com.yuan.common.oss.core.client.OssClient;
 import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.common.web.core.BaseController;
 import com.yuan.system.domain.bo.SysUserBo;
@@ -22,7 +23,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -40,6 +47,7 @@ import java.util.Arrays;
 public class SysProfileController extends BaseController {
 
     private final SysUserService userService;
+    private final OssClient ossClient;
 
 
     /**
@@ -102,26 +110,20 @@ public class SysProfileController extends BaseController {
     /**
      * 头像上传
      *
-     * @param avatarfile 用户头像
+     * @param avatarFile 用户头像
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "个人信息",operationId="avatar")
-    public R<AvatarVo> avatar(@RequestPart("avatarfile") MultipartFile avatarfile) {
-        if (!avatarfile.isEmpty()) {
-            String extension = FileUtil.extName(avatarfile.getOriginalFilename());
+    public R<AvatarVo> avatar(@RequestPart("avatarFile") MultipartFile avatarFile) {
+        if (!avatarFile.isEmpty()) {
+            String extension = FileUtil.extName(avatarFile.getOriginalFilename());
             if (!StringUtils.equalsAnyIgnoreCase(extension, MimeTypeUtils.IMAGE_EXTENSION)) {
                 return R.fail("文件格式不正确，请上传" + Arrays.toString(MimeTypeUtils.IMAGE_EXTENSION) + "格式");
             }
-            //todo 上传头像
-//            SysOssVo oss = ossService.upload(avatarfile);
-//            String avatar = oss.getUrl();
-//            if (userService.updateUserAvatar(LoginHelper.getUserId(), oss.getUrl())) {
-//                AvatarVo avatarVo = new AvatarVo();
-//                avatarVo.setImgUrl(avatar);
-//                return R.ok(avatarVo);
-//            }
+            userService.editAvatar(avatarFile);
         }
         return R.fail("上传图片异常，请联系管理员");
     }
+
 }

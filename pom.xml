@@ -47,6 +47,7 @@
         <knife4j.verison>4.4.0</knife4j.verison>
         <ip2region.version>2.7.0</ip2region.version>
         <velocity.version>2.3</velocity.version>
+        <aws-sdk.version>2.41.10</aws-sdk.version>
         <!-- 插件版本 -->
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
@@ -229,8 +230,13 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${aws-sdk.version}</version>
+            </dependency>
 
-            <!-- ===== 自己的模块（关键！） ===== -->
+            <!-- ===== 自己的模块 ===== -->
             <dependency>
                 <groupId>com.yuan</groupId>
                 <artifactId>yuan-common-core</artifactId>
@@ -315,6 +321,12 @@
             <dependency>
                 <groupId>com.yuan</groupId>
                 <artifactId>yuan-oa</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-common-oss</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
