@@ -5,7 +5,7 @@
 <mapper namespace="com.yuan.workflow.mapper.WfTaskMapper">
     <resultMap id="taskVoMap" type="com.yuan.workflow.domain.vo.WfTaskVo">
         <id column="id"/>
-        <collection property="taskLogVoList" javaType="java.util.List" resultMap="taskLogResult" />
+        <collection property="logs" javaType="java.util.List" resultMap="taskLogResult" />
     </resultMap>
     <resultMap id="taskLogResult" type="com.yuan.workflow.domain.vo.WfTaskLogVo">
         <id column="id" property="id"/>
@@ -15,7 +15,7 @@
         select t.*,
                tl.*
         from wf_task t
-                 left join wf_task_log tl on tl.taskId = t.id
+                 left join wf_task_log tl on tl.task_id = t.id
     </sql>
 
     <update id="finishAll">
@@ -42,6 +42,7 @@
         SET
             status = #{toStatus},
             action = #{action},
+            operator_id = #{operatorId},
             finish_time = NOW()
         WHERE node_instance_id = #{nodeInstanceId}
           AND status = #{fromStatus}

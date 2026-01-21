@@ -11,6 +11,8 @@ import com.yuan.workflow.domain.enums.NodeType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
+
 /**
  * wfn对象 wf_node_instance
  *
@@ -57,6 +59,18 @@ public class WfNodeInstance extends TenantEntity {
     private String assigneeValue;
 
     /**
+     * operatorId：
+     * 触发该节点进入最终状态（DONE / CANCELED）的操作人
+     *
+     * - 单人审批：审批人
+     * - 或签：第一个同意的人
+     * - 会签：最后一个完成人
+     * - 自动节点：SYSTEM
+     * - 撤回/回滚：撤回/回滚发起人
+     */
+    private Long operatorId;
+
+    /**
      * 状态(WAIT/DONE)
      */
     private NodeStatus status;
@@ -67,4 +81,5 @@ public class WfNodeInstance extends TenantEntity {
     private Integer orderNo;
     @TableLogic
     private String delFlag;
+    private LocalDateTime finishedTime;
 }

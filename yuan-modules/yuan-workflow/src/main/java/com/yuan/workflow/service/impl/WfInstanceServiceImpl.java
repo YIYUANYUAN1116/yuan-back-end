@@ -170,6 +170,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     }
 
     @Override
+    @Transactional
     public WfInstance createInstance(StartProcessCmd cmd, WfDefinition def) {
         WfInstance instance = new WfInstance();
         instance.setTenantId(cmd.getTenantId());
@@ -220,7 +221,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         //时间线
         List<WfNodeInstanceVo> timeline = nodeInstanceService.getTimelineByInstanceId(wfInstance.getId());
         for (WfNodeInstanceVo wfNodeInstance : timeline) {
-            wfNodeInstance.setTaskVoList(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
+            wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
         }
 
         WfApprovalDetailVO detailVO = new WfApprovalDetailVO();

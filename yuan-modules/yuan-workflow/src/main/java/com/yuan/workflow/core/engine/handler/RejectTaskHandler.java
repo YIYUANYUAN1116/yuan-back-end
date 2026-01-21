@@ -53,7 +53,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
         taskLifecycle.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
 
         // 完成节点
-        nodeLifeCycle.finishCancel(node.getId());
+        nodeLifeCycle.finishCancel(node.getId(),operatorId);
 
 
         // 发布“任务驳回”事件 afterCommit

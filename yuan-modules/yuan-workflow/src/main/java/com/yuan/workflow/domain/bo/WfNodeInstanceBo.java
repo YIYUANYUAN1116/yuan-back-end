@@ -50,6 +50,8 @@ public class WfNodeInstanceBo implements Serializable {
      * 审批人值
      */
     private String assigneeValue;
+
+    private Long operatorId;
     /**
      * 状态(WAIT/DONE)
      */
@@ -65,4 +67,5 @@ public class WfNodeInstanceBo implements Serializable {
      */
     private LocalDateTime createTime;
 
+    private LocalDateTime finishedTime;
 }

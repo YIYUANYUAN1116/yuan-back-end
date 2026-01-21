@@ -48,7 +48,7 @@ spring.data:
 
 oss:
   storage: S3_COMPATIBLE
-  bucket: hiesg
+  bucket: yuan
   presign-expire-seconds: 600
   s3:
     endpoint: http://minio:9000   # 换成 ceph/aws 就改这里

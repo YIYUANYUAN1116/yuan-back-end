@@ -8,16 +8,17 @@ import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.core.parser.FlowParser;
-import com.yuan.workflow.domain.enums.NodeStatus;
-import com.yuan.workflow.domain.enums.NodeType;
-import com.yuan.workflow.mapper.WfDefinitionMapper;
-import com.yuan.workflow.model.logicflow.LfNode;
-import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
+import com.yuan.workflow.mapper.WfDefinitionMapper;
+import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
+import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfNodeInstanceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
     private final WfNodeInstanceMapper baseMapper;
     private final FlowParser flowParser;
     private final WfDefinitionMapper wfDefinitionMapper;
+    private final WfInstanceMapper wfInstanceMapper;
     /**
      * 查询wfn
      */
@@ -161,19 +163,13 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
 
     @Override
     public List<WfNodeInstanceVo> selectVoByInstanceId(Long instanceId) {
-        LambdaQueryWrapper<WfNodeInstance> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WfNodeInstance::getInstanceId, instanceId)
-                .orderByAsc(WfNodeInstance::getOrderNo);
-        return baseMapper.selectVoList(queryWrapper);
+        return baseMapper.selectVoByInstanceId(instanceId);
     }
 
     @Override
     public List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId) {
-
-        LambdaQueryWrapper<WfNodeInstance> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WfNodeInstance::getInstanceId, instanceId)
-                .orderByAsc(WfNodeInstance::getOrderNo);
+        //todo 解析全部节点
 //        flowParser.parse()
-        return List.of();
+        return baseMapper.selectVoByInstanceId(instanceId);
     }
 }

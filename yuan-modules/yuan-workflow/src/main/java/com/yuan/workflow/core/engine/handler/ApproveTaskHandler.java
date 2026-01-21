@@ -45,7 +45,7 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
         taskLifecycle.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
 
         // 6) 完成节点
-        nodeInstanceLifeCycle.finishDone(task.getNodeInstanceId());
+        nodeInstanceLifeCycle.finishDone(task.getNodeInstanceId(),operatorId);
 
         // 7) 推进
         flowAdvanceService.advance(node,cmd);

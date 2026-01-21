@@ -6,6 +6,8 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * wfnMapper接口
  *
@@ -18,4 +20,6 @@ public interface WfNodeInstanceMapper extends BaseMapperPlus<WfNodeInstance, WfN
     void finishAll(@Param("instanceId") Long instanceId,@Param("status") String status);
 
     int nextOrderNo(@Param("instanceId") Long instanceId);
+
+    List<WfNodeInstanceVo> selectVoByInstanceId(@Param("instanceId") Long instanceId);
 }

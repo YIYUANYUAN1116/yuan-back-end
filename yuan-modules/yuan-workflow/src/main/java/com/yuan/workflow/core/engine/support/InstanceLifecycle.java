@@ -89,10 +89,10 @@ public class InstanceLifecycle {
     public void finishWithDraw(WfInstance instance, WithdrawCmd cmd) {
 
         // 取消所有待办任务（实例级）
-        taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW);
+        taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW,cmd.getOperatorId());
 
         //  取消所有 WAIT 节点
-        nodeInstanceLifeCycle.cancelAllWaitByInstance(instance.getId());
+        nodeInstanceLifeCycle.cancelAllWaitByInstance(instance.getId(),cmd.getOperatorId());
 
         //更新实例
         instance.setStatus(InstanceStatus.CANCELED);

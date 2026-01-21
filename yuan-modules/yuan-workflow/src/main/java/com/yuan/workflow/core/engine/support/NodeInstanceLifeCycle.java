@@ -20,9 +20,10 @@ public class NodeInstanceLifeCycle {
         nodeInstanceMapper.updateById(node);
     }
 
-    public void finishDone(Long nodeInstanceId) {
+    public void finishDone(Long nodeInstanceId,Long operatorId) {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .set(WfNodeInstance::getStatus, NodeStatus.DONE)
+                .set(WfNodeInstance::getOperatorId, operatorId)
                 .eq(WfNodeInstance::getId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
@@ -36,9 +37,10 @@ public class NodeInstanceLifeCycle {
         nodeInstanceMapper.updateById(node);
     }
 
-    public void finishCancel(Long nodeInstanceId) {
+    public void finishCancel(Long nodeInstanceId,Long operatorId) {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
+                .set(WfNodeInstance::getOperatorId, operatorId)
                 .eq(WfNodeInstance::getInstanceId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
@@ -47,11 +49,12 @@ public class NodeInstanceLifeCycle {
         }
     }
 
-    public void cancelAllWaitByInstance(Long instanceId) {
+    public void cancelAllWaitByInstance(Long instanceId,Long operatorId) {
         nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .eq(WfNodeInstance::getInstanceId, instanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT)
-                .set(WfNodeInstance::getStatus, NodeStatus.CANCELED));
+                .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
+                .set(WfNodeInstance::getOperatorId, operatorId));
 
     }
 }

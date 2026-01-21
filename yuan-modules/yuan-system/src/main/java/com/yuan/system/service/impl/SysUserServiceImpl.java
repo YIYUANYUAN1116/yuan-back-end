@@ -222,7 +222,7 @@ public class SysUserServiceImpl implements SysUserService {
     public String editAvatar(MultipartFile file) {
         try {
             OssScope scope = OssScope.builder()
-                    .prefix(BizNoPrefixEnum.SYS.getPrefix())
+                    .prefix(BizNoPrefixEnum.SYS)
                     .tenantId(LoginHelper.getTenantId())
                     .namespace(NameSpace.FORMAL)
                     .build();

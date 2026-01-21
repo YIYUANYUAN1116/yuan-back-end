@@ -53,6 +53,10 @@ public class WfNodeInstanceVo implements Serializable {
      */
     @ExcelProperty(value = "审批人值")
     private String assigneeValue;
+
+    @ExcelProperty(value = "操作人Id")
+    private Long operatorId;
+
     /**
      * 状态(WAIT/DONE)
      */
@@ -69,5 +73,9 @@ public class WfNodeInstanceVo implements Serializable {
     @ExcelProperty(value = "createTime")
     private LocalDateTime createTime;
 
-    List<WfTaskVo> taskVoList;
+    private LocalDateTime finishedTime;
+
+    /**********************非数据库字段*******************************/
+    private String operatorName;
+    List<WfTaskVo> tasks;
 }

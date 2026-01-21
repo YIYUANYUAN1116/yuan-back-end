@@ -15,4 +15,10 @@
         from wf_node_instance
         WHERE instance_id = #{instanceId}
     </select>
+    <select id="selectVoByInstanceId" resultType="com.yuan.workflow.domain.vo.WfNodeInstanceVo">
+        select wni.*
+        from wf_node_instance wni
+        where wni.instance_id = #{instanceId}
+        order by wni.order_no desc
+    </select>
 </mapper>

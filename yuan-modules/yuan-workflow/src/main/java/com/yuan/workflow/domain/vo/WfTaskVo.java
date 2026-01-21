@@ -48,6 +48,7 @@ public class WfTaskVo implements Serializable {
     private Long assigneeId;
     @ExcelProperty(value = "操作人Id")
     private Long operatorId;
+
     @ExcelProperty(value = "转交来自")
     private Long transferFrom;
     @ExcelProperty(value = "转交日期")
@@ -76,5 +77,8 @@ public class WfTaskVo implements Serializable {
     @ExcelProperty(value = "完成时间")
     private LocalDateTime finishTime;
 
-    private List<WfTaskLogVo> taskLogVoList;
+
+    /**********************非数据库字段*******************************/
+    private String operatorName;
+    private List<WfTaskLogVo> logs;
 }

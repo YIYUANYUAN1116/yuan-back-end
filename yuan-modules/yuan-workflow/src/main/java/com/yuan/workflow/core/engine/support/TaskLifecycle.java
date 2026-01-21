@@ -54,11 +54,12 @@ public class TaskLifecycle {
 //        }
     }
 
-    public void cancelAllTodoTasks(Long nodeInstanceId, TaskAction action) {
+    public void cancelAllTodoTasks(Long nodeInstanceId, TaskAction action,Long operatorId) {
         int updated = taskMapper.updateAllTodoTasks(nodeInstanceId,
                 action.getCode(),
                 TaskStatus.TODO.getCode(),
-                TaskStatus.CANCELED.getCode());
+                TaskStatus.CANCELED.getCode(),
+                operatorId);
         if (updated == 0) {
             log.error("[cancelAllTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
             throw new TaskAlreadyHandledException();
@@ -84,6 +85,7 @@ public class TaskLifecycle {
                 .set(WfTask::getAssigneeId, cmd.getToUserId())
                 .set(WfTask::getTransferFrom, cmd.getOperatorId())
                 .set(WfTask::getTransferTime, LocalDateTime.now())
+                .set(WfTask::getOperatorId, cmd.getOperatorId())
                 .set(WfTask::getComment, cmd.getComment()));
         if (update == 0) {
             log.error("[transfer] update wfTask fail. taskId={}, toUserId={}, operatorId={}", task.getId(),  cmd.getToUserId(), cmd.getOperatorId());
