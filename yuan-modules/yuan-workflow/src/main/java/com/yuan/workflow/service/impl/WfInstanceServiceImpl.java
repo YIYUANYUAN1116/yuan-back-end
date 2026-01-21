@@ -26,6 +26,7 @@ import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfBizRefVo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
+import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfBizRefService;
@@ -37,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -211,16 +213,22 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                     bizNo, bizRef.getInstanceId(),LoginHelper.getTenantId());
             throw new InstanceNotFoundException();
         }
-        List<WfNodeInstanceVo> wfNodeInstances =  nodeInstanceService.selectVoByInstanceId(wfInstance.getId());
-        for (WfNodeInstanceVo wfNodeInstance : wfNodeInstances) {
-           wfNodeInstance.setTaskVoList(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
+
+        //当前用户任务
+        WfTaskVo currentUserTask =  wfTaskService.findCurrentUserTask(wfInstance.getId());
+
+        //时间线
+        List<WfNodeInstanceVo> timeline = nodeInstanceService.getTimelineByInstanceId(wfInstance.getId());
+        for (WfNodeInstanceVo wfNodeInstance : timeline) {
+            wfNodeInstance.setTaskVoList(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
         }
 
         WfApprovalDetailVO detailVO = new WfApprovalDetailVO();
         detailVO.setBiz(bizRef);
         detailVO.setInstance(wfInstance);
-        detailVO.setTimeline(wfNodeInstances);
-
+        detailVO.setCurrent(currentUserTask);
+        detailVO.setTimeline(timeline);
+        detailVO.setOps(new ArrayList<>());
         return detailVO;
     }
 

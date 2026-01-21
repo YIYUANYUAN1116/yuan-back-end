@@ -181,6 +181,15 @@ public class WfTaskServiceImpl implements WfTaskService {
         return baseMapper.selectVoByNodeInstanceId(nodeInstanceId);
     }
 
+    @Override
+    public WfTaskVo findCurrentUserTask(Long instanceId) {
+      return baseMapper.selectVoOne(Wrappers.<WfTask>lambdaQuery()
+                .eq(WfTask::getInstanceId, instanceId)
+                .eq(WfTask::getAssigneeId, LoginHelper.getUserId())
+                .eq(WfTask::getStatus,TaskStatus.TODO));
+
+    }
+
     private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){
         List<WfTask> tasks = taskPage.getRecords();
         if (tasks.isEmpty()) {

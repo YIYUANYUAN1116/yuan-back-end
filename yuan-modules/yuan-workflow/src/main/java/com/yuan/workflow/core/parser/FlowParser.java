@@ -110,7 +110,7 @@ public class FlowParser {
     }
 
 
-    private LfGraph parse(WfDefinition def) {
+    public LfGraph parse(WfDefinition def) {
         String key = def.getId()+"-"+def.getVersion();
         return cache.computeIfAbsent(key, id -> {
             try {

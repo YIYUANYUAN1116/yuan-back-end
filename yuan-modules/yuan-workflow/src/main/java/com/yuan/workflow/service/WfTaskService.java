@@ -59,4 +59,6 @@ public interface WfTaskService {
     void deleteByInstanceIds(Collection<Long> ids);
 
     List<WfTaskVo> selectVoByNodeInstanceId(Long nodeInstanceId);
+
+    WfTaskVo findCurrentUserTask(Long instanceId);
 }

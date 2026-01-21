@@ -59,4 +59,6 @@ public interface WfNodeInstanceService {
     void deleteByInstanceIds(Collection<Long> ids);
 
     List<WfNodeInstanceVo> selectVoByInstanceId(Long instanceId);
+
+    List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId);
 }

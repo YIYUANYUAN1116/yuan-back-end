@@ -7,8 +7,10 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import com.yuan.workflow.domain.WfNodeInstance;
@@ -34,7 +36,8 @@ import java.util.Set;
 public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
 
     private final WfNodeInstanceMapper baseMapper;
-
+    private final FlowParser flowParser;
+    private final WfDefinitionMapper wfDefinitionMapper;
     /**
      * 查询wfn
      */
@@ -162,5 +165,15 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         queryWrapper.eq(WfNodeInstance::getInstanceId, instanceId)
                 .orderByAsc(WfNodeInstance::getOrderNo);
         return baseMapper.selectVoList(queryWrapper);
+    }
+
+    @Override
+    public List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId) {
+
+        LambdaQueryWrapper<WfNodeInstance> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WfNodeInstance::getInstanceId, instanceId)
+                .orderByAsc(WfNodeInstance::getOrderNo);
+//        flowParser.parse()
+        return List.of();
     }
 }
