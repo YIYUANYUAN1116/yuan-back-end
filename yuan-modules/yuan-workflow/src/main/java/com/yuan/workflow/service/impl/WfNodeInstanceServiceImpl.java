@@ -8,6 +8,7 @@ import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.core.parser.FlowParser;
+import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
@@ -16,6 +17,7 @@ import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
+import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * wfnService业务层处理
@@ -168,8 +172,35 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
 
     @Override
     public List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId) {
-        //todo 解析全部节点
-//        flowParser.parse()
-        return baseMapper.selectVoByInstanceId(instanceId);
+
+        WfDefinition wfDefinition =  wfDefinitionMapper.selectByInstanceId(instanceId);
+        LfGraph graph = flowParser.parse(wfDefinition);
+
+        List<WfNodeInstanceVo> defNodeVoList =  flowParser.parse(graph);
+
+        List<WfNodeInstanceVo> instanceVoList = baseMapper.selectVoByInstanceId(instanceId);
+        Map<String, WfNodeInstanceVo> runtimeMap = instanceVoList.stream().collect(Collectors.toMap(
+                WfNodeInstanceVo::getNodeKey,
+                item -> item,
+                (a, b) -> a
+        ));
+
+        mergeRuntime(defNodeVoList, runtimeMap);
+        return defNodeVoList;
+    }
+
+    private void mergeRuntime(List<WfNodeInstanceVo> definitions,Map<String,WfNodeInstanceVo> runtimeMap) {
+        for (WfNodeInstanceVo defNode : definitions) {
+            WfNodeInstanceVo node = runtimeMap.get(defNode.getNodeKey());
+            if (node == null) continue;
+
+            defNode.setId(node.getId());
+            defNode.setOperatorId(node.getOperatorId());
+            defNode.setOperatorName(node.getOperatorName());
+            defNode.setCreateTime(node.getCreateTime());
+            defNode.setOrderNo(node.getOrderNo());
+            defNode.setFinishedTime(node.getFinishedTime());
+            defNode.setInstanceId(node.getInstanceId());
+        }
     }
 }

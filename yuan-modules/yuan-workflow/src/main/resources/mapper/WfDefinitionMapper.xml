@@ -11,4 +11,10 @@
         order by wfd.version desc
         limit 1
     </select>
+    <select id="selectByInstanceId" resultType="com.yuan.workflow.domain.WfDefinition">
+        select distinct wfd.*
+        from wf_definition wfd
+        join wf_instance wfi on wfi.definition_id = wfd.id
+        where wfi.id = #{instanceId}
+    </select>
 </mapper>

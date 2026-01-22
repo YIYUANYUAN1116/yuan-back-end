@@ -20,6 +20,7 @@ import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.BizRefException;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
@@ -221,6 +222,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         //时间线
         List<WfNodeInstanceVo> timeline = nodeInstanceService.getTimelineByInstanceId(wfInstance.getId());
         for (WfNodeInstanceVo wfNodeInstance : timeline) {
+            if (wfNodeInstance.getStatus().equals(NodeStatus.NOT_REACHED)) continue;
             wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
         }
 

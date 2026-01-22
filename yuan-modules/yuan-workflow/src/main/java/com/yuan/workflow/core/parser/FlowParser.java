@@ -2,10 +2,12 @@ package com.yuan.workflow.core.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
-import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.core.evaluator.SimpleConditionEvaluator;
 import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.domain.WfDefinition;
+import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.model.Expression;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
@@ -15,10 +17,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -127,5 +131,22 @@ public class FlowParser {
                 throw new ProcessDefinitionParseException(def.getId(),def.getVersion());
             }
         });
+    }
+
+    public List<WfNodeInstanceVo> parse(LfGraph graph) {
+        if (graph == null || graph.getNodes() == null) {
+            return Collections.emptyList();
+        }
+
+        return graph.getNodes().stream().map(FlowParser::convertNode).collect(Collectors.toList());
+    }
+
+    private static WfNodeInstanceVo convertNode(LfNode node) {
+        WfNodeInstanceVo vo = new WfNodeInstanceVo();
+        vo.setNodeKey(node.getId());
+        vo.setNodeName(node.getText().getValue());
+        vo.setNodeType(NodeType.valueOf(node.getType()));
+        vo.setStatus(NodeStatus.NOT_REACHED);
+        return vo;
     }
 }

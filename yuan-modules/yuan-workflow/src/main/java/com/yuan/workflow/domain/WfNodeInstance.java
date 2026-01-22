@@ -82,4 +82,5 @@ public class WfNodeInstance extends TenantEntity {
     @TableLogic
     private String delFlag;
     private LocalDateTime finishedTime;
+    private String selectNodeKey;
 }

@@ -78,4 +78,6 @@ public class WfNodeInstanceVo implements Serializable {
     /**********************非数据库字段*******************************/
     private String operatorName;
     List<WfTaskVo> tasks;
+
+    private String selectNodeKey;
 }
