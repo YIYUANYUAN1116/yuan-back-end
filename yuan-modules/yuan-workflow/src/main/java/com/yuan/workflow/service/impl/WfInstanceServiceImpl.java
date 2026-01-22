@@ -23,6 +23,7 @@ import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.BizRefException;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
+import com.yuan.workflow.domain.vo.OpsVO;
 import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfBizRefVo;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
@@ -39,10 +40,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -231,8 +232,25 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         detailVO.setInstance(wfInstance);
         detailVO.setCurrent(currentUserTask);
         detailVO.setTimeline(timeline);
-        detailVO.setOps(new ArrayList<>());
+        detailVO.setOps(getOps(currentUserTask,wfInstance));
         return detailVO;
+    }
+
+    /**
+     * 获取可操作按钮
+     * @param curTask
+     * @return
+     */
+    private OpsVO getOps(WfTaskVo curTask,WfInstanceVo instance) {
+        OpsVO opsVO = new OpsVO();
+        if (curTask != null){
+            opsVO.setCanApprove(true);
+            opsVO.setCanReject(true);
+            opsVO.setCanRollback(true);
+            opsVO.setCanTransfer(true);
+        }
+
+        return opsVO;
     }
 
     private Page<WorkItemRowVO> enrichFromInstancePage(Page<WfInstance> insPage) {

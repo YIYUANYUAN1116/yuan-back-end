@@ -23,5 +23,5 @@ public class WfApprovalDetailVO {
     private List<WfNodeInstanceVo> timeline;
 
     /** 前端按钮权限 */
-    private List<OpsVO> ops;
+    private OpsVO ops;
 }
