@@ -21,6 +21,7 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
     private final ApproveTaskHandler approveTaskHandler;
     private final RejectTaskHandler rejectTaskHandler;
     private final RollbackToActivityHandler rollbackToActivityHandler;
+    private final RollbackToPrevHandler rollbackToPrevHandler;
     private final WithdrawHandler withdrawHandler;
     private final TransferHandler transferHandler;
 
@@ -52,14 +53,23 @@ public class SimpleWorkflowEngine implements WorkflowEngine {
         rejectTaskHandler.handle(cmd);
     }
 
-    @Override public void rollbackToPrev(RollbackToPrevCmd cmd) { }
-    @Override public void rollbackToActivity(RollbackToActivityCmd cmd) {
+    @Override
+    public void rollbackToPrev(RollbackToPrevCmd cmd) {
+        rollbackToPrevHandler.handle(cmd);
+    }
+
+    @Override
+    public void rollbackToActivity(RollbackToActivityCmd cmd) {
         rollbackToActivityHandler.handle(cmd);
     }
-    @Override public void withdraw(WithdrawCmd cmd) {
+
+    @Override
+    public void withdraw(WithdrawCmd cmd) {
         withdrawHandler.handle(cmd);
     }
-    @Override public void transfer(TransferTaskCmd cmd) {
+
+    @Override
+    public void transfer(TransferTaskCmd cmd) {
         transferHandler.handle(cmd);
     }
 
