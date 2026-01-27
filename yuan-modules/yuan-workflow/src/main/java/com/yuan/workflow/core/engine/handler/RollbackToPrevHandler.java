@@ -1,10 +1,6 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.NodeInstanceLifeCycle;
-import com.yuan.workflow.core.engine.support.TaskLifecycle;
-import com.yuan.workflow.core.engine.support.VariableService;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
+import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -12,16 +8,13 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.TaskAction;
-import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.domain.exception.RollbackTargetInvalidException;
+import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * 退回到上一节点处理器
@@ -69,7 +62,7 @@ public class RollbackToPrevHandler implements CommandHandler<com.yuan.workflow.c
         nodeInstanceLifeCycle.finishCancel(currentNode.getId(), cmd.getOperatorId());
 
         // 推进到上一节点
-        flowAdvanceService.advanceToTarget(instance, prevNode, cmd);
+        flowAdvanceService.advanceToTarget(instance,def, prevNode, cmd,cmd.getVariables());
 
         return null;
     }
