@@ -80,4 +80,11 @@ public class WfNodeInstanceVo implements Serializable {
     List<WfTaskVo> tasks;
 
     private String selectNodeKey;
+
+
+    /** 上一个节点 */
+    private List<String> prevNodeKeys;
+
+    /** 下一个节点 */
+    private List<String> nextNodeKeys;
 }

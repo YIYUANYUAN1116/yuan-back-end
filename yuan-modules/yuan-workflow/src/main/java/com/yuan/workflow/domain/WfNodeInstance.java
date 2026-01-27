@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * wfn对象 wf_node_instance
@@ -70,9 +71,6 @@ public class WfNodeInstance extends TenantEntity {
      */
     private Long operatorId;
 
-    /**
-     * 状态(WAIT/DONE)
-     */
     private NodeStatus status;
 
     /**
@@ -82,5 +80,5 @@ public class WfNodeInstance extends TenantEntity {
     @TableLogic
     private String delFlag;
     private LocalDateTime finishedTime;
-    private String selectNodeKey;
+    private List<String> selectedNextKeys;
 }

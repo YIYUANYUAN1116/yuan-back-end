@@ -1,5 +1,7 @@
 package com.yuan.workflow.core.engine.support;
 
+import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
+import com.yuan.common.core.exception.workflow.WorkflowException;
 import com.yuan.workflow.cmd.ApproveTaskCmd;
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.parser.FlowParser;
@@ -8,8 +10,7 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.enums.NodeStatus;
-import com.yuan.workflow.domain.enums.NodeType;
-import com.yuan.workflow.domain.exception.RollbackTargetInvalidException;
+import com.yuan.workflow.domain.exception.NodeInstanceException;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +36,7 @@ public class FlowAdvanceService {
     private final WfNodeInstanceService nodeInstanceService;
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
+    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
 
     public void advance(WfNodeInstance currentNode, ApproveTaskCmd cmd) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
@@ -44,25 +47,54 @@ public class FlowAdvanceService {
 
         // 用最新变量（finish 时已 mergeAndSave）
         Map<String, Object> vars = variableService.getVars(instance);
-        LfNode next = flowParser.getNextNode(def, currentFlowNode, vars);
-        advanceToTarget(instance,next,cmd);
+        List<LfNode> nodeList = flowParser.getNextNode(def, currentFlowNode, vars);
+        for (LfNode next : nodeList) {
+            advanceToTarget(instance,def,next,cmd,vars);
+        }
     }
 
-    public void advanceToTarget(WfInstance instance, LfNode lfNode, WorkflowCmd cmd) {
+    public void advanceToTarget(WfInstance instance,WfDefinition def, LfNode lfNode, WorkflowCmd cmd,Map<String, Object> vars) {
         if (lfNode == null) {
-            throw new RollbackTargetInvalidException(); // 或 WF_NODE_NOT_FOUND
-        }
-
-        if (NodeType.END.getCode().equals(lfNode.getProperties().getWfType())) {
-            instanceLifecycle.finishApproved(instance, cmd);
-            return;
+            throw new NodeInstanceException(WorkflowErrorCode.WF_NODE_NOT_FOUND);
         }
 
         int nextOrderNo = nodeInstanceService.nextOrderNo(instance.getId());
         WfNodeInstance nextNodeIns =
                 nodeInstanceService.createNodeInstance(instance.getId(), lfNode, NodeStatus.WAIT, nextOrderNo);
 
-        Set<Long> userIds = assigneeResolver.resolve(lfNode);
-        wfTaskService.createTasks(instance, nextNodeIns, userIds);
+        if (flowParser.isGateway(lfNode)) {
+            List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
+            nextNodeIns.setSelectedNextKeys(
+                    nodeList.stream().map(LfNode::getId).toList()
+            );
+            nodeInstanceLifeCycle.finishDone(nextNodeIns);
+            for (LfNode next : nodeList) {
+                advanceToTarget(instance,def, next,cmd, vars);
+            }
+        }
+
+
+        if (flowParser.isUserTask(lfNode)) {
+            Set<Long> userIds = assigneeResolver.resolve(lfNode);
+            wfTaskService.createTasks(instance, nextNodeIns, userIds);
+            return;
+        }
+
+        if (flowParser.isEnd(lfNode)) {
+            instanceLifecycle.finishApproved(instance, cmd);
+            return;
+        }
+
+        if (flowParser.isSystem(lfNode)) {
+            //todo 系统节点
+            log.info("[advanceToTarget] LfNode type is system_task instance id:{}, lfNode:{}"
+                    , instance.getId(), lfNode);
+            return;
+        }
+
+        log.error("[advanceToTarget] LfNode type invalid instance id:{}, lfNode:{}"
+                , instance.getId(), lfNode);
+        throw new WorkflowException(WorkflowErrorCode.WF_NODE_TYPE_INVALID);
+
     }
 }

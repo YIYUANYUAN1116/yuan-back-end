@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -17,6 +19,8 @@ public class NodeInstanceLifeCycle {
 
     public void finishDone(WfNodeInstance node) {
         node.setStatus(NodeStatus.DONE);
+        node.setOperatorId(0L);
+        node.setFinishedTime(LocalDateTime.now());
         nodeInstanceMapper.updateById(node);
     }
 
@@ -24,6 +28,7 @@ public class NodeInstanceLifeCycle {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .set(WfNodeInstance::getStatus, NodeStatus.DONE)
                 .set(WfNodeInstance::getOperatorId, operatorId)
+                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
                 .eq(WfNodeInstance::getId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
@@ -41,6 +46,7 @@ public class NodeInstanceLifeCycle {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
                 .set(WfNodeInstance::getOperatorId, operatorId)
+                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
                 .eq(WfNodeInstance::getInstanceId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
@@ -54,6 +60,7 @@ public class NodeInstanceLifeCycle {
                 .eq(WfNodeInstance::getInstanceId, instanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT)
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
+                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
                 .set(WfNodeInstance::getOperatorId, operatorId));
 
     }

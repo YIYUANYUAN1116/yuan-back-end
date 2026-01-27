@@ -66,7 +66,7 @@ public class RollbackToActivityHandler implements CommandHandler<RollbackToActiv
         //修改节点状态
         nodeInstanceLifeCycle.finishCancel(currentNode.getId(),cmd.getOperatorId());
 
-        flowAdvanceService.advanceToTarget(instance,target,cmd);
+        flowAdvanceService.advanceToTarget(instance,def,target,cmd,cmd.getVariables());
 
         return null;
     }

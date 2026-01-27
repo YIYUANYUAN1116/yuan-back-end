@@ -8,19 +8,15 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
-import com.yuan.workflow.model.Expression;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
-import com.yuan.workflow.model.logicflow.LfProperties;
+import com.yuan.workflow.service.WfNodeInstanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -29,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FlowParser {
     private final ObjectMapper objectMapper;
+
     /** 缓存解析结果 */
     private final Map<String, LfGraph> cache = new ConcurrentHashMap<>();
 
@@ -64,7 +61,7 @@ public class FlowParser {
                 });
     }
 
-    public LfNode getNextNode(WfDefinition def, LfNode currentNode, Map<String, Object> variables) {
+    public List<LfNode> getNextNode(WfDefinition def, LfNode currentNode, Map<String, Object> variables) {
         LfGraph json = parse(def);
 
         // 1. 找出所有出边
@@ -78,40 +75,29 @@ public class FlowParser {
 
 
         // 2. 非网关：只有一条出边
-        if (!Objects.equals(currentNode.getProperties().getWfType(), NodeType.GATEWAY.getCode())) {
-            String nextId = outEdges.get(0).getTargetNodeId();
-            LfNode node = getNode(def, nextId);
-            if (node.getProperties().getWfType().equals(NodeType.GATEWAY.getCode())) {
-                //下一个节点时网关时，继续找网关的下一个节点
-                return getNextNode(def, node, variables);
-            }
-            return node;
+        if (!isGateway(currentNode)) {
+            return List.of(getNode(def, outEdges.get(0).getTargetNodeId()));
         }
 
         // 3. 网关：按条件判断
-        for (LfEdge outEdge : outEdges) {
-            LfProperties properties = outEdge.getProperties();
-            Expression condition = properties.getCondition();
-            if (SimpleConditionEvaluator.match(condition, variables)) {
-                LfNode node = getNode(def, outEdge.getTargetNodeId());
-                if (node.getProperties().getWfType().equals(NodeType.GATEWAY.getCode())) {
-                    //下一个节点时网关时，继续找网关的下一个节点
-                    return getNextNode(def, node, variables);
-                }
-                return node;
+        List<LfNode> matched = new ArrayList<>();
+        for (LfEdge edge : outEdges) {
+            if (SimpleConditionEvaluator.match(edge.getProperties().getCondition(), variables)) {
+                matched.add(getNode(def, edge.getTargetNodeId()));
             }
         }
 
-        log.error(
-                "Gateway node [{}] matched no condition and has no default target",
-                currentNode.getId()
-        );
-        throw new ProcessDefinitionParseException(
-                WorkflowErrorCode.WF_DEFINITION_NO_DEFAULT_GATEWAY,
-                def.getId(),
-                def.getVersion()
-        );
+        if (matched.isEmpty()) {
+            throw new ProcessDefinitionParseException(
+                    WorkflowErrorCode.WF_DEFINITION_NO_DEFAULT_GATEWAY,
+                    def.getId(),
+                    def.getVersion()
+            );
+        }
+
+        return matched;
     }
+
 
 
     public LfGraph parse(WfDefinition def) {
@@ -137,16 +123,99 @@ public class FlowParser {
         if (graph == null || graph.getNodes() == null) {
             return Collections.emptyList();
         }
+        List<LfNode> nodes = graph.getNodes();
+        List<LfEdge> edges = graph.getEdges();
 
-        return graph.getNodes().stream().map(FlowParser::convertNode).collect(Collectors.toList());
+        Map<String, WfNodeInstanceVo> nodeMap = nodes.stream().collect(Collectors.toMap(LfNode::getId,
+                FlowParser::convertNode,
+                (a, b) -> a));
+
+        nodeMap.values().forEach(node -> {
+            node.setPrevNodeKeys(new ArrayList<>());
+        node.setNextNodeKeys(new ArrayList<>());});
+
+        // 获取边界关系
+        for (LfEdge edge : edges) {
+            WfNodeInstanceVo from  = nodeMap.get(edge.getSourceNodeId());
+            WfNodeInstanceVo to  = nodeMap.get(edge.getTargetNodeId());
+            if (from != null && to != null){
+                from.getNextNodeKeys().add(to.getNodeKey());
+                to.getPrevNodeKeys().add(from.getNodeKey());
+            }
+        }
+
+
+        // 按流程顺序排序（从 start 开始）
+        return sortByFlowOrder(nodeMap);
+    }
+
+    private List<WfNodeInstanceVo> sortByFlowOrder(Map<String, WfNodeInstanceVo> nodeMap) {
+        // 找 start 节点
+        Optional<WfNodeInstanceVo> startOpt = nodeMap.values().stream()
+                .filter(n -> NodeType.START.equals(n.getNodeType()))
+                .findFirst();
+
+        if (startOpt.isEmpty()) {
+            // 没 start，就按插入顺序
+            int i = 0;
+            for (WfNodeInstanceVo n : nodeMap.values()) {
+                n.setOrderNo(i++);
+            }
+            return new ArrayList<>(nodeMap.values());
+        }
+
+        List<WfNodeInstanceVo> result = new ArrayList<>();
+        Set<String> visited = new HashSet<>();
+
+        dfs(startOpt.get(), nodeMap, visited, result);
+
+        // 设置 order
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).setOrderNo(i);
+        }
+        return result;
+    }
+
+    private void dfs(WfNodeInstanceVo node, Map<String, WfNodeInstanceVo> nodeMap, Set<String> visited, List<WfNodeInstanceVo> result) {
+        if (!visited.add(node.getNodeKey())) return;
+
+        result.add(node);
+
+        for (String nextNodeKey : node.getNextNodeKeys()) {
+            WfNodeInstanceVo nextNode = nodeMap.get(nextNodeKey);
+            if (nextNode != null) {
+                dfs(nextNode, nodeMap, visited, result);
+            }
+        }
     }
 
     private static WfNodeInstanceVo convertNode(LfNode node) {
         WfNodeInstanceVo vo = new WfNodeInstanceVo();
         vo.setNodeKey(node.getId());
         vo.setNodeName(node.getText().getValue());
-        vo.setNodeType(NodeType.valueOf(node.getType()));
+        vo.setNodeType(NodeType.valueOf(node.getProperties().getWfType()));
         vo.setStatus(NodeStatus.NOT_REACHED);
         return vo;
     }
+
+    public boolean isGateway(LfNode node) {
+        return NodeType.GATEWAY.getCode()
+                .equals(node.getProperties().getWfType());
+    }
+
+    public boolean isUserTask(LfNode node) {
+        return NodeType.USER_TASK.getCode()
+                .equals(node.getProperties().getWfType());
+    }
+
+    public boolean isEnd(LfNode node) {
+        return NodeType.END.getCode()
+                .equals(node.getProperties().getWfType());
+    }
+
+    public boolean isSystem(LfNode node) {
+        return NodeType.SYSTEM_TASK.getCode()
+                .equals(node.getProperties().getWfType());
+    }
+
 }

@@ -1,14 +1,13 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.StartProcessCmd;
-import com.yuan.workflow.domain.enums.NodeStatus;
-import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.core.engine.support.FlowAdvanceService;
 import com.yuan.workflow.core.engine.support.InstanceLifecycle;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
-import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -36,6 +35,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
     private final WfOperationGuard wfOperationGuard;
+    private final FlowAdvanceService flowAdvanceService;
 
 
     @Override
@@ -58,19 +58,15 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
         wfNodeInstanceService.createNodeInstance(instance.getId(), startNode, NodeStatus.DONE, 1);
 
         // 5) 找到下一个节点
-        LfNode firstApproveNode = flowParser.getNextNode(def, startNode, cmd.getVariables());
+        List<LfNode> nodeList = flowParser.getNextNode(def, startNode, cmd.getVariables());
 
-        // 6) 创建审批节点 + 任务
-        if (firstApproveNode != null && !NodeType.END.getCode().equals(firstApproveNode.getProperties().getWfType())) {
-            WfNodeInstance nodeInstance = wfNodeInstanceService.createNodeInstance(instance.getId(), firstApproveNode, NodeStatus.WAIT, 2);
-            Set<Long> userIds = assigneeResolver.resolve(firstApproveNode);
-            wfTaskService.createTasks(instance, nodeInstance,userIds);
-        } else {
-            // 没有审批节点，直接结束
+        if (nodeList.isEmpty()){
             log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
             instanceLifecycle.finishApproved(instance, cmd);
         }
-
+        for (LfNode next : nodeList) {
+            flowAdvanceService.advanceToTarget(instance,def,next,cmd,cmd.getVariables());
+        }
         return instance.getId();
     }
 }
