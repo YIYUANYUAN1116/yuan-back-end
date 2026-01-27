@@ -159,5 +159,13 @@ public class WfTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/rollbackToPrev")
+    @Log(title = "wfi", businessType = BusinessType.INSERT)
+    @Operation(summary = "退回上一节点",operationId = "WfTaskRollbackToPrev")
+    public R<Long> rollbackToPrev(@RequestBody RollbackToPrevCmd cmd) {
+        workflowService.rollbackToPrev(cmd);
+        return R.ok();
+    }
+
 
 }
