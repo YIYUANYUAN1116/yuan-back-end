@@ -1,11 +1,17 @@
 package com.yuan.workflow.core.engine.handler;
 
 
+import com.yuan.workflow.cmd.RecordTransitionCmd;
+import com.yuan.workflow.cmd.TransferTaskCmd;
 import com.yuan.workflow.cmd.WithdrawCmd;
 import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
 import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
+import com.yuan.workflow.enums.OperatorType;
+import com.yuan.workflow.enums.TransitionAction;
 import com.yuan.workflow.mapper.WfInstanceMapper;
+import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,6 +27,7 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
     private final WfInstanceMapper wfInstanceMapper;
     private final WfOperationGuard wfOperationGuard;
     private final InstanceStateManager instanceStateManager;
+    private final WfTransitionLogService transitionLogService;
 
     @Override
     @Transactional
@@ -32,6 +39,23 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
 
         instanceStateManager.finishWithDraw(wfInstance,cmd);
 
+
         return null;
+    }
+
+    private void transitionLog(WfInstance instance, WfNodeInstance node, TransferTaskCmd cmd) {
+        transitionLogService.recordSuccess(RecordTransitionCmd.builder()
+                .tenantId(instance.getTenantId())
+                .defId(instance.getDefinitionId())
+                .defVersion(instance.getDefinitionVersion())
+                .instanceId(instance.getId())
+                .nodeInstanceId(node.getId())
+                .fromNodeKey(null)                 // START 可空
+                .toNodeKey(node.getNodeKey())
+                .action(TransitionAction.TRANSFER)
+                .operatorType(OperatorType.USER)
+                .operatorId(cmd.getOperatorId())
+                .comment(cmd.getComment())
+                .build());
     }
 }

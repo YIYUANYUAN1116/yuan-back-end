@@ -18,6 +18,7 @@ import com.yuan.workflow.domain.exception.RollbackTargetInvalidException;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
+import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,7 @@ public class RollbackToPreviousHandler implements CommandHandler<RollbackToPrevi
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final InstanceTransitionManager instanceTransitionManager;
     private final WfNodeInstanceMapper nodeInstanceMapper;
+    private final WfTransitionLogService transitionLogService;
 
     @Override
     @Transactional

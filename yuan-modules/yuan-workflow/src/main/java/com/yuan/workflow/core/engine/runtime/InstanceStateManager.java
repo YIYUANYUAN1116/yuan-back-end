@@ -15,8 +15,6 @@ import com.yuan.workflow.domain.enums.WfEndReason;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.mapper.WfBizRefMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
-import com.yuan.workflow.mapper.WfNodeInstanceMapper;
-import com.yuan.workflow.mapper.WfTaskMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +29,6 @@ public class InstanceStateManager {
 
     private final WfInstanceMapper instanceMapper;
     private final WfBizRefMapper bizRefMapper;
-    private final WfNodeInstanceMapper nodeInstanceMapper;
-    private final WfTaskMapper taskMapper;
     private final SpringWfEventPublisher eventPublisher;
     private final TaskStateManager taskStateManager;
     private final NodeInstanceStateManager nodeInstanceStateManager;

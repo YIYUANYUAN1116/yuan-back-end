@@ -38,6 +38,7 @@ public class InstanceTransitionManager {
     private final AssigneeResolver assigneeResolver;
     private final NodeInstanceStateManager nodeInstanceStateManager;
 
+
     public void advance(WfNodeInstance currentNode, ApproveCmd cmd) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
 
@@ -64,9 +65,6 @@ public class InstanceTransitionManager {
 
         if (flowParser.isGateway(lfNode)) {
             List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
-            nextNodeIns.setSelectedNextKeys(
-                    nodeList.stream().map(LfNode::getId).toList()
-            );
             nodeInstanceStateManager.finishDone(nextNodeIns);
             for (LfNode next : nodeList) {
                 advanceToTarget(instance,def, next,cmd, vars);

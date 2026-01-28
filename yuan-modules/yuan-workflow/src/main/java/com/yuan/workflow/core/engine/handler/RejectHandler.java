@@ -15,6 +15,7 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
+import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
     private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
     private final NodeInstanceStateManager nodeLifeCycle;
+    private final WfTransitionLogService transitionLogService;
 
     @Override
     @Transactional
