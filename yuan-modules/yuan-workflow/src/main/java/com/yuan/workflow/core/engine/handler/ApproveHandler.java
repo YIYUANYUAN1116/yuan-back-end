@@ -1,6 +1,10 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.ApproveCmd;
+import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
+import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.TaskStateManager;
+import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
@@ -19,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApproveHandler implements CommandHandler<ApproveCmd,Void>{
     private final WfContextLoader contextLoader;
     private final VariableManager variableManager;
-    private final TaskLifecycle taskLifecycle;
-    private final FlowAdvanceService flowAdvanceService;
+    private final TaskStateManager taskStateManager;
+    private final InstanceTransitionManager instanceTransitionManager;
     private final WfOperationGuard wfOperationGuard;
     private final NodeInstanceStateManager nodeInstanceStateManager;
 
@@ -42,13 +46,13 @@ public class ApproveHandler implements CommandHandler<ApproveCmd,Void>{
         variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 4) 完成任务,节点
-        taskLifecycle.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
+        taskStateManager.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
 
         // 6) 完成节点
         nodeInstanceStateManager.finishDone(task.getNodeInstanceId(),operatorId);
 
         // 7) 推进
-        flowAdvanceService.advance(node,cmd);
+        instanceTransitionManager.advance(node,cmd);
 
         return null;
     }

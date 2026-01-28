@@ -1,4 +1,4 @@
-package com.yuan.workflow.core.engine.support;
+package com.yuan.workflow.core.engine.runtime;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yuan.workflow.cmd.TransferTaskCmd;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TaskLifecycle {
+public class TaskStateManager {
     private final WfTaskMapper taskMapper;
     private final WfTaskLogMapper taskLogMapper;
 

@@ -1,4 +1,4 @@
-package com.yuan.workflow.core.engine.support;
+package com.yuan.workflow.core.engine.runtime;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yuan.workflow.cmd.RejectCmd;
@@ -34,7 +34,7 @@ public class InstanceStateManager {
     private final WfNodeInstanceMapper nodeInstanceMapper;
     private final WfTaskMapper taskMapper;
     private final SpringWfEventPublisher eventPublisher;
-    private final TaskLifecycle taskLifecycle;
+    private final TaskStateManager taskStateManager;
     private final NodeInstanceStateManager nodeInstanceStateManager;
 
     @Transactional
@@ -89,7 +89,7 @@ public class InstanceStateManager {
     public void finishWithDraw(WfInstance instance, WithdrawCmd cmd) {
 
         // 取消所有待办任务（实例级）
-        taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW,cmd.getOperatorId());
+        taskStateManager.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW,cmd.getOperatorId());
 
         //  取消所有 WAIT 节点
         nodeInstanceStateManager.cancelAllWaitByInstance(instance.getId(),cmd.getOperatorId());

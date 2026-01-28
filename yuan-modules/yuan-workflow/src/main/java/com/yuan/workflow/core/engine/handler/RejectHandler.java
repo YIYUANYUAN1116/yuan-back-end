@@ -1,6 +1,10 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.RejectCmd;
+import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.TaskStateManager;
+import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
 import com.yuan.workflow.core.event.WfEventContext;
@@ -25,7 +29,7 @@ import java.util.Map;
 public class RejectHandler implements CommandHandler<RejectCmd,Void>{
     private final WfContextLoader contextLoader;
     private final VariableManager variableManager;
-    private final TaskLifecycle taskLifecycle;
+    private final TaskStateManager taskStateManager;
     private final SpringWfEventPublisher eventPublisher;
     private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
@@ -50,7 +54,7 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 完成任务
-        taskLifecycle.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
+        taskStateManager.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
 
         // 完成节点
         nodeLifeCycle.finishCancel(node.getId(),operatorId);

@@ -2,10 +2,10 @@ package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.workflow.cmd.RollbackCmd;
-import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.NodeInstanceStateManager;
-import com.yuan.workflow.core.engine.support.TaskLifecycle;
-import com.yuan.workflow.core.engine.support.VariableManager;
+import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
+import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.TaskStateManager;
+import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.core.parser.FlowParser;
@@ -31,11 +31,11 @@ public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
 
     private final WfContextLoader contextLoader;
     private final VariableManager variableManager;
-    private final TaskLifecycle taskLifecycle;
+    private final TaskStateManager taskStateManager;
     private final WfOperationGuard wfOperationGuard;
     private final FlowParser flowParser;
     private final NodeInstanceStateManager nodeInstanceStateManager;
-    private final FlowAdvanceService flowAdvanceService;
+    private final InstanceTransitionManager instanceTransitionManager;
 
 
     @Override
@@ -61,12 +61,12 @@ public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
         variableManager.mergeAndSave(taskCtx.instance(), cmd.getVariables());
 
         //完成当前任务
-        taskLifecycle.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorId());
+        taskStateManager.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorId());
 
         //修改节点状态
         nodeInstanceStateManager.finishCancel(currentNode.getId(),cmd.getOperatorId());
 
-        flowAdvanceService.advanceToTarget(instance,def,target,cmd,cmd.getVariables());
+        instanceTransitionManager.advanceToTarget(instance,def,target,cmd,cmd.getVariables());
 
         return null;
     }

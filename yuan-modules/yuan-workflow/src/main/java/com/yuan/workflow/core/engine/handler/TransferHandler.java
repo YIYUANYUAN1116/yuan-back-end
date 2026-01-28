@@ -1,7 +1,7 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.TransferTaskCmd;
-import com.yuan.workflow.core.engine.support.TaskLifecycle;
+import com.yuan.workflow.core.engine.runtime.TaskStateManager;
 import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransferHandler implements  CommandHandler<TransferTaskCmd,Void>{
     private final WfContextLoader contextLoader;
-    private final TaskLifecycle taskLifecycle;
+    private final TaskStateManager taskStateManager;
     private final WfOperationGuard wfOperationGuard;
 
 
@@ -31,7 +31,7 @@ public class TransferHandler implements  CommandHandler<TransferTaskCmd,Void>{
         wfOperationGuard.assertCanOperate(task, operatorId);
 
         // 2) 执行转交：task 只是换 assignee
-        taskLifecycle.transfer(
+        taskStateManager.transfer(
                 task,
                 cmd
         );

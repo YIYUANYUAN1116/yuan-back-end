@@ -1,8 +1,8 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.StartCmd;
-import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.InstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
+import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
@@ -35,7 +35,7 @@ public class StartHandler implements  CommandHandler<StartCmd,Long>{
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
     private final WfOperationGuard wfOperationGuard;
-    private final FlowAdvanceService flowAdvanceService;
+    private final InstanceTransitionManager instanceTransitionManager;
 
 
     @Override
@@ -65,7 +65,7 @@ public class StartHandler implements  CommandHandler<StartCmd,Long>{
             instanceStateManager.finishApproved(instance, cmd);
         }
         for (LfNode next : nodeList) {
-            flowAdvanceService.advanceToTarget(instance,def,next,cmd,cmd.getVariables());
+            instanceTransitionManager.advanceToTarget(instance,def,next,cmd,cmd.getVariables());
         }
         return instance.getId();
     }

@@ -1,4 +1,4 @@
-package com.yuan.workflow.core.engine.support;
+package com.yuan.workflow.core.engine.runtime;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
@@ -27,7 +27,7 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FlowAdvanceService {
+public class InstanceTransitionManager {
     private final WfInstanceMapper instanceMapper;
     private final WfDefinitionMapper definitionMapper;
     private final VariableManager variableManager;
