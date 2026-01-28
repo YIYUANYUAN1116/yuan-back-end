@@ -13,7 +13,7 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -173,7 +172,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
 
     @Override
     @Transactional
-    public WfInstance createInstance(StartProcessCmd cmd, WfDefinition def) {
+    public WfInstance createInstance(StartCmd cmd, WfDefinition def) {
         WfInstance instance = new WfInstance();
         instance.setTenantId(cmd.getTenantId());
         instance.setDefinitionId(def.getId());

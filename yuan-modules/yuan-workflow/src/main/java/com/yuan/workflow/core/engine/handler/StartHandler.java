@@ -1,8 +1,8 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.InstanceLifecycle;
+import com.yuan.workflow.core.engine.support.InstanceStateManager;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
@@ -25,13 +25,13 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long>{
+public class StartHandler implements  CommandHandler<StartCmd,Long>{
     private final WfDefinitionMapper definitionMapper;
     private final WfInstanceService wfInstanceService;
     private final WfBizRefService wfBizRefService;
     private final FlowParser flowParser;
     private final WfNodeInstanceService wfNodeInstanceService;
-    private final InstanceLifecycle instanceLifecycle;
+    private final InstanceStateManager instanceStateManager;
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
     private final WfOperationGuard wfOperationGuard;
@@ -40,7 +40,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
 
     @Override
     @Transactional
-    public Long handle(StartProcessCmd cmd) {
+    public Long handle(StartCmd cmd) {
         String tenantId = cmd.getTenantId();
 
         // 1) 查最新已发布定义
@@ -62,7 +62,7 @@ public class StartProcessHandler implements  CommandHandler<StartProcessCmd,Long
 
         if (nodeList.isEmpty()){
             log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
-            instanceLifecycle.finishApproved(instance, cmd);
+            instanceStateManager.finishApproved(instance, cmd);
         }
         for (LfNode next : nodeList) {
             flowAdvanceService.advanceToTarget(instance,def,next,cmd,cmd.getVariables());

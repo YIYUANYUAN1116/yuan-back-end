@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class NodeInstanceLifeCycle {
+public class NodeInstanceStateManager {
     private final WfNodeInstanceMapper nodeInstanceMapper;
 
     public void finishDone(WfNodeInstance node) {

@@ -2,7 +2,7 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
@@ -51,7 +51,7 @@ public interface WfInstanceService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    WfInstance createInstance(StartProcessCmd cmd, WfDefinition def);
+    WfInstance createInstance(StartCmd cmd, WfDefinition def);
 
     TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery);
 

@@ -1,11 +1,11 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
-import com.yuan.workflow.cmd.RollbackToActivityCmd;
+import com.yuan.workflow.cmd.RollbackCmd;
 import com.yuan.workflow.core.engine.support.FlowAdvanceService;
-import com.yuan.workflow.core.engine.support.NodeInstanceLifeCycle;
+import com.yuan.workflow.core.engine.support.NodeInstanceStateManager;
 import com.yuan.workflow.core.engine.support.TaskLifecycle;
-import com.yuan.workflow.core.engine.support.VariableService;
+import com.yuan.workflow.core.engine.support.VariableManager;
 import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.core.parser.FlowParser;
@@ -27,20 +27,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RollbackToActivityHandler implements CommandHandler<RollbackToActivityCmd,Void>{
+public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
 
     private final WfContextLoader contextLoader;
-    private final VariableService variableService;
+    private final VariableManager variableManager;
     private final TaskLifecycle taskLifecycle;
     private final WfOperationGuard wfOperationGuard;
     private final FlowParser flowParser;
-    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
     private final FlowAdvanceService flowAdvanceService;
 
 
     @Override
     @Transactional
-    public Void handle(RollbackToActivityCmd cmd) {
+    public Void handle(RollbackCmd cmd) {
 
         WfContextLoader.TaskCtx taskCtx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = taskCtx.task();
@@ -58,13 +58,13 @@ public class RollbackToActivityHandler implements CommandHandler<RollbackToActiv
         //判断当前操作人是否可操作该任务
         wfOperationGuard.assertCanOperate(task,cmd.getOperatorId());
 
-        variableService.mergeAndSave(taskCtx.instance(), cmd.getVariables());
+        variableManager.mergeAndSave(taskCtx.instance(), cmd.getVariables());
 
         //完成当前任务
         taskLifecycle.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorId());
 
         //修改节点状态
-        nodeInstanceLifeCycle.finishCancel(currentNode.getId(),cmd.getOperatorId());
+        nodeInstanceStateManager.finishCancel(currentNode.getId(),cmd.getOperatorId());
 
         flowAdvanceService.advanceToTarget(instance,def,target,cmd,cmd.getVariables());
 

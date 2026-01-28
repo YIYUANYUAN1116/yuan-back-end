@@ -21,7 +21,7 @@ import com.yuan.oa.domain.vo.OaLeaveApplyVo;
 import com.yuan.oa.mapper.OaLeaveApplyMapper;
 import com.yuan.oa.service.OaLeaveApplyService;
 import com.yuan.workflow.api.WorkflowService;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,7 +176,7 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
         }
 
         // 3) 组装发起流程命令
-        StartProcessCmd cmd = new StartProcessCmd();
+        StartCmd cmd = new StartCmd();
         cmd.setBizType(ApplyConstants.OA_LEAVE);
         cmd.setBizId(apply.getId());
         cmd.setBizNo(apply.getApplyNo());

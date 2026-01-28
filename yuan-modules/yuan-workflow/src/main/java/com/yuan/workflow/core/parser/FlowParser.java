@@ -11,12 +11,18 @@ import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
-import com.yuan.workflow.service.WfNodeInstanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -132,7 +138,8 @@ public class FlowParser {
 
         nodeMap.values().forEach(node -> {
             node.setPrevNodeKeys(new ArrayList<>());
-        node.setNextNodeKeys(new ArrayList<>());});
+            node.setNextNodeKeys(new ArrayList<>());
+        });
 
         // 获取边界关系
         for (LfEdge edge : edges) {

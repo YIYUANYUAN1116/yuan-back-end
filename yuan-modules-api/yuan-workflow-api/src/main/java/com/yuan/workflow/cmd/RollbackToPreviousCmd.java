@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class RollbackToPrevCmd extends WorkflowCmd {
+public class RollbackToPreviousCmd extends WorkflowCmd {
     @NotNull(message = "任务Id不能为空")
     private Long taskId;
 }

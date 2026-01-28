@@ -3,7 +3,7 @@ package com.yuan.workflow.domain.guard;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -52,7 +52,7 @@ public class WfOperationGuard {
     }
 
 
-    public void assertStartInstance(WfDefinition definition, StartProcessCmd cmd) {
+    public void assertStartInstance(WfDefinition definition, StartCmd cmd) {
         if (definition == null) {
             log.error("[assertStartInstance]: definition is null");
             throw new WorkflowException(WorkflowErrorCode.WF_DEFINITION_NOT_FOUND);

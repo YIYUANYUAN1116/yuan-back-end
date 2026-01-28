@@ -2,7 +2,7 @@ package com.yuan.workflow.core.engine.support;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
-import com.yuan.workflow.cmd.ApproveTaskCmd;
+import com.yuan.workflow.cmd.ApproveCmd;
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
@@ -30,15 +30,15 @@ import java.util.Set;
 public class FlowAdvanceService {
     private final WfInstanceMapper instanceMapper;
     private final WfDefinitionMapper definitionMapper;
-    private final VariableService variableService;
+    private final VariableManager variableManager;
     private final FlowParser flowParser;
-    private final InstanceLifecycle instanceLifecycle;
+    private final InstanceStateManager instanceStateManager;
     private final WfNodeInstanceService nodeInstanceService;
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
-    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
 
-    public void advance(WfNodeInstance currentNode, ApproveTaskCmd cmd) {
+    public void advance(WfNodeInstance currentNode, ApproveCmd cmd) {
         WfInstance instance = instanceMapper.selectById(currentNode.getInstanceId());
 
         WfDefinition def = definitionMapper.selectById(instance.getDefinitionId());
@@ -46,7 +46,7 @@ public class FlowAdvanceService {
         LfNode currentFlowNode = flowParser.getNode(def, currentNode.getNodeKey());
 
         // 用最新变量（finish 时已 mergeAndSave）
-        Map<String, Object> vars = variableService.getVars(instance);
+        Map<String, Object> vars = variableManager.getVars(instance);
         List<LfNode> nodeList = flowParser.getNextNode(def, currentFlowNode, vars);
         for (LfNode next : nodeList) {
             advanceToTarget(instance,def,next,cmd,vars);
@@ -67,7 +67,7 @@ public class FlowAdvanceService {
             nextNodeIns.setSelectedNextKeys(
                     nodeList.stream().map(LfNode::getId).toList()
             );
-            nodeInstanceLifeCycle.finishDone(nextNodeIns);
+            nodeInstanceStateManager.finishDone(nextNodeIns);
             for (LfNode next : nodeList) {
                 advanceToTarget(instance,def, next,cmd, vars);
             }
@@ -81,7 +81,7 @@ public class FlowAdvanceService {
         }
 
         if (flowParser.isEnd(lfNode)) {
-            instanceLifecycle.finishApproved(instance, cmd);
+            instanceStateManager.finishApproved(instance, cmd);
             return;
         }
 

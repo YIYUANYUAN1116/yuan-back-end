@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.cmd.RejectTaskCmd;
+import com.yuan.workflow.cmd.RejectCmd;
 import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
 import com.yuan.workflow.core.event.WfEventContext;
@@ -22,18 +22,18 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
-public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
+public class RejectHandler implements CommandHandler<RejectCmd,Void>{
     private final WfContextLoader contextLoader;
-    private final VariableService variableService;
+    private final VariableManager variableManager;
     private final TaskLifecycle taskLifecycle;
     private final SpringWfEventPublisher eventPublisher;
-    private final InstanceLifecycle instanceLifecycle;
+    private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
-    private final NodeInstanceLifeCycle nodeLifeCycle;
+    private final NodeInstanceStateManager nodeLifeCycle;
 
     @Override
     @Transactional
-    public Void handle(RejectTaskCmd cmd) {
+    public Void handle(RejectCmd cmd) {
         Long operatorId = cmd.getOperatorId();
 
         //  load 上下文
@@ -47,7 +47,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
         wfOperationGuard.assertCanOperate(task, operatorId);
 
         // 合并变量（驳回也可能写变量）
-        variableService.mergeAndSave(instance, cmd.getVariables());
+        variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 完成任务
         taskLifecycle.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
@@ -67,7 +67,7 @@ public class RejectTaskHandler implements CommandHandler<RejectTaskCmd,Void>{
         }
 
         // 结束实例
-        instanceLifecycle.finishRejected(instance,cmd);
+        instanceStateManager.finishRejected(instance,cmd);
         return null;
     }
 

@@ -7,7 +7,7 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.bo.WfBizRefBo;
@@ -117,7 +117,7 @@ public class WfBizRefServiceImpl implements WfBizRefService {
     }
 
     @Override
-    public void bindWfBizRef(StartProcessCmd cmd, Long instanceId) {
+    public void bindWfBizRef(StartCmd cmd, Long instanceId) {
         WfBizRef ref = new WfBizRef();
         ref.setBizType(cmd.getBizType());
         ref.setBizId(cmd.getBizId());

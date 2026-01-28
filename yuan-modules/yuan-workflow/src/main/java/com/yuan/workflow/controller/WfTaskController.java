@@ -122,7 +122,7 @@ public class WfTaskController extends BaseController {
     @PostMapping("/approve")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "审批通过",operationId = "WfTask_approve")
-    public R<Long> start(@RequestBody ApproveTaskCmd cmd) {
+    public R<Long> start(@RequestBody ApproveCmd cmd) {
         workflowService.approveTask(cmd);
         return R.ok();
     }
@@ -130,7 +130,7 @@ public class WfTaskController extends BaseController {
     @PostMapping("/reject")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "审批拒绝",operationId = "WfTask_reject")
-    public R<Long> reject(@RequestBody RejectTaskCmd cmd) {
+    public R<Long> reject(@RequestBody RejectCmd cmd) {
         workflowService.rejectTask(cmd);
         return R.ok();
     }
@@ -154,7 +154,7 @@ public class WfTaskController extends BaseController {
     @PostMapping("/rollbackTo")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "退回指定节点",operationId = "WfTaskRollbackTo")
-    public R<Long> rollbackTo(@RequestBody RollbackToActivityCmd cmd) {
+    public R<Long> rollbackTo(@RequestBody RollbackCmd cmd) {
         workflowService.rollbackTo(cmd);
         return R.ok();
     }
@@ -162,7 +162,7 @@ public class WfTaskController extends BaseController {
     @PostMapping("/rollbackToPrev")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "退回上一节点",operationId = "WfTaskRollbackToPrev")
-    public R<Long> rollbackToPrev(@RequestBody RollbackToPrevCmd cmd) {
+    public R<Long> rollbackToPrev(@RequestBody RollbackToPreviousCmd cmd) {
         workflowService.rollbackToPrev(cmd);
         return R.ok();
     }

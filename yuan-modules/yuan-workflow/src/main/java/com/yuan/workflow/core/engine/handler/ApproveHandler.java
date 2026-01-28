@@ -1,6 +1,6 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.cmd.ApproveTaskCmd;
+import com.yuan.workflow.cmd.ApproveCmd;
 import com.yuan.workflow.core.engine.support.*;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
@@ -16,17 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @RequiredArgsConstructor
-public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
+public class ApproveHandler implements CommandHandler<ApproveCmd,Void>{
     private final WfContextLoader contextLoader;
-    private final VariableService variableService;
+    private final VariableManager variableManager;
     private final TaskLifecycle taskLifecycle;
     private final FlowAdvanceService flowAdvanceService;
     private final WfOperationGuard wfOperationGuard;
-    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
 
     @Override
     @Transactional
-    public Void handle(ApproveTaskCmd cmd) {
+    public Void handle(ApproveCmd cmd) {
         Long operatorId = cmd.getOperatorId();
 
         // 1) load 上下文（task/node/instance/def/bizRef）
@@ -39,13 +39,13 @@ public class ApproveTaskHandler implements CommandHandler<ApproveTaskCmd,Void>{
         wfOperationGuard.assertCanOperate(task,operatorId);
 
         // 3) 合并变量
-        variableService.mergeAndSave(instance, cmd.getVariables());
+        variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 4) 完成任务,节点
         taskLifecycle.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
 
         // 6) 完成节点
-        nodeInstanceLifeCycle.finishDone(task.getNodeInstanceId(),operatorId);
+        nodeInstanceStateManager.finishDone(task.getNodeInstanceId(),operatorId);
 
         // 7) 推进
         flowAdvanceService.advance(node,cmd);

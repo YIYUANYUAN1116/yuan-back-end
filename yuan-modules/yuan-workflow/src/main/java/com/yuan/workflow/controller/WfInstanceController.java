@@ -14,7 +14,7 @@ import com.yuan.common.web.core.BaseController;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.api.WorkflowService;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
@@ -130,7 +130,7 @@ public class WfInstanceController extends BaseController {
     @PostMapping("/start")
     @Log(title = "流程实例", businessType = BusinessType.INSERT)
     @Operation(summary = "流程发起",operationId = "WfInstance_start")
-    public R<Long> start(@RequestBody StartProcessCmd cmd) {
+    public R<Long> start(@RequestBody StartCmd cmd) {
         Long instanceId = workflowService.startProcess(cmd);
         return R.ok(instanceId);
     }

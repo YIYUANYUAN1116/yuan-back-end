@@ -75,6 +75,8 @@ public class WfNodeInstanceVo implements Serializable {
 
     private LocalDateTime finishedTime;
 
+    private List<String> selectedNextKeys;
+
     /**********************非数据库字段*******************************/
     private String operatorName;
     List<WfTaskVo> tasks;

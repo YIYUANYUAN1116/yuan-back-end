@@ -1,11 +1,11 @@
 package com.yuan.workflow.service.api;
 
 import com.yuan.workflow.annotation.FillWfCmd;
-import com.yuan.workflow.cmd.ApproveTaskCmd;
-import com.yuan.workflow.cmd.RejectTaskCmd;
-import com.yuan.workflow.cmd.RollbackToActivityCmd;
-import com.yuan.workflow.cmd.RollbackToPrevCmd;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.ApproveCmd;
+import com.yuan.workflow.cmd.RejectCmd;
+import com.yuan.workflow.cmd.RollbackCmd;
+import com.yuan.workflow.cmd.RollbackToPreviousCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.cmd.TransferTaskCmd;
 import com.yuan.workflow.cmd.WithdrawCmd;
 import com.yuan.workflow.core.engine.WorkflowEngine;
@@ -20,27 +20,27 @@ public class WorkflowServiceImpl implements WorkflowService {
     private final WorkflowEngine workflowEngine;
 
     @Override
-    public Long startProcess(StartProcessCmd cmd) {
+    public Long startProcess(StartCmd cmd) {
         return workflowEngine.startProcess(cmd);
     }
 
     @Override
-    public void approveTask(ApproveTaskCmd cmd) {
+    public void approveTask(ApproveCmd cmd) {
         workflowEngine.approveTask(cmd);
     }
 
     @Override
-    public void rejectTask(RejectTaskCmd cmd) {
+    public void rejectTask(RejectCmd cmd) {
         workflowEngine.rejectTask(cmd);
     }
 
     @Override
-    public void rollbackToPrev(RollbackToPrevCmd cmd) {
+    public void rollbackToPrev(RollbackToPreviousCmd cmd) {
         workflowEngine.rollbackToPrev(cmd);
     }
 
     @Override
-    public void rollbackTo(RollbackToActivityCmd cmd) {
+    public void rollbackTo(RollbackCmd cmd) {
         workflowEngine.rollbackToActivity(cmd);
     }
 

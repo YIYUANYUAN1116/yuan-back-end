@@ -1,6 +1,12 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.workflow.core.engine.support.*;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.yuan.workflow.cmd.RollbackToPreviousCmd;
+import com.yuan.workflow.core.engine.support.FlowAdvanceService;
+import com.yuan.workflow.core.engine.support.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.support.TaskLifecycle;
+import com.yuan.workflow.core.engine.support.VariableManager;
+import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -10,6 +16,7 @@ import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.exception.RollbackTargetInvalidException;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
+import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,20 +29,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RollbackToPrevHandler implements CommandHandler<com.yuan.workflow.cmd.RollbackToPrevCmd, Void> {
+public class RollbackToPreviousHandler implements CommandHandler<RollbackToPreviousCmd, Void> {
 
     private final WfContextLoader contextLoader;
-    private final VariableService variableService;
+    private final VariableManager variableManager;
     private final TaskLifecycle taskLifecycle;
     private final WfOperationGuard wfOperationGuard;
     private final FlowParser flowParser;
-    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
     private final FlowAdvanceService flowAdvanceService;
-    private final com.yuan.workflow.mapper.WfNodeInstanceMapper nodeInstanceMapper;
+    private final WfNodeInstanceMapper nodeInstanceMapper;
 
     @Override
     @Transactional
-    public Void handle(com.yuan.workflow.cmd.RollbackToPrevCmd cmd) {
+    public Void handle(RollbackToPreviousCmd cmd) {
         WfContextLoader.TaskCtx taskCtx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = taskCtx.task();
         WfDefinition def = taskCtx.def();
@@ -53,13 +60,13 @@ public class RollbackToPrevHandler implements CommandHandler<com.yuan.workflow.c
         // 判断当前操作人是否可操作该任务
         wfOperationGuard.assertCanOperate(task, cmd.getOperatorId());
 
-        variableService.mergeAndSave(taskCtx.instance(), cmd.getVariables());
+        variableManager.mergeAndSave(taskCtx.instance(), cmd.getVariables());
 
         // 完成当前任务
         taskLifecycle.finish(task, TaskAction.ROLLBACK, cmd.getComment(), cmd.getOperatorId());
 
         // 修改节点状态
-        nodeInstanceLifeCycle.finishCancel(currentNode.getId(), cmd.getOperatorId());
+        nodeInstanceStateManager.finishCancel(currentNode.getId(), cmd.getOperatorId());
 
         // 推进到上一节点
         flowAdvanceService.advanceToTarget(instance,def, prevNode, cmd,cmd.getVariables());
@@ -73,8 +80,8 @@ public class RollbackToPrevHandler implements CommandHandler<com.yuan.workflow.c
      */
     private LfNode findPreviousNode(WfDefinition def, Long instanceId, Integer currentOrderNo) {
         // 查找已完成且orderNo小于当前节点的节点实例
-        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<WfNodeInstance> wrapper =
-            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        LambdaQueryWrapper<WfNodeInstance> wrapper =
+            new LambdaQueryWrapper<>();
         wrapper.eq(WfNodeInstance::getInstanceId, instanceId)
             .eq(WfNodeInstance::getStatus, NodeStatus.DONE)
             .lt(WfNodeInstance::getOrderNo, currentOrderNo)

@@ -2,7 +2,7 @@ package com.yuan.workflow.core.engine.handler;
 
 
 import com.yuan.workflow.cmd.WithdrawCmd;
-import com.yuan.workflow.core.engine.support.InstanceLifecycle;
+import com.yuan.workflow.core.engine.support.InstanceStateManager;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
 import com.yuan.workflow.mapper.WfInstanceMapper;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
     private final WfInstanceMapper wfInstanceMapper;
     private final WfOperationGuard wfOperationGuard;
-    private final InstanceLifecycle instanceLifecycle;
+    private final InstanceStateManager instanceStateManager;
 
     @Override
     @Transactional
@@ -30,7 +30,7 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
         //校验
         wfOperationGuard.assertWithDraw(wfInstance,cmd.getOperatorId());
 
-        instanceLifecycle.finishWithDraw(wfInstance,cmd);
+        instanceStateManager.finishWithDraw(wfInstance,cmd);
 
         return null;
     }

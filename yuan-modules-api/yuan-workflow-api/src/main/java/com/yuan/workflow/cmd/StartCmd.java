@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class StartProcessCmd extends WorkflowCmd{
+public class StartCmd extends WorkflowCmd{
     @NotBlank(message = "流程定义key不能为空")
     private String definitionKey;
     @NotBlank(message = "业务类型不能为空")

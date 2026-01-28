@@ -1,7 +1,7 @@
 package com.yuan.workflow.core.engine.support;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yuan.workflow.cmd.RejectTaskCmd;
+import com.yuan.workflow.cmd.RejectCmd;
 import com.yuan.workflow.cmd.WithdrawCmd;
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class InstanceLifecycle {
+public class InstanceStateManager {
 
     private final WfInstanceMapper instanceMapper;
     private final WfBizRefMapper bizRefMapper;
@@ -35,17 +35,17 @@ public class InstanceLifecycle {
     private final WfTaskMapper taskMapper;
     private final SpringWfEventPublisher eventPublisher;
     private final TaskLifecycle taskLifecycle;
-    private final NodeInstanceLifeCycle nodeInstanceLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
 
     @Transactional
-    public void finishRejected(Long instanceId, RejectTaskCmd cmd) {
+    public void finishRejected(Long instanceId, RejectCmd cmd) {
         WfInstance instance = instanceMapper.selectById(instanceId);
         if (instance == null) throw new InstanceNotFoundException();
         finishRejected(instance, cmd);
     }
 
     @Transactional
-    public void finishRejected(WfInstance instance, RejectTaskCmd cmd) {
+    public void finishRejected(WfInstance instance, RejectCmd cmd) {
         instance.setStatus(InstanceStatus.REJECTED);
         instance.setEndTime(LocalDateTime.now());
         instance.setLastOperatorId(cmd.getOperatorId());
@@ -92,7 +92,7 @@ public class InstanceLifecycle {
         taskLifecycle.cancelAllTodoTasks(instance.getId(), TaskAction.WITHDRAW,cmd.getOperatorId());
 
         //  取消所有 WAIT 节点
-        nodeInstanceLifeCycle.cancelAllWaitByInstance(instance.getId(),cmd.getOperatorId());
+        nodeInstanceStateManager.cancelAllWaitByInstance(instance.getId(),cmd.getOperatorId());
 
         //更新实例
         instance.setStatus(InstanceStatus.CANCELED);

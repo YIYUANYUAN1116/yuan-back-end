@@ -1,21 +1,21 @@
 package com.yuan.workflow.api;
 
-import com.yuan.workflow.cmd.ApproveTaskCmd;
-import com.yuan.workflow.cmd.RejectTaskCmd;
-import com.yuan.workflow.cmd.RollbackToActivityCmd;
-import com.yuan.workflow.cmd.RollbackToPrevCmd;
-import com.yuan.workflow.cmd.StartProcessCmd;
+import com.yuan.workflow.cmd.ApproveCmd;
+import com.yuan.workflow.cmd.RejectCmd;
+import com.yuan.workflow.cmd.RollbackCmd;
+import com.yuan.workflow.cmd.RollbackToPreviousCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.cmd.TransferTaskCmd;
 import com.yuan.workflow.cmd.WithdrawCmd;
 
 public interface WorkflowService {
-    Long startProcess(StartProcessCmd cmd);
+    Long startProcess(StartCmd cmd);
 
-    void approveTask(ApproveTaskCmd approveTaskCmd);
-    void rejectTask(RejectTaskCmd rejectTaskCmd);
+    void approveTask(ApproveCmd approveCmd);
+    void rejectTask(RejectCmd rejectCmd);
 
-    void rollbackToPrev(RollbackToPrevCmd rollbackToPrevCmd);
-    void rollbackTo(RollbackToActivityCmd rollbackToCmd);
+    void rollbackToPrev(RollbackToPreviousCmd rollbackToPreviousCmd);
+    void rollbackTo(RollbackCmd rollbackToCmd);
 
     void withdraw(WithdrawCmd withdrawCmd);
     void transfer(TransferTaskCmd transferTaskCmd);

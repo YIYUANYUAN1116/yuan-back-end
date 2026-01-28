@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class VariableService {
+public class VariableManager {
   private final WfInstanceMapper instanceMapper;
 
   public Map<String, Object> getVars(WfInstance ins) {
