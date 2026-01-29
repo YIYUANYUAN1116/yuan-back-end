@@ -8,6 +8,7 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
+import com.yuan.workflow.model.Expression;
 import com.yuan.workflow.model.logicflow.LfEdge;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
@@ -89,7 +90,9 @@ public class FlowParser {
         List<LfNode> matched = new ArrayList<>();
         for (LfEdge edge : outEdges) {
             if (SimpleConditionEvaluator.match(edge.getProperties().getCondition(), variables)) {
-                matched.add(getNode(def, edge.getTargetNodeId()));
+                LfNode node = getNode(def, edge.getTargetNodeId());
+                node.getProperties().setCondition(edge.getProperties().getCondition());
+                matched.add(node);
             }
         }
 
@@ -225,4 +228,12 @@ public class FlowParser {
                 .equals(node.getProperties().getWfType());
     }
 
+    public String parseConditionExpr(LfNode lfNode) {
+        Expression condition = lfNode.getProperties().getCondition();
+        if (condition == null) return null;
+        String field = condition.getField();
+        String desc = condition.getOperator().getDesc();
+        String value = condition.getValue();
+        return field + desc + value;
+    }
 }

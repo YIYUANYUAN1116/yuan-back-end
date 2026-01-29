@@ -20,7 +20,7 @@ public class WfApprovalDetailVO {
     private WfTaskVo current;
 
     /** 审批进度：节点轨迹（按 orderNo 升序） */
-    private List<WfNodeInstanceVo> timeline;
+    private List<WfTimelineEventVo> timeline;
 
     /** 前端按钮权限 */
     private OpsVO ops;

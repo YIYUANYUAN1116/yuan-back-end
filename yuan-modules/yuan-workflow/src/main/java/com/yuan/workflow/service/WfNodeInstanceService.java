@@ -6,6 +6,7 @@ import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
+import com.yuan.workflow.domain.vo.WfTimelineEventVo;
 import com.yuan.workflow.model.logicflow.LfNode;
 
 import java.util.Collection;
@@ -60,5 +61,5 @@ public interface WfNodeInstanceService {
 
     List<WfNodeInstanceVo> selectVoByInstanceId(Long instanceId);
 
-    List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId);
+    List<WfTimelineEventVo> selectTimelineByInstanceId(Long instanceId);
 }

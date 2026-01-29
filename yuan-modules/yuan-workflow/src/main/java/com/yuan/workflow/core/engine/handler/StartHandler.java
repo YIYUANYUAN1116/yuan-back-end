@@ -2,7 +2,6 @@ package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
-import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
@@ -30,7 +29,7 @@ public class StartHandler implements  CommandHandler<StartCmd,Long>{
     private final WfNodeInstanceService wfNodeInstanceService;
     private final WfOperationGuard wfOperationGuard;
     private final InstanceTransitionManager instanceTransitionManager;
-    private final VariableManager variableManager;
+
 
     @Override
     @Transactional

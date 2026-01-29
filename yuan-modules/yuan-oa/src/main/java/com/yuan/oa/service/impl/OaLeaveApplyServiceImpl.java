@@ -184,6 +184,7 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
         cmd.setStarterDeptId(LoginHelper.getDeptId());
         cmd.setTitle(apply.getApplicantName() + " 请假 " + (apply.getLeaveDays() == null ? "" : apply.getLeaveDays()) + " 天");
         cmd.setDefinitionKey(ApplyConstants.OA_LEAVE);
+        cmd.setComment(apply.getReason());
         // 网关/指派需要的变量
         Map<String, Object> vars = new HashMap<>();
         vars.put("days", apply.getLeaveDays());

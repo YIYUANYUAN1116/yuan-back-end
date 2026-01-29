@@ -2,12 +2,7 @@ package com.yuan.workflow.core.engine.runtime;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
-import com.yuan.workflow.cmd.ApproveCmd;
-import com.yuan.workflow.cmd.RecordTransitionCmd;
-import com.yuan.workflow.cmd.RejectCmd;
-import com.yuan.workflow.cmd.RollbackCmd;
-import com.yuan.workflow.cmd.StartCmd;
-import com.yuan.workflow.cmd.WorkflowCmd;
+import com.yuan.workflow.cmd.*;
 import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
@@ -55,18 +50,18 @@ public class InstanceTransitionManager {
 
         LfNode currentFlowNode = flowParser.getNode(def, currentNode.getNodeKey());
 
-        variableManager.mergeAndSave(instance,cmd.getVariables());
+        variableManager.mergeAndSave(instance, cmd.getVariables());
 
         Map<String, Object> vars = variableManager.getVars(instance);
 
         List<LfNode> nodeList = flowParser.getNextNode(def, currentFlowNode, vars);
         for (LfNode next : nodeList) {
-            transitionLog(instance,currentNode,next,TransitionAction.APPROVE,OperatorType.USER,cmd);
-            advanceToTarget(instance,def,next,cmd,vars);
+            transitionLog(instance, currentNode, next, TransitionAction.APPROVE, OperatorType.USER, cmd,null,null);
+            advanceToTarget(instance, def, next, cmd, vars);
         }
     }
 
-    public void advanceToTarget(WfInstance instance,WfDefinition def, LfNode lfNode, WorkflowCmd cmd,Map<String, Object> vars) {
+    public void advanceToTarget(WfInstance instance, WfDefinition def, LfNode lfNode, WorkflowCmd cmd, Map<String, Object> vars) {
         if (lfNode == null) {
             throw new NodeInstanceException(WorkflowErrorCode.WF_NODE_NOT_FOUND);
         }
@@ -79,9 +74,12 @@ public class InstanceTransitionManager {
             List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
             nodeInstanceStateManager.finishDone(currentNode);
             for (LfNode next : nodeList) {
-                transitionLog(instance,currentNode,next,TransitionAction.GATEWAY,OperatorType.SYSTEM,cmd);
-                advanceToTarget(instance,def, next,cmd, vars);
+                cmd.setComment(null);
+                String conditionExpr =  flowParser.parseConditionExpr(next);
+                transitionLog(instance, currentNode, next, TransitionAction.GATEWAY, OperatorType.SYSTEM, cmd,conditionExpr,vars);
+                advanceToTarget(instance, def, next, cmd, vars);
             }
+            return;
         }
 
 
@@ -92,8 +90,10 @@ public class InstanceTransitionManager {
         }
 
         if (flowParser.isEnd(lfNode)) {
+            nodeInstanceStateManager.finishDone(currentNode);
             instanceStateManager.finishApproved(instance, cmd);
-            transitionLog(instance,currentNode,null,TransitionAction.END,OperatorType.SYSTEM,cmd);
+            cmd.setComment(null);
+            transitionLog(instance, currentNode, null, TransitionAction.END, OperatorType.SYSTEM, cmd,null,null);
             return;
         }
 
@@ -111,21 +111,21 @@ public class InstanceTransitionManager {
     }
 
 
-    public void start(WfDefinition def, WfInstance instance, WfNodeInstance node,LfNode lfNode, StartCmd cmd) {
-        variableManager.mergeAndSave(instance,cmd.getVariables());
+    public void start(WfDefinition def, WfInstance instance, WfNodeInstance node, LfNode lfNode, StartCmd cmd) {
+        variableManager.mergeAndSave(instance, cmd.getVariables());
         Map<String, Object> vars = variableManager.getVars(instance);
         List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
 
-        if (nodeList.isEmpty()){
+        if (nodeList.isEmpty()) {
             log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
             instanceStateManager.finishApproved(instance, cmd);
             transitionLog(instance, node, null,
-                    TransitionAction.END, OperatorType.SYSTEM, cmd);
+                    TransitionAction.END, OperatorType.SYSTEM, cmd,null,null);
         }
         for (LfNode next : nodeList) {
             transitionLog(instance, node, next,
-                    TransitionAction.START, OperatorType.USER, cmd);
-            advanceToTarget(instance,def,next,cmd,cmd.getVariables());
+                    TransitionAction.START, OperatorType.USER, cmd,null,null);
+            advanceToTarget(instance, def, next, cmd, cmd.getVariables());
         }
 
     }
@@ -133,10 +133,40 @@ public class InstanceTransitionManager {
 
     public void reject(WfInstance instance, WfNodeInstance node, LfNode lfNode, RejectCmd cmd) {
         transitionLog(instance, node, lfNode,
-                TransitionAction.REJECT, OperatorType.USER, cmd);
+                TransitionAction.REJECT, OperatorType.USER, cmd,null,null);
     }
 
-    private void transitionLog(WfInstance instance, WfNodeInstance from,LfNode to,TransitionAction action,OperatorType operatorType ,WorkflowCmd cmd) {
+
+    public void rollback(WfDefinition def, WfInstance instance, WfNodeInstance currentNode, RollbackCmd cmd) {
+        //找到退回到的节点
+        LfNode target = flowParser.getNode(def, cmd.getTargetActivityId());
+        if (target == null) {
+            log.error("Target activity id not found,defId={},defVersion={},targetActivityId={}", def.getId(), def.getVersion(), cmd.getTargetActivityId());
+            throw new ProcessDefinitionParseException(WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND, def.getId(), def.getVersion());
+        }
+        transitionLog(instance, currentNode, target, TransitionAction.ROLLBACK, OperatorType.USER, cmd,null,null);
+        advanceToTarget(instance, def, target, cmd, cmd.getVariables());
+    }
+
+    public void transfer(WfInstance instance, WfNodeInstance node, TransferTaskCmd cmd) {
+        transitionLog(instance, node, null,
+                TransitionAction.TRANSFER, OperatorType.USER, cmd,null,null);
+    }
+
+
+    public void withDraw(WfInstance instance, WfNodeInstance from, LfNode to, WithdrawCmd cmd) {
+        transitionLog(instance, from, to,
+                TransitionAction.WITHDRAW, OperatorType.USER, cmd,null,null);
+    }
+
+    private void transitionLog(WfInstance instance,
+                               WfNodeInstance from,
+                               LfNode to,
+                               TransitionAction action,
+                               OperatorType operatorType,
+                               WorkflowCmd cmd,
+                               String conditionExpr,
+                               Map<String,Object> varSnapshot) {
         transitionLogService.recordSuccess(RecordTransitionCmd.builder()
                 .tenantId(instance.getTenantId())
                 .defId(instance.getDefinitionId())
@@ -144,22 +174,14 @@ public class InstanceTransitionManager {
                 .instanceId(instance.getId())
                 .nodeInstanceId(from != null ? from.getId() : null)
                 .fromNodeKey(from != null ? from.getNodeKey() : null)
-                .toNodeKey(to != null ?to.getId(): null)
+                .toNodeKey(to != null ? to.getId() : null)
                 .action(action)
                 .operatorType(operatorType)
-                .operatorId(operatorType.equals(OperatorType.USER)?cmd.getOperatorId(): null)
+                .operatorId(operatorType.equals(OperatorType.USER) ? cmd.getOperatorId() : null)
+                .conditionExpr(conditionExpr)
+                .variablesSnapshot(varSnapshot)
                 .comment(cmd.getComment())
                 .build());
     }
 
-    public void rollback(WfDefinition def, WfInstance instance, WfNodeInstance currentNode, RollbackCmd cmd) {
-        //找到退回到的节点
-        LfNode target = flowParser.getNode(def, cmd.getTargetActivityId());
-        if (target == null) {
-            log.error("Target activity id not found,defId={},defVersion={},targetActivityId={}",def.getId(),def.getVersion(),cmd.getTargetActivityId());
-            throw new ProcessDefinitionParseException(WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND,def.getId(),def.getVersion());
-        }
-        transitionLog(instance,currentNode,target,TransitionAction.ROLLBACK,OperatorType.USER,cmd);
-        advanceToTarget(instance,def,target,cmd,cmd.getVariables());
-    }
 }

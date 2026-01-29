@@ -20,16 +20,9 @@ import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
-import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.BizRefException;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
-import com.yuan.workflow.domain.vo.OpsVO;
-import com.yuan.workflow.domain.vo.WfApprovalDetailVO;
-import com.yuan.workflow.domain.vo.WfBizRefVo;
-import com.yuan.workflow.domain.vo.WfInstanceVo;
-import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
-import com.yuan.workflow.domain.vo.WfTaskVo;
-import com.yuan.workflow.domain.vo.WorkItemRowVO;
+import com.yuan.workflow.domain.vo.*;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfInstanceService;
@@ -220,11 +213,12 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         WfTaskVo currentUserTask =  wfTaskService.findCurrentUserTask(wfInstance.getId());
 
         //时间线
-        List<WfNodeInstanceVo> timeline = nodeInstanceService.getTimelineByInstanceId(wfInstance.getId());
-        for (WfNodeInstanceVo wfNodeInstance : timeline) {
-            if (wfNodeInstance.getStatus().equals(NodeStatus.NOT_REACHED)) continue;
-            wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
-        }
+        List<WfTimelineEventVo> timeline = nodeInstanceService.selectTimelineByInstanceId(wfInstance.getId());
+
+//        for (WfTimelineEventVo wfNodeInstance : timeline) {
+//            if (wfNodeInstance.getStatus().equals(NodeStatus.NOT_REACHED)) continue;
+//            wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
+//        }
 
         WfApprovalDetailVO detailVO = new WfApprovalDetailVO();
         detailVO.setBiz(bizRef);
@@ -248,7 +242,6 @@ public class WfInstanceServiceImpl implements WfInstanceService {
             opsVO.setCanRollback(true);
             opsVO.setCanTransfer(true);
         }
-
         return opsVO;
     }
 

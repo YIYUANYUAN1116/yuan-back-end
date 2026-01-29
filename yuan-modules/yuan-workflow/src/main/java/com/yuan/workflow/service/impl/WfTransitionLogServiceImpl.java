@@ -143,6 +143,14 @@ public class WfTransitionLogServiceImpl implements WfTransitionLogService {
         insert(cmd, TransitionResult.FAIL, ex);
     }
 
+    @Override
+    public List<WfTransitionLog> selectVoListByInstanceId(Long instanceId) {
+        LambdaQueryWrapper<WfTransitionLog> wrapper = Wrappers.<WfTransitionLog>lambdaQuery()
+                .eq(WfTransitionLog::getInstanceId, instanceId)
+                .orderByAsc(WfTransitionLog::getCreateTime);
+        return baseMapper.selectList(wrapper);
+    }
+
     private void insert(RecordTransitionCmd cmd, TransitionResult result, Exception ex) {
         WfTransitionLog log = new WfTransitionLog();
         log.setTenantId(cmd.getTenantId());

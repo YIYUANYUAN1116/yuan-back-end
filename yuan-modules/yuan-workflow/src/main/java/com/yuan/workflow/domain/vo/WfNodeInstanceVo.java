@@ -75,7 +75,6 @@ public class WfNodeInstanceVo implements Serializable {
 
     private LocalDateTime finishedTime;
 
-    private List<String> selectedNextKeys;
 
     /**********************非数据库字段*******************************/
     private String operatorName;
@@ -89,4 +88,6 @@ public class WfNodeInstanceVo implements Serializable {
 
     /** 下一个节点 */
     private List<String> nextNodeKeys;
+
+    private WfTransitionLogVo transitionLogVo;
 }

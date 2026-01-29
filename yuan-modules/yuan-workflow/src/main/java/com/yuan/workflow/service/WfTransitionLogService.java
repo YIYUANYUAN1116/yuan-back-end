@@ -3,6 +3,7 @@ package com.yuan.workflow.service;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.cmd.RecordTransitionCmd;
+import com.yuan.workflow.domain.WfTransitionLog;
 import com.yuan.workflow.domain.bo.WfTransitionLogBo;
 import com.yuan.workflow.domain.vo.WfTransitionLogVo;
 
@@ -50,4 +51,6 @@ public interface WfTransitionLogService {
     void recordSuccess(RecordTransitionCmd cmd);
 
     void recordFail(RecordTransitionCmd cmd, Exception ex);
+
+    List<WfTransitionLog> selectVoListByInstanceId(Long instanceId);
 }

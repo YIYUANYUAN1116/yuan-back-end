@@ -7,27 +7,29 @@ import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.api.UserQueryApi;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.WfTransitionLog;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
+import com.yuan.workflow.domain.vo.WfTimelineEventVo;
+import com.yuan.workflow.domain.vo.WfTransitionLogVo;
+import com.yuan.workflow.enums.OperatorType;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
-import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfGraph;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfNodeInstanceService;
+import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +44,11 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
 
     private final WfNodeInstanceMapper baseMapper;
     private final FlowParser flowParser;
-    private final WfDefinitionMapper wfDefinitionMapper;
-    private final WfInstanceMapper wfInstanceMapper;
+    private final WfDefinitionMapper definitionMapper;
+    private final WfTransitionLogService transitionLogService;
+    private final UserQueryApi userQueryApi;
+
+
     /**
      * 查询wfn
      */
@@ -171,22 +176,65 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
     }
 
     @Override
-    public List<WfNodeInstanceVo> getTimelineByInstanceId(Long instanceId) {
+    public List<WfTimelineEventVo> selectTimelineByInstanceId(Long instanceId) {
 
-        WfDefinition wfDefinition =  wfDefinitionMapper.selectByInstanceId(instanceId);
-        LfGraph graph = flowParser.parse(wfDefinition);
+        WfDefinition def = definitionMapper.selectByInstanceId(instanceId);
+        if (def == null) {
+            return Collections.emptyList();
+        }
 
-        List<WfNodeInstanceVo> defNodeVoList =  flowParser.parse(graph);
+        LfGraph graph = flowParser.parse(def);
+        Map<String, String> nodeNameMap = graph.getNodes().stream()
+                .collect(Collectors.toMap(
+                        LfNode::getId,
+                        item->item.getText().getValue(),
+                        (a, b) -> a
+                ));
 
-        List<WfNodeInstanceVo> instanceVoList = baseMapper.selectVoByInstanceId(instanceId);
-        Map<String, WfNodeInstanceVo> runtimeMap = instanceVoList.stream().collect(Collectors.toMap(
-                WfNodeInstanceVo::getNodeKey,
-                item -> item,
-                (a, b) -> a
-        ));
 
-        mergeRuntime(defNodeVoList, runtimeMap);
-        return defNodeVoList;
+        List<WfTransitionLog> logs = transitionLogService.selectVoListByInstanceId(instanceId);
+
+        if (logs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<Long> userIds = logs.stream()
+                .filter(l -> OperatorType.USER.equals(l.getOperatorType()))
+                .map(WfTransitionLog::getOperatorId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<Long, String> userNameMap = userIds.isEmpty()
+                ? Collections.emptyMap()
+                : userQueryApi.getUserNameMap(userIds); // 你已有的 user 查询方法
+
+        List<WfTimelineEventVo> result = new ArrayList<>();
+
+        for (WfTransitionLog l : logs) {
+
+            WfTimelineEventVo vo = new WfTimelineEventVo();
+            vo.setId(l.getId());
+            vo.setTime(l.getCreateTime());
+
+            vo.setAction(l.getAction());
+            vo.setOperatorType(l.getOperatorType());
+            vo.setOperatorId(l.getOperatorId());
+            vo.setOperatorName(userNameMap.get(l.getOperatorId()));
+
+            vo.setFromNodeKey(l.getFromNodeKey());
+            vo.setFromNodeName(nodeNameMap.get(l.getFromNodeKey()));
+
+            vo.setToNodeKey(l.getToNodeKey());
+            vo.setToNodeName(nodeNameMap.get(l.getToNodeKey()));
+
+            vo.setComment(l.getComment());
+            vo.setConditionExpr(l.getConditionExpr());
+            vo.setResult(l.getResult());
+
+            result.add(vo);
+        }
+
+        return result;
     }
 
     private void mergeRuntime(List<WfNodeInstanceVo> definitions,Map<String,WfNodeInstanceVo> runtimeMap) {
