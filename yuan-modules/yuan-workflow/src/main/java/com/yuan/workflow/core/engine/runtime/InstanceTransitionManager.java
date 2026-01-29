@@ -3,7 +3,12 @@ package com.yuan.workflow.core.engine.runtime;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
 import com.yuan.workflow.cmd.ApproveCmd;
+import com.yuan.workflow.cmd.RecordTransitionCmd;
+import com.yuan.workflow.cmd.RejectCmd;
+import com.yuan.workflow.cmd.RollbackCmd;
+import com.yuan.workflow.cmd.StartCmd;
 import com.yuan.workflow.cmd.WorkflowCmd;
+import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.core.resolver.AssigneeResolver;
 import com.yuan.workflow.domain.WfDefinition;
@@ -11,11 +16,14 @@ import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.NodeInstanceException;
+import com.yuan.workflow.enums.OperatorType;
+import com.yuan.workflow.enums.TransitionAction;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
 import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
+import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,6 +45,7 @@ public class InstanceTransitionManager {
     private final WfTaskService wfTaskService;
     private final AssigneeResolver assigneeResolver;
     private final NodeInstanceStateManager nodeInstanceStateManager;
+    private final WfTransitionLogService transitionLogService;
 
 
     public void advance(WfNodeInstance currentNode, ApproveCmd cmd) {
@@ -46,10 +55,13 @@ public class InstanceTransitionManager {
 
         LfNode currentFlowNode = flowParser.getNode(def, currentNode.getNodeKey());
 
-        // 用最新变量（finish 时已 mergeAndSave）
+        variableManager.mergeAndSave(instance,cmd.getVariables());
+
         Map<String, Object> vars = variableManager.getVars(instance);
+
         List<LfNode> nodeList = flowParser.getNextNode(def, currentFlowNode, vars);
         for (LfNode next : nodeList) {
+            transitionLog(instance,currentNode,next,TransitionAction.APPROVE,OperatorType.USER,cmd);
             advanceToTarget(instance,def,next,cmd,vars);
         }
     }
@@ -60,13 +72,14 @@ public class InstanceTransitionManager {
         }
 
         int nextOrderNo = nodeInstanceService.nextOrderNo(instance.getId());
-        WfNodeInstance nextNodeIns =
+        WfNodeInstance currentNode =
                 nodeInstanceService.createNodeInstance(instance.getId(), lfNode, NodeStatus.WAIT, nextOrderNo);
 
         if (flowParser.isGateway(lfNode)) {
             List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
-            nodeInstanceStateManager.finishDone(nextNodeIns);
+            nodeInstanceStateManager.finishDone(currentNode);
             for (LfNode next : nodeList) {
+                transitionLog(instance,currentNode,next,TransitionAction.GATEWAY,OperatorType.SYSTEM,cmd);
                 advanceToTarget(instance,def, next,cmd, vars);
             }
         }
@@ -74,12 +87,13 @@ public class InstanceTransitionManager {
 
         if (flowParser.isUserTask(lfNode)) {
             Set<Long> userIds = assigneeResolver.resolve(lfNode);
-            wfTaskService.createTasks(instance, nextNodeIns, userIds);
+            wfTaskService.createTasks(instance, currentNode, userIds);
             return;
         }
 
         if (flowParser.isEnd(lfNode)) {
             instanceStateManager.finishApproved(instance, cmd);
+            transitionLog(instance,currentNode,null,TransitionAction.END,OperatorType.SYSTEM,cmd);
             return;
         }
 
@@ -94,5 +108,58 @@ public class InstanceTransitionManager {
                 , instance.getId(), lfNode);
         throw new WorkflowException(WorkflowErrorCode.WF_NODE_TYPE_INVALID);
 
+    }
+
+
+    public void start(WfDefinition def, WfInstance instance, WfNodeInstance node,LfNode lfNode, StartCmd cmd) {
+        variableManager.mergeAndSave(instance,cmd.getVariables());
+        Map<String, Object> vars = variableManager.getVars(instance);
+        List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
+
+        if (nodeList.isEmpty()){
+            log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
+            instanceStateManager.finishApproved(instance, cmd);
+            transitionLog(instance, node, null,
+                    TransitionAction.END, OperatorType.SYSTEM, cmd);
+        }
+        for (LfNode next : nodeList) {
+            transitionLog(instance, node, next,
+                    TransitionAction.START, OperatorType.USER, cmd);
+            advanceToTarget(instance,def,next,cmd,cmd.getVariables());
+        }
+
+    }
+
+
+    public void reject(WfInstance instance, WfNodeInstance node, LfNode lfNode, RejectCmd cmd) {
+        transitionLog(instance, node, lfNode,
+                TransitionAction.REJECT, OperatorType.USER, cmd);
+    }
+
+    private void transitionLog(WfInstance instance, WfNodeInstance from,LfNode to,TransitionAction action,OperatorType operatorType ,WorkflowCmd cmd) {
+        transitionLogService.recordSuccess(RecordTransitionCmd.builder()
+                .tenantId(instance.getTenantId())
+                .defId(instance.getDefinitionId())
+                .defVersion(instance.getDefinitionVersion())
+                .instanceId(instance.getId())
+                .nodeInstanceId(from != null ? from.getId() : null)
+                .fromNodeKey(from != null ? from.getNodeKey() : null)
+                .toNodeKey(to != null ?to.getId(): null)
+                .action(action)
+                .operatorType(operatorType)
+                .operatorId(operatorType.equals(OperatorType.USER)?cmd.getOperatorId(): null)
+                .comment(cmd.getComment())
+                .build());
+    }
+
+    public void rollback(WfDefinition def, WfInstance instance, WfNodeInstance currentNode, RollbackCmd cmd) {
+        //找到退回到的节点
+        LfNode target = flowParser.getNode(def, cmd.getTargetActivityId());
+        if (target == null) {
+            log.error("Target activity id not found,defId={},defVersion={},targetActivityId={}",def.getId(),def.getVersion(),cmd.getTargetActivityId());
+            throw new ProcessDefinitionParseException(WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND,def.getId(),def.getVersion());
+        }
+        transitionLog(instance,currentNode,target,TransitionAction.ROLLBACK,OperatorType.USER,cmd);
+        advanceToTarget(instance,def,target,cmd,cmd.getVariables());
     }
 }

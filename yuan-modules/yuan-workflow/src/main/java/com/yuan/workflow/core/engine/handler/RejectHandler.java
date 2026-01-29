@@ -2,10 +2,11 @@ package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.RejectCmd;
 import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
 import com.yuan.workflow.core.engine.runtime.TaskStateManager;
 import com.yuan.workflow.core.engine.runtime.VariableManager;
-import com.yuan.workflow.core.engine.support.*;
+import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
 import com.yuan.workflow.core.event.WfEventContext;
 import com.yuan.workflow.core.event.WfEventFactory;
@@ -15,7 +16,6 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
-import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
     private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
     private final NodeInstanceStateManager nodeLifeCycle;
-    private final WfTransitionLogService transitionLogService;
+    private final InstanceTransitionManager transitionManager;
 
     @Override
     @Transactional
@@ -61,19 +61,20 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         // 完成节点
         nodeLifeCycle.finishCancel(node.getId(),operatorId);
 
-
-        // 发布“任务驳回”事件 afterCommit
-        WfEventContext wfEventContext = buildEventContextByTask(instance,wfBizRef,task);
-        eventPublisher.publishAfterCommit(WfEventFactory.buildTaskRejected(wfEventContext, cmd.getComment(), Map.of()));
-
         // 业务规则：驳回直接结束
         boolean instanceEnded = isRejectEnd(task);
         if (!instanceEnded) {
             return null;
         }
-
         // 结束实例
         instanceStateManager.finishRejected(instance,cmd);
+
+        transitionManager.reject(instance,node,null,cmd);
+
+        // 发布“任务驳回”事件 afterCommit
+        WfEventContext wfEventContext = buildEventContextByTask(instance,wfBizRef,task);
+        eventPublisher.publishAfterCommit(WfEventFactory.buildTaskRejected(wfEventContext, cmd.getComment(), Map.of()));
+
         return null;
     }
 
