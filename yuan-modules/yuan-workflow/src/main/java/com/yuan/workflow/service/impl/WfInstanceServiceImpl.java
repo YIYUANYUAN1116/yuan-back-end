@@ -14,16 +14,24 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
 import com.yuan.workflow.cmd.StartCmd;
+import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
+import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.BizRefException;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.domain.vo.*;
+import com.yuan.workflow.domain.vo.detail.OpsVO;
+import com.yuan.workflow.domain.vo.detail.WfApprovalDetailVO;
+import com.yuan.workflow.domain.vo.detail.WfTimelineEventVo;
+import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;
+import com.yuan.workflow.model.logicflow.LfGraph;
+import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WfNodeInstanceService;
@@ -56,6 +64,8 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     private final UserQueryApi userQueryApi;
     private final WfTaskService wfTaskService;
     private final WfBizRefService wfBizRefService;
+    private final FlowParser flowParser;
+    private final WfDefinitionMapper definitionMapper;
 
     /**
      * 查询wfi
@@ -114,6 +124,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         lqw.eq(bo.getStarterId() != null, WfInstance::getStarterId, bo.getStarterId());
         lqw.eq(bo.getStartTime() != null, WfInstance::getStartTime, bo.getStartTime());
         lqw.eq(bo.getEndTime() != null, WfInstance::getEndTime, bo.getEndTime());
+        lqw.orderByDesc(WfInstance::getCreateTime);
         return lqw;
     }
 
@@ -208,23 +219,31 @@ public class WfInstanceServiceImpl implements WfInstanceService {
                     bizNo, bizRef.getInstanceId(),LoginHelper.getTenantId());
             throw new InstanceNotFoundException();
         }
+        WfDefinition def = definitionMapper.selectByInstanceId(wfInstance.getId());
+        LfGraph lfGraph = flowParser.parseSortNode(def);
+        List<List<LfNode>> layers = flowParser.topoLayers(lfGraph);
 
         //当前用户任务
         WfTaskVo currentUserTask =  wfTaskService.findCurrentUserTask(wfInstance.getId());
 
-        //时间线
-        List<WfTimelineEventVo> timeline = nodeInstanceService.selectTimelineByInstanceId(wfInstance.getId());
+        //操作时间线
+        List<WfTimelineEventVo> timeline = nodeInstanceService.selectTimelineByInstanceIdAndLfGraph(wfInstance.getId(),lfGraph);
 
-//        for (WfTimelineEventVo wfNodeInstance : timeline) {
-//            if (wfNodeInstance.getStatus().equals(NodeStatus.NOT_REACHED)) continue;
-//            wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
-//        }
+        List<WfNodeInstanceVo> stepNodeVos = nodeInstanceService.selectStepNodeVoByInstanceIdAndLfGraph(wfInstance.getId(),lfGraph);
+
+        for (WfNodeInstanceVo wfNodeInstance : stepNodeVos) {
+            if (wfNodeInstance.getStatus().equals(NodeStatus.NOT_REACHED)) continue;
+            wfNodeInstance.setTasks(wfTaskService.selectVoByNodeInstanceId(wfNodeInstance.getId()));
+        }
 
         WfApprovalDetailVO detailVO = new WfApprovalDetailVO();
         detailVO.setBiz(bizRef);
         detailVO.setInstance(wfInstance);
         detailVO.setCurrent(currentUserTask);
         detailVO.setTimeline(timeline);
+        detailVO.setStepNodes(stepNodeVos);
+        detailVO.setLfGraph(lfGraph);
+        detailVO.setLayers(layers);
         detailVO.setOps(getOps(currentUserTask,wfInstance));
         return detailVO;
     }
@@ -234,7 +253,7 @@ public class WfInstanceServiceImpl implements WfInstanceService {
      * @param curTask
      * @return
      */
-    private OpsVO getOps(WfTaskVo curTask,WfInstanceVo instance) {
+    private OpsVO getOps(WfTaskVo curTask, WfInstanceVo instance) {
         OpsVO opsVO = new OpsVO();
         if (curTask != null){
             opsVO.setCanApprove(true);

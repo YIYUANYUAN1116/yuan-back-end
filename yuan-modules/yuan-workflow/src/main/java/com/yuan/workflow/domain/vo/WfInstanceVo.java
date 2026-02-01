@@ -3,7 +3,7 @@ package com.yuan.workflow.domain.vo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.workflow.domain.enums.InstanceStatus;
-import com.yuan.workflow.domain.enums.WfEndReason;
+import com.yuan.workflow.enums.WfEndReason;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

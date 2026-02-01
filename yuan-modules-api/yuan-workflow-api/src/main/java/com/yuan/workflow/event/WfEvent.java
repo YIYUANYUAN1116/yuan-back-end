@@ -1,8 +1,8 @@
-package com.yuan.workflow.core.event;
+package com.yuan.workflow.event;
 
 import com.yuan.workflow.enums.WfDecision;
+import com.yuan.workflow.enums.WfEndReason;
 import com.yuan.workflow.enums.WfEventType;
-import com.yuan.workflow.domain.enums.WfEndReason;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

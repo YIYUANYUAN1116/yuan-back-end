@@ -22,6 +22,7 @@ import com.yuan.workflow.mapper.WfTaskMapper;
 import com.yuan.workflow.service.WfBizRefService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class WfTaskServiceImpl implements WfTaskService {
     private final WfBizRefService wfBizRefService;
     private final UserQueryApi userQueryApi;
     private final WfTaskLogMapper wfTaskLogMapper;
+    private final ConditionsReportEndpoint conditionsReportEndpoint;
 
     /**
      * 查询wft
@@ -152,6 +154,7 @@ public class WfTaskServiceImpl implements WfTaskService {
             lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
         }
         lqw.eq(WfTask::getStatus,TaskStatus.TODO);
+        lqw.orderByDesc(WfTask::getCreateTime);
         Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
         return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }
@@ -163,6 +166,7 @@ public class WfTaskServiceImpl implements WfTaskService {
             lqw.eq(WfTask::getOperatorId, LoginHelper.getUserId());
         }
         lqw.eq(WfTask::getStatus,TaskStatus.DONE);
+        lqw.orderByDesc(WfTask::getFinishTime);
         Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
         return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }

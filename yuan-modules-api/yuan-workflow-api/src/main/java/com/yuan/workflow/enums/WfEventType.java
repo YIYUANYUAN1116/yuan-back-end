@@ -12,8 +12,8 @@ import lombok.Getter;
 public enum WfEventType implements BaseEnum {
 
     // 任务相关
-    TASK_APPROVED("TASK_APPROVED","创建"),
-    TASK_REJECTED("TASK_REJECTED","分配"),
+    TASK_APPROVED("TASK_APPROVED","通过"),
+    TASK_REJECTED("TASK_REJECTED","拒绝"),
     TASK_ROLLBACK_PREV("TASK_ROLLBACK_PREV","退回上个节点"),
     TASK_ROLLBACK_TO("TASK_ROLLBACK_TO","退回指定节点"), // 审批/拒绝/退回（本质都是对task做decision）
     TASK_TRANSFERRED("TASK_TRANSFERRED","转办"),  // 转办

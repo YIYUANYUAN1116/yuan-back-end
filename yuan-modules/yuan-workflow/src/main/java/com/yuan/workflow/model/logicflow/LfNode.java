@@ -1,9 +1,11 @@
 package com.yuan.workflow.model.logicflow;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class LfNode {
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   //结点ID
   private String id;
   //x坐标
@@ -16,7 +18,5 @@ public class LfNode {
   private String type;
 
   private LfProperties properties;
-  //参数 wfType/assignee
-//  private Map<String, Object> properties;
 
 }

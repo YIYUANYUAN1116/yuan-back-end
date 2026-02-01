@@ -1,14 +1,16 @@
-package com.yuan.workflow.domain.vo;
+package com.yuan.workflow.domain.vo.detail;
 
 import com.yuan.workflow.enums.OperatorType;
 import com.yuan.workflow.enums.TransitionAction;
 import com.yuan.workflow.enums.TransitionResult;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class WfTimelineEventVo {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 
     private LocalDateTime time;

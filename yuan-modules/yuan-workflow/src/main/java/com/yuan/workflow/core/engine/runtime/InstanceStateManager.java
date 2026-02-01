@@ -11,7 +11,7 @@ import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.TaskAction;
-import com.yuan.workflow.domain.enums.WfEndReason;
+import com.yuan.workflow.enums.WfEndReason;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.mapper.WfBizRefMapper;
 import com.yuan.workflow.mapper.WfInstanceMapper;

@@ -47,7 +47,7 @@ public class NodeInstanceStateManager {
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
                 .set(WfNodeInstance::getOperatorId, operatorId)
                 .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
-                .eq(WfNodeInstance::getInstanceId, nodeInstanceId)
+                .eq(WfNodeInstance::getId, nodeInstanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (update == 0){
             log.error("[finishCancel]: don't finish cancel nodeInstanceId={},expectStatus={}", nodeInstanceId,NodeStatus.WAIT);
@@ -56,12 +56,16 @@ public class NodeInstanceStateManager {
     }
 
     public void cancelAllWaitByInstance(Long instanceId,Long operatorId) {
-        nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
+        int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .eq(WfNodeInstance::getInstanceId, instanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT)
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
                 .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
                 .set(WfNodeInstance::getOperatorId, operatorId));
+        if (update == 0){
+            log.error("[finishCancel]: don't finish cancel instanceId={},expectStatus={}", instanceId,NodeStatus.WAIT);
+            throw new InstanceStatusInvalidException(NodeStatus.WAIT);
+        }
 
     }
 }

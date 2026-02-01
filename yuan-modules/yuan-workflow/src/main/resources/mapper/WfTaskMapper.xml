@@ -47,6 +47,15 @@
         WHERE node_instance_id = #{nodeInstanceId}
           AND status = #{fromStatus}
     </update>
+    <delete id="canceledAllTodoTasks">
+        UPDATE wf_task
+        SET
+            status = #{toStatus},
+            action = #{action},
+            finish_time = NOW()
+        WHERE instance_id = #{instanceId}
+          AND status = #{fromStatus}
+    </delete>
 
     <select id="countTodoByNode" resultType="java.lang.Integer">
 

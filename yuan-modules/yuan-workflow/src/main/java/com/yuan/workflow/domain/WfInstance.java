@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.InstanceStatus;
-import com.yuan.workflow.domain.enums.WfEndReason;
+import com.yuan.workflow.enums.WfEndReason;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

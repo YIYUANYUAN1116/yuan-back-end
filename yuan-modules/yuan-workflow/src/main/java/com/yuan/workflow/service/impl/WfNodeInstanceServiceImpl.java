@@ -16,8 +16,7 @@ import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
-import com.yuan.workflow.domain.vo.WfTimelineEventVo;
-import com.yuan.workflow.domain.vo.WfTransitionLogVo;
+import com.yuan.workflow.domain.vo.detail.WfTimelineEventVo;
 import com.yuan.workflow.enums.OperatorType;
 import com.yuan.workflow.mapper.WfDefinitionMapper;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
@@ -183,7 +182,22 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
             return Collections.emptyList();
         }
 
-        LfGraph graph = flowParser.parse(def);
+        LfGraph graph = flowParser.parseNode(def);
+
+        return selectTimelineByInstanceIdAndLfGraph(instanceId, graph);
+    }
+
+    @Override
+    public List<WfNodeInstanceVo> selectStepNodeVoByInstanceId(Long instanceId) {
+        WfDefinition wfDefinition =  definitionMapper.selectByInstanceId(instanceId);
+        LfGraph graph = flowParser.parseNode(wfDefinition);
+        return selectStepNodeVoByInstanceIdAndLfGraph(instanceId, graph);
+    }
+
+    @Override
+    public List<WfTimelineEventVo> selectTimelineByInstanceIdAndLfGraph(Long instanceId, LfGraph graph) {
+        if (graph == null || instanceId == null) return List.of();
+
         Map<String, String> nodeNameMap = graph.getNodes().stream()
                 .collect(Collectors.toMap(
                         LfNode::getId,
@@ -206,7 +220,7 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
 
         Map<Long, String> userNameMap = userIds.isEmpty()
                 ? Collections.emptyMap()
-                : userQueryApi.getUserNameMap(userIds); // 你已有的 user 查询方法
+                : userQueryApi.getUserNameMap(userIds);
 
         List<WfTimelineEventVo> result = new ArrayList<>();
 
@@ -237,11 +251,27 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         return result;
     }
 
+    @Override
+    public List<WfNodeInstanceVo> selectStepNodeVoByInstanceIdAndLfGraph(Long instanceId, LfGraph graph) {
+        if (graph == null || instanceId == null) return List.of();
+
+        List<WfNodeInstanceVo> defNodeVoList =  flowParser.parseNode(graph);
+
+        List<WfNodeInstanceVo> instanceVoList = baseMapper.selectVoByInstanceId(instanceId);
+        Map<String, WfNodeInstanceVo> runtimeMap = instanceVoList.stream().collect(Collectors.toMap(
+                WfNodeInstanceVo::getNodeKey,
+                item -> item,
+                (a, b) -> a
+        ));
+
+        mergeRuntime(defNodeVoList, runtimeMap);
+        return defNodeVoList;
+    }
+
     private void mergeRuntime(List<WfNodeInstanceVo> definitions,Map<String,WfNodeInstanceVo> runtimeMap) {
         for (WfNodeInstanceVo defNode : definitions) {
             WfNodeInstanceVo node = runtimeMap.get(defNode.getNodeKey());
             if (node == null) continue;
-
             defNode.setId(node.getId());
             defNode.setOperatorId(node.getOperatorId());
             defNode.setOperatorName(node.getOperatorName());
@@ -249,6 +279,7 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
             defNode.setOrderNo(node.getOrderNo());
             defNode.setFinishedTime(node.getFinishedTime());
             defNode.setInstanceId(node.getInstanceId());
+            defNode.setStatus(node.getStatus());
         }
     }
 }

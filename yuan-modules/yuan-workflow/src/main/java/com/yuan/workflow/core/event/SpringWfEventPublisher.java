@@ -1,6 +1,7 @@
 package com.yuan.workflow.core.event;
 
 
+import com.yuan.workflow.event.WfEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

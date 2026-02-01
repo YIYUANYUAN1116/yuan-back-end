@@ -1,5 +1,8 @@
-package com.yuan.workflow.domain.vo;
+package com.yuan.workflow.domain.vo.detail;
 
+import com.yuan.workflow.domain.vo.*;
+import com.yuan.workflow.model.logicflow.LfGraph;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +24,12 @@ public class WfApprovalDetailVO {
 
     /** 审批进度：节点轨迹（按 orderNo 升序） */
     private List<WfTimelineEventVo> timeline;
+
+    private List<WfNodeInstanceVo> stepNodes;
+
+    private LfGraph lfGraph;
+
+    private List<List<LfNode>> layers;
 
     /** 前端按钮权限 */
     private OpsVO ops;

@@ -2,7 +2,8 @@ package com.yuan.workflow.core.event;
 
 import com.yuan.workflow.enums.WfDecision;
 import com.yuan.workflow.enums.WfEventType;
-import com.yuan.workflow.domain.enums.WfEndReason;
+import com.yuan.workflow.enums.WfEndReason;
+import com.yuan.workflow.event.WfEvent;
 
 import java.time.LocalDateTime;
 import java.util.Map;

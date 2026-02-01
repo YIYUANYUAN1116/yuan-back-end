@@ -54,14 +54,13 @@ public class TaskStateManager {
 //        }
     }
 
-    public void cancelAllTodoTasks(Long nodeInstanceId, TaskAction action,Long operatorId) {
-        int updated = taskMapper.updateAllTodoTasks(nodeInstanceId,
+    public void cancelAllTodoTasks(Long instanceId, TaskAction action,Long operatorId) {
+        int updated = taskMapper.canceledAllTodoTasks(instanceId,
                 action.getCode(),
                 TaskStatus.TODO.getCode(),
-                TaskStatus.CANCELED.getCode(),
-                operatorId);
+                TaskStatus.CANCELED.getCode());
         if (updated == 0) {
-            log.error("[cancelAllTodoTasks] update wfTask fail. nodeInstanceId={},action={}", nodeInstanceId, action.getCode());
+            log.error("[cancelAllTodoTasks] update wfTask fail. instanceId={},action={}", instanceId, action.getCode());
             throw new TaskAlreadyHandledException();
         }
     }

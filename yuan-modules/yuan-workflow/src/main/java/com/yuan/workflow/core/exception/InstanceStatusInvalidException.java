@@ -15,4 +15,10 @@ public class InstanceStatusInvalidException extends WorkflowException {
         this.instanceId = instanceId;
         this.expectStatus = expectStatus;
     }
+
+    public InstanceStatusInvalidException(NodeStatus expectStatus) {
+        super(WorkflowErrorCode.WF_INSTANCE_STATUS_INVALID);
+        this.instanceId = null;
+        this.expectStatus = expectStatus;
+    }
 }

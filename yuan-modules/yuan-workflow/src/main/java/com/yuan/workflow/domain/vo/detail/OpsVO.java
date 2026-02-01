@@ -1,5 +1,7 @@
-package com.yuan.workflow.domain.vo;
+package com.yuan.workflow.domain.vo.detail;
 
+import com.yuan.workflow.domain.vo.RollbackTargetVO;
+import com.yuan.workflow.domain.vo.UserOptionVO;
 import lombok.Data;
 
 import java.util.List;

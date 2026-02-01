@@ -3,7 +3,7 @@ package com.yuan.workflow.domain.vo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.enums.TaskStatus;
-import com.yuan.workflow.domain.enums.WfEndReason;
+import com.yuan.workflow.enums.WfEndReason;
 import lombok.Data;
 
 import java.time.LocalDateTime;
