@@ -2,9 +2,11 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
@@ -60,5 +62,15 @@ public interface WfTaskService {
 
     List<WfTaskVo> selectVoByNodeInstanceId(Long nodeInstanceId);
 
+    /**
+     * 查询当前用户在该流程的任务
+     */
     WfTaskVo findCurrentUserTask(Long instanceId);
+
+    /**
+     * 查询可转交人
+     */
+    List<SysUserDTO> transferCandidates(Long taskId,SysUserDTO userDTO,PageQuery pageQuery);
+
+    List<WfNodeInstanceVo> rollbackNodes(Long taskId);
 }

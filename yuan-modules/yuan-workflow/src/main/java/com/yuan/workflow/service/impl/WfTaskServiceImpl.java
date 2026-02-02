@@ -10,9 +10,17 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
-import com.yuan.workflow.domain.*;
+import com.yuan.system.dto.SysUserDTO;
+import com.yuan.workflow.domain.WfBizRef;
+import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.WfTask;
+import com.yuan.workflow.domain.WfTaskLog;
 import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.TaskStatus;
+import com.yuan.workflow.domain.exception.TaskNotFoundException;
+import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.mapper.WfInstanceMapper;
@@ -20,9 +28,9 @@ import com.yuan.workflow.mapper.WfNodeInstanceMapper;
 import com.yuan.workflow.mapper.WfTaskLogMapper;
 import com.yuan.workflow.mapper.WfTaskMapper;
 import com.yuan.workflow.service.WfBizRefService;
+import com.yuan.workflow.service.WfNodeInstanceService;
 import com.yuan.workflow.service.WfTaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +53,10 @@ public class WfTaskServiceImpl implements WfTaskService {
     private final WfTaskMapper baseMapper;
     private final WfInstanceMapper instanceMapper;
     private final WfNodeInstanceMapper nodeInstanceMapper;
+    private final WfNodeInstanceService wfNodeInstanceService;
     private final WfBizRefService wfBizRefService;
     private final UserQueryApi userQueryApi;
     private final WfTaskLogMapper wfTaskLogMapper;
-    private final ConditionsReportEndpoint conditionsReportEndpoint;
 
     /**
      * 查询wft
@@ -192,6 +200,23 @@ public class WfTaskServiceImpl implements WfTaskService {
                 .eq(WfTask::getAssigneeId, LoginHelper.getUserId())
                 .eq(WfTask::getStatus,TaskStatus.TODO));
 
+    }
+
+    @Override
+    public List<SysUserDTO> transferCandidates(Long taskId,SysUserDTO userDTO,PageQuery pageQuery) {
+        return userQueryApi.queryPageList(userDTO, pageQuery.getPageNum(), pageQuery.getPageSize());
+    }
+
+    @Override
+    public List<WfNodeInstanceVo> rollbackNodes(Long taskId) {
+        WfTask wfTask = baseMapper.selectById(taskId);
+        if (wfTask == null) {
+            throw new TaskNotFoundException();
+        }
+
+        return nodeInstanceMapper.selectVoList(Wrappers.<WfNodeInstance>lambdaQuery()
+                .eq(WfNodeInstance::getInstanceId, wfTask.getInstanceId())
+                .eq(WfNodeInstance::getStatus, NodeStatus.DONE));
     }
 
     private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.enums.TaskStatus;
+import com.yuan.workflow.domain.enums.TaskType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -49,6 +50,12 @@ public class WfTask extends TenantEntity {
 
     private Long transferFrom;
     private LocalDateTime transferTime;
+
+    private Long addFrom;
+    private LocalDateTime addTime;
+
+    private TaskType type;
+
     /**
      * @see TaskStatus
      */

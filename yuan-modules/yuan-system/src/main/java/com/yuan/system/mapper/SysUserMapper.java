@@ -45,4 +45,5 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
 
     Set<Long> selectUserIdsByPostIds(@Param("postIds") Set<Long> postIds);
 
+    List<SysUserDTO> selectPageDto(@Param("page") Page<SysUser> page, @Param("userDto") SysUserDTO userDTO);
 }

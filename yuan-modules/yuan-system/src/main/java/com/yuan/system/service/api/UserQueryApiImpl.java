@@ -1,6 +1,7 @@
 package com.yuan.system.service.api;
 
 import com.yuan.common.core.utils.StreamUtils;
+import com.yuan.core.page.PageQuery;
 import com.yuan.system.api.UserQueryApi;
 import com.yuan.system.domain.SysDept;
 import com.yuan.system.domain.SysUser;
@@ -53,6 +54,15 @@ public class UserQueryApiImpl implements UserQueryApi {
     public Map<Long, String> getUserNameMap(Set<Long> userIds) {
         List<SysUser> sysUsers = userMapper.selectByIds(userIds);
         return StreamUtils.toMap(sysUsers,SysUser::getUserId,SysUser::getNickName);
+    }
+
+    @Override
+    public List<SysUserDTO> queryPageList(SysUserDTO userDTO, int page, int pageSize) {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        PageQuery pageQuery = new PageQuery(page, pageSize);
+
+        return userMapper.selectPageDto(pageQuery.build(),userDTO);
     }
 }
 

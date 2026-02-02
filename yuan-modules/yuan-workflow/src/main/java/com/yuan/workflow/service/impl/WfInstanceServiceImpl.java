@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -255,11 +256,17 @@ public class WfInstanceServiceImpl implements WfInstanceService {
      */
     private OpsVO getOps(WfTaskVo curTask, WfInstanceVo instance) {
         OpsVO opsVO = new OpsVO();
-        if (curTask != null){
+        Long userId = LoginHelper.getUserId();
+        if (curTask != null && Objects.equals(userId,curTask.getAssigneeId())) {
             opsVO.setCanApprove(true);
             opsVO.setCanReject(true);
             opsVO.setCanRollback(true);
             opsVO.setCanTransfer(true);
+        }
+
+        Long starterId = instance.getStarterId();
+        if (Objects.equals(starterId,userId)) {
+            opsVO.setCanWithdraw(true);
         }
         return opsVO;
     }

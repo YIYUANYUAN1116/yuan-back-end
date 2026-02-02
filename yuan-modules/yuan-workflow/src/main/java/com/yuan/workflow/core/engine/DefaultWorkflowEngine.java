@@ -1,5 +1,6 @@
 package com.yuan.workflow.core.engine;
 
+import com.yuan.workflow.cmd.AddSignCmd;
 import com.yuan.workflow.cmd.ApproveCmd;
 import com.yuan.workflow.cmd.RejectCmd;
 import com.yuan.workflow.cmd.RollbackCmd;
@@ -71,6 +72,11 @@ public class DefaultWorkflowEngine implements WorkflowEngine {
     @Override
     public void transfer(TransferTaskCmd cmd) {
         transferHandler.handle(cmd);
+    }
+
+    @Override
+    public void addSign(AddSignCmd addSignCmd) {
+
     }
 
 }

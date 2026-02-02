@@ -160,4 +160,15 @@
             #{postId}
         </foreach>
     </select>
+    <select id="selectPageDto" resultType="com.yuan.system.dto.SysUserDTO">
+        select su.*
+        from sys_user su
+        where su.status = '0' and su.del_flag = '0'
+        <if test="userDto.nickName != null and userDto.nickName != ''">
+            and  su.nick_name = #{userDto.nickName}
+        </if>
+        <if test="userDto.email != null and userDto.email != ''">
+            and su.email = #{userDto.email}
+        </if>
+    </select>
 </mapper>

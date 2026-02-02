@@ -159,6 +159,11 @@ public class InstanceTransitionManager {
                 TransitionAction.WITHDRAW, OperatorType.USER, cmd,null,null);
     }
 
+    public void addSign(WfInstance instance, WfNodeInstance node, AddSignCmd cmd) {
+        transitionLog(instance, node, null,
+                TransitionAction.ADD_SIGN, OperatorType.USER, cmd,null,null);
+    }
+
     private void transitionLog(WfInstance instance,
                                WfNodeInstance from,
                                LfNode to,
@@ -183,5 +188,6 @@ public class InstanceTransitionManager {
                 .comment(cmd.getComment())
                 .build());
     }
+
 
 }

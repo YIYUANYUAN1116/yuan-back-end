@@ -2,6 +2,7 @@ package com.yuan.system.api;
 
 import com.yuan.system.dto.SysUserDTO;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,4 +33,6 @@ public interface UserQueryApi {
     Set<Long> findUserIdsByPostIds(Set<Long> postId);
 
     Map<Long, String> getUserNameMap(Set<Long> userIds);
+
+    List<SysUserDTO>  queryPageList(SysUserDTO userDTO,int page,int pageSize);
 }

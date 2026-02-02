@@ -13,4 +13,6 @@ public interface WorkflowEngine {
 
     void withdraw(WithdrawCmd withdrawCmd);
     void transfer(TransferTaskCmd transferTaskCmd);
+
+    void addSign(AddSignCmd addSignCmd);
 }

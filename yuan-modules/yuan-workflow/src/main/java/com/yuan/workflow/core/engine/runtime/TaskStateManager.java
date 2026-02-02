@@ -1,6 +1,7 @@
 package com.yuan.workflow.core.engine.runtime;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yuan.workflow.cmd.AddSignCmd;
 import com.yuan.workflow.cmd.TransferTaskCmd;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.WfTaskLog;
@@ -84,6 +85,7 @@ public class TaskStateManager {
                 .set(WfTask::getAssigneeId, cmd.getToUserId())
                 .set(WfTask::getTransferFrom, cmd.getOperatorId())
                 .set(WfTask::getTransferTime, LocalDateTime.now())
+                .set(WfTask::getAction, TaskAction.TRANSFER)
                 .set(WfTask::getOperatorId, cmd.getOperatorId())
                 .set(WfTask::getComment, cmd.getComment()));
         if (update == 0) {
@@ -104,4 +106,7 @@ public class TaskStateManager {
         taskLogMapper.insert(wfTaskLog);
     }
 
+    public void addSign(WfTask task, AddSignCmd cmd) {
+
+    }
 }
