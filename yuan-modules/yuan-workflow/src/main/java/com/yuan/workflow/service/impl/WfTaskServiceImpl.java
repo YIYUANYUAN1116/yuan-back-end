@@ -3,6 +3,8 @@ package com.yuan.workflow.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -11,11 +13,7 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.api.UserQueryApi;
 import com.yuan.system.dto.SysUserDTO;
-import com.yuan.workflow.domain.WfBizRef;
-import com.yuan.workflow.domain.WfInstance;
-import com.yuan.workflow.domain.WfNodeInstance;
-import com.yuan.workflow.domain.WfTask;
-import com.yuan.workflow.domain.WfTaskLog;
+import com.yuan.workflow.domain.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.TaskStatus;
@@ -171,7 +169,10 @@ public class WfTaskServiceImpl implements WfTaskService {
     public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
         if (!LoginHelper.isSuperAdmin()){
-            lqw.eq(WfTask::getOperatorId, LoginHelper.getUserId());
+            lqw
+                    .eq(WfTask::getAssigneeId, LoginHelper.getUserId())
+                    .or()
+                    .eq(WfTask::getTransferFrom, LoginHelper.getUserId());
         }
         lqw.eq(WfTask::getStatus,TaskStatus.DONE);
         lqw.orderByDesc(WfTask::getFinishTime);
@@ -203,20 +204,34 @@ public class WfTaskServiceImpl implements WfTaskService {
     }
 
     @Override
-    public List<SysUserDTO> transferCandidates(Long taskId,SysUserDTO userDTO,PageQuery pageQuery) {
-        return userQueryApi.queryPageList(userDTO, pageQuery.getPageNum(), pageQuery.getPageSize());
+    public List<SelectModel> transferCandidates(Long taskId,SysUserDTO userDTO,PageQuery pageQuery) {
+        List<SysUserDTO> sysUserDTOS = userQueryApi.queryPageList(userDTO, pageQuery.getPageNum(), pageQuery.getPageSize());
+        return sysUserDTOS.stream().map(item -> {
+            SelectModel selectModel = new SelectModel();
+            selectModel.setValue(item.getUserId());
+            selectModel.setLabel(item.getNickName());
+            return selectModel;
+        }).toList();
+
     }
 
     @Override
-    public List<WfNodeInstanceVo> rollbackNodes(Long taskId) {
+    public List<StrSelectModel> rollbackNodes(Long taskId) {
         WfTask wfTask = baseMapper.selectById(taskId);
         if (wfTask == null) {
             throw new TaskNotFoundException();
         }
 
-        return nodeInstanceMapper.selectVoList(Wrappers.<WfNodeInstance>lambdaQuery()
+        List<WfNodeInstanceVo> wfNodeInstanceVos = nodeInstanceMapper.selectVoList(Wrappers.<WfNodeInstance>lambdaQuery()
                 .eq(WfNodeInstance::getInstanceId, wfTask.getInstanceId())
                 .eq(WfNodeInstance::getStatus, NodeStatus.DONE));
+
+        return wfNodeInstanceVos.stream().map(item -> {
+            StrSelectModel selectModel = new StrSelectModel();
+            selectModel.setLabel(item.getNodeName());
+            selectModel.setValue(item.getNodeKey());
+            return selectModel;
+        }).toList();
     }
 
     private Page<WorkItemRowVO> enrichFromTaskPage( Page<WfTask> taskPage){

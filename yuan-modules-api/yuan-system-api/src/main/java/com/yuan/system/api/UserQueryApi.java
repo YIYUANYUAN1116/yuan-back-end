@@ -34,5 +34,5 @@ public interface UserQueryApi {
 
     Map<Long, String> getUserNameMap(Set<Long> userIds);
 
-    List<SysUserDTO>  queryPageList(SysUserDTO userDTO,int page,int pageSize);
+    List<SysUserDTO>  queryPageList(SysUserDTO userDTO,Integer page,Integer pageSize);
 }

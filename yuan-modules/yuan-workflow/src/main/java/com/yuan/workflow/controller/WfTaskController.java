@@ -2,6 +2,8 @@ package com.yuan.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -15,14 +17,8 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.api.WorkflowService;
-import com.yuan.workflow.cmd.ApproveCmd;
-import com.yuan.workflow.cmd.RejectCmd;
-import com.yuan.workflow.cmd.RollbackCmd;
-import com.yuan.workflow.cmd.RollbackToPreviousCmd;
-import com.yuan.workflow.cmd.TransferTaskCmd;
-import com.yuan.workflow.cmd.WithdrawCmd;
+import com.yuan.workflow.cmd.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
-import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.service.WfTaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,14 +28,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -184,14 +173,14 @@ public class WfTaskController extends BaseController {
     @GetMapping("{taskId}/transfer-candidates")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "获取可转交人",operationId = "WfTaskTransferCandidates")
-    public R<List<SysUserDTO>> transferCandidates(@PathVariable Long taskId,SysUserDTO userDTO,PageQuery pageQuery) {
+    public R<List<SelectModel>> transferCandidates(@PathVariable @PathId Long taskId, SysUserDTO userDTO, PageQuery pageQuery) {
         return R.ok(wfTaskService.transferCandidates(taskId,userDTO,pageQuery));
     }
 
     @GetMapping("{taskId}/rollback-nodes")
     @Log(title = "wfi", businessType = BusinessType.INSERT)
     @Operation(summary = "可退回结点",operationId = "WfTaskRollbackNodes")
-    public R<List<WfNodeInstanceVo>> rollbackNodes(@PathVariable Long taskId) {
+    public R<List<StrSelectModel>> rollbackNodes(@PathVariable @PathId  Long taskId) {
         return R.ok(wfTaskService.rollbackNodes(taskId));
     }
 

@@ -57,10 +57,10 @@ public class UserQueryApiImpl implements UserQueryApi {
     }
 
     @Override
-    public List<SysUserDTO> queryPageList(SysUserDTO userDTO, int page, int pageSize) {
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 10;
-        PageQuery pageQuery = new PageQuery(page, pageSize);
+    public List<SysUserDTO> queryPageList(SysUserDTO userDTO, Integer page, Integer pageSize) {
+        if (page == null || page < 1) page = 1;
+        if (pageSize == null || pageSize < 1) pageSize = 10;
+        PageQuery pageQuery = new PageQuery(pageSize,page);
 
         return userMapper.selectPageDto(pageQuery.build(),userDTO);
     }

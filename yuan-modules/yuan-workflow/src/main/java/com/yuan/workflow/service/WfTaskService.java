@@ -1,12 +1,13 @@
 package com.yuan.workflow.service;
 
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfTaskBo;
-import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
@@ -70,7 +71,7 @@ public interface WfTaskService {
     /**
      * 查询可转交人
      */
-    List<SysUserDTO> transferCandidates(Long taskId,SysUserDTO userDTO,PageQuery pageQuery);
+    List<SelectModel> transferCandidates(Long taskId, SysUserDTO userDTO, PageQuery pageQuery);
 
-    List<WfNodeInstanceVo> rollbackNodes(Long taskId);
+    List<StrSelectModel> rollbackNodes(Long taskId);
 }
