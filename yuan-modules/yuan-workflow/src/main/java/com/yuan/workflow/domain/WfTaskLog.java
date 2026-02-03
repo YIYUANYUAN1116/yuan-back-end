@@ -39,6 +39,8 @@ public class WfTaskLog extends TenantEntity {
      */
     private Long instanceId;
 
+    private Long nodeInstanceId;
+
     /**
      * 操作(APPROVE/REJECT/TRANSFER)
      */

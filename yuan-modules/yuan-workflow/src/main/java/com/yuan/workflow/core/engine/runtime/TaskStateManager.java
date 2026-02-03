@@ -100,6 +100,7 @@ public class TaskStateManager {
         WfTaskLog wfTaskLog = new WfTaskLog();
         wfTaskLog.setTaskId(wfTask.getId());
         wfTaskLog.setInstanceId(wfTask.getInstanceId());
+        wfTaskLog.setNodeInstanceId(wfTask.getNodeInstanceId());
         wfTaskLog.setAction(action);
         wfTaskLog.setOperatorId(operatorId);
         wfTaskLog.setComment(comment);
@@ -107,6 +108,6 @@ public class TaskStateManager {
     }
 
     public void addSign(WfTask task, AddSignCmd cmd) {
-
+        //todo 加签，加签需要做并签
     }
 }

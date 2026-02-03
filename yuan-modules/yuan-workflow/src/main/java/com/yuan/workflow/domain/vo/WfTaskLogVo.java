@@ -33,6 +33,9 @@ public class WfTaskLogVo implements Serializable {
      */
     @ExcelProperty(value = "流程实例ID")
     private Long instanceId;
+
+    private Long nodeInstanceId;
+
     /**
      * 操作(APPROVE/REJECT/TRANSFER)
      */
