@@ -18,7 +18,8 @@ public enum TaskAction implements BaseEnum {
     TRANSFER("TRANSFER", "转签"),
     ADD_SIGN("ADD_SIGN", "加签"),
     ALL_APPROVE("ALL_APPROVE","会签同意"),
-    WITHDRAW("WITHDRAW", "撤回");
+    WITHDRAW("WITHDRAW", "撤回"),
+    SYSTEM_PROCESS("SYSTEM_PROCESS", "系统处理"),;
 
     @EnumValue
     private final String code;

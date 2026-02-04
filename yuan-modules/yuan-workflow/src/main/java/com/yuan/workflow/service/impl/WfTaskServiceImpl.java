@@ -16,6 +16,7 @@ import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.domain.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.enums.TaskStatus;
 import com.yuan.workflow.domain.exception.TaskNotFoundException;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
@@ -224,7 +225,8 @@ public class WfTaskServiceImpl implements WfTaskService {
 
         List<WfNodeInstanceVo> wfNodeInstanceVos = nodeInstanceMapper.selectVoList(Wrappers.<WfNodeInstance>lambdaQuery()
                 .eq(WfNodeInstance::getInstanceId, wfTask.getInstanceId())
-                .eq(WfNodeInstance::getStatus, NodeStatus.DONE));
+                .eq(WfNodeInstance::getStatus, NodeStatus.DONE)
+                .eq(WfNodeInstance::getNodeType, NodeType.USER_TASK));
 
         return wfNodeInstanceVos.stream().map(item -> {
             StrSelectModel selectModel = new StrSelectModel();

@@ -1,26 +1,17 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.RejectCmd;
-import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
-import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
-import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
-import com.yuan.workflow.core.engine.runtime.TaskStateManager;
-import com.yuan.workflow.core.engine.runtime.VariableManager;
+import com.yuan.workflow.core.engine.runtime.*;
 import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.core.event.SpringWfEventPublisher;
-import com.yuan.workflow.core.event.WfEventContext;
-import com.yuan.workflow.core.event.WfEventFactory;
-import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
-import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
+import com.yuan.workflow.mapper.WfBizRefMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 /**
  * 审批拒绝处理器
@@ -34,8 +25,11 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
     private final SpringWfEventPublisher eventPublisher;
     private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
-    private final NodeInstanceStateManager nodeLifeCycle;
+    private final NodeInstanceStateManager nodeInstanceStateManager;
     private final InstanceTransitionManager transitionManager;
+    private final WfBizRefMapper bizRefMapper;
+    private final WfEventManager eventManager;
+
 
     @Override
     @Transactional
@@ -46,7 +40,6 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         WfContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = ctx.task();
         WfInstance instance = ctx.instance();
-        WfBizRef wfBizRef = ctx.bizRef();
         WfNodeInstance node = ctx.node();
 
         // 校验
@@ -56,10 +49,10 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 完成任务
-        taskStateManager.finish(task, TaskAction.REJECT, cmd.getComment(), operatorId);
+        taskStateManager.reject(task, cmd);
 
         // 完成节点
-        nodeLifeCycle.finishCancel(node.getId(),operatorId);
+        nodeInstanceStateManager.reject(node,cmd);
 
         // 业务规则：驳回直接结束
         boolean instanceEnded = isRejectEnd(task);
@@ -67,13 +60,11 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
             return null;
         }
         // 结束实例
-        instanceStateManager.finishRejected(instance,cmd);
+        instanceStateManager.reject(instance,cmd);
 
         transitionManager.reject(instance,node,null,cmd);
 
-        // 发布“任务驳回”事件 afterCommit
-        WfEventContext wfEventContext = buildEventContextByTask(instance,wfBizRef,task);
-        eventPublisher.publishAfterCommit(WfEventFactory.buildTaskRejected(wfEventContext, cmd.getComment(), Map.of()));
+        eventManager.reject(instance,cmd.getOperatorId());
 
         return null;
     }
@@ -82,17 +73,4 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         return true;
     }
 
-    private WfEventContext buildEventContextByTask(WfInstance instance,WfBizRef bizRef,WfTask task) {
-        return WfEventContext.builder()
-                .tenantId(instance.getTenantId())
-                .bizId(bizRef != null ? bizRef.getBizId() : null)
-                .bizType(bizRef != null ? bizRef.getBizType() : null)
-                .definitionId(instance.getDefinitionId())
-                .instanceId(instance.getId())
-                .taskId(task.getId())
-                .nodeId(task.getNodeInstanceId())
-                .starterId(instance.getStarterId())
-                .operatorId(task.getAssigneeId())
-                .build();
-    }
 }

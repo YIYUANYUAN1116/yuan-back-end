@@ -32,10 +32,7 @@ public class TransferHandler implements  CommandHandler<TransferTaskCmd,Void>{
         wfOperationGuard.assertCanOperate(task, operatorId);
 
         // 2) 执行转交：task 只是换 assignee
-        taskStateManager.transfer(
-                task,
-                cmd
-        );
+        taskStateManager.transfer(task, cmd);
 
         instanceTransitionManager.transfer(ctx.instance(),ctx.node(),cmd);
 

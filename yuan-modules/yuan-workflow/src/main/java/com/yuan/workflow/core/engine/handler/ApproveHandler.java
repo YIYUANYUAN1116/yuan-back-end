@@ -9,9 +9,7 @@ import com.yuan.workflow.core.engine.support.WfContextLoader;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
-import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
-import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +26,7 @@ public class ApproveHandler implements CommandHandler<ApproveCmd,Void>{
     private final InstanceTransitionManager instanceTransitionManager;
     private final WfOperationGuard wfOperationGuard;
     private final NodeInstanceStateManager nodeInstanceStateManager;
-    private final WfTransitionLogService transitionLogService;
+
 
     @Override
     @Transactional
@@ -48,10 +46,10 @@ public class ApproveHandler implements CommandHandler<ApproveCmd,Void>{
         variableManager.mergeAndSave(instance, cmd.getVariables());
 
         // 4) 完成任务,节点
-        taskStateManager.finish(task, TaskAction.ANY_APPROVE, cmd.getComment(), operatorId);
+        taskStateManager.anyApprove(task, cmd);
 
         // 6) 完成节点
-        nodeInstanceStateManager.finishDone(task.getNodeInstanceId(),operatorId);
+        nodeInstanceStateManager.approve(node,cmd);
 
         // 7) 推进
         instanceTransitionManager.advance(node,cmd);

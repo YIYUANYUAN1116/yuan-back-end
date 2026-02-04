@@ -11,7 +11,7 @@ import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.enums.TaskStatus;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.domain.exception.InstancePermissionDeniedException;
-import com.yuan.workflow.domain.exception.TaskAlreadyHandledException;
+import com.yuan.workflow.domain.exception.TaskConcurrentChangedException;
 import com.yuan.workflow.domain.exception.TaskNotFoundException;
 import com.yuan.workflow.domain.exception.TaskPermissionDeniedException;
 import com.yuan.workflow.mapper.WfBizRefMapper;
@@ -36,7 +36,7 @@ public class WfOperationGuard {
 
         if (!Objects.equals(task.getStatus(), TaskStatus.TODO)) {
             log.error("[assertTodoTask]: The task status is not todo. taskId={},taskStatus={}", task.getId(),task.getStatus());
-            throw new TaskAlreadyHandledException(task.getId(), operatorId);
+            throw new TaskConcurrentChangedException(task.getId(), operatorId);
         }
     }
 

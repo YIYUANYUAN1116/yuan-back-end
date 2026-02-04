@@ -1,24 +1,17 @@
 package com.yuan.workflow.core.engine.handler;
 
-import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
-import com.yuan.workflow.cmd.RecordTransitionCmd;
 import com.yuan.workflow.cmd.RollbackCmd;
 import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
 import com.yuan.workflow.core.engine.runtime.TaskStateManager;
 import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.engine.support.WfContextLoader;
-import com.yuan.workflow.core.exception.ProcessDefinitionParseException;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
-import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
-import com.yuan.workflow.enums.OperatorType;
-import com.yuan.workflow.enums.TransitionAction;
-import com.yuan.workflow.model.logicflow.LfNode;
 import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,19 +42,19 @@ public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
         WfContextLoader.TaskCtx taskCtx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = taskCtx.task();
         WfDefinition def = taskCtx.def();
-        WfNodeInstance currentNode = taskCtx.node();
+        WfNodeInstance node = taskCtx.node();
         WfInstance instance = taskCtx.instance();
 
         //判断当前操作人是否可操作该任务
         wfOperationGuard.assertCanOperate(task,cmd.getOperatorId());
 
         //完成当前任务
-        taskStateManager.finish(task, TaskAction.ROLLBACK,cmd.getComment(),cmd.getOperatorId());
+        taskStateManager.rollback(task, cmd);
 
         //修改节点状态
-        nodeInstanceStateManager.finishCancel(currentNode.getId(),cmd.getOperatorId());
+        nodeInstanceStateManager.rollback(node,cmd);
 
-        instanceTransitionManager.rollback(def,instance,currentNode,cmd);
+        instanceTransitionManager.rollback(def,instance,node,cmd);
 
         return null;
     }

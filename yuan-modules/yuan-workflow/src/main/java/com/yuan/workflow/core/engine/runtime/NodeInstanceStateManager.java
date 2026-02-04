@@ -1,7 +1,9 @@
 package com.yuan.workflow.core.engine.runtime;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.yuan.workflow.core.exception.InstanceStatusInvalidException;
+import com.yuan.workflow.cmd.*;
+import com.yuan.workflow.core.exception.NodeInstanceConcurrentChangedException;
+import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
@@ -17,45 +19,27 @@ import java.time.LocalDateTime;
 public class NodeInstanceStateManager {
     private final WfNodeInstanceMapper nodeInstanceMapper;
 
-    public void finishDone(WfNodeInstance node) {
-        node.setStatus(NodeStatus.DONE);
-        node.setOperatorId(0L);
-        node.setFinishedTime(LocalDateTime.now());
-        nodeInstanceMapper.updateById(node);
+    public void approve(WfNodeInstance node, ApproveCmd cmd){
+        update(node,cmd);
     }
 
-    public void finishDone(Long nodeInstanceId,Long operatorId) {
-        int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
-                .set(WfNodeInstance::getStatus, NodeStatus.DONE)
-                .set(WfNodeInstance::getOperatorId, operatorId)
-                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
-                .eq(WfNodeInstance::getId, nodeInstanceId)
-                .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
-        if (update == 0){
-            log.error("[finishDone]: don't finish done nodeInstanceId={},expectStatus={}", nodeInstanceId,NodeStatus.WAIT);
-            throw new InstanceStatusInvalidException(nodeInstanceId, NodeStatus.WAIT);
-        }
+    public void reject(WfNodeInstance node, RejectCmd cmd){
+        update(node,cmd);
     }
 
-    public void finishCancel(WfNodeInstance node) {
-        node.setStatus(NodeStatus.CANCELED);
-        nodeInstanceMapper.updateById(node);
+    public void rollback(WfNodeInstance node, RollbackCmd cmd){
+        update(node,cmd);
     }
 
-    public void finishCancel(Long nodeInstanceId,Long operatorId) {
-        int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
-                .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
-                .set(WfNodeInstance::getOperatorId, operatorId)
-                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
-                .eq(WfNodeInstance::getId, nodeInstanceId)
-                .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
-        if (update == 0){
-            log.error("[finishCancel]: don't finish cancel nodeInstanceId={},expectStatus={}", nodeInstanceId,NodeStatus.WAIT);
-            throw new InstanceStatusInvalidException(nodeInstanceId, NodeStatus.WAIT);
-        }
+    public void autoApprove(WfNodeInstance node, WorkflowCmd cmd){
+        cmd.setOperatorId(0L);
+        cmd.setOperatorName("系统处理");
+        update(node,cmd);
     }
 
-    public void cancelAllWaitByInstance(Long instanceId,Long operatorId) {
+    public void withDraw(WfInstance wfInstance, WithdrawCmd cmd) {
+        Long instanceId = wfInstance.getId();
+        Long operatorId = cmd.getOperatorId();
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .eq(WfNodeInstance::getInstanceId, instanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT)
@@ -64,8 +48,22 @@ public class NodeInstanceStateManager {
                 .set(WfNodeInstance::getOperatorId, operatorId));
         if (update == 0){
             log.error("[finishCancel]: don't finish cancel instanceId={},expectStatus={}", instanceId,NodeStatus.WAIT);
-            throw new InstanceStatusInvalidException(NodeStatus.WAIT);
+            throw new NodeInstanceConcurrentChangedException(NodeStatus.WAIT);
         }
+    }
 
+    private void update(WfNodeInstance node, WorkflowCmd cmd) {
+        Long operatorId = cmd.getOperatorId();
+        Long id = node.getId();
+        int row = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
+                .set(WfNodeInstance::getStatus, NodeStatus.DONE)
+                .set(WfNodeInstance::getOperatorId, operatorId)
+                .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
+                .eq(WfNodeInstance::getId, id)
+                .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
+        if (row == 0){
+            log.error("[NodeInstanceStateManager][update]: don't finish done nodeInstanceId={},expectStatus={}", id, NodeStatus.WAIT);
+            throw new NodeInstanceConcurrentChangedException(id, NodeStatus.WAIT);
+        }
     }
 }

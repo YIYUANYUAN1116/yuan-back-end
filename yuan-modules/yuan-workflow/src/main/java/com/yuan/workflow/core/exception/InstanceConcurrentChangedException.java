@@ -2,21 +2,21 @@ package com.yuan.workflow.core.exception;
 
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
-import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.InstanceStatus;
 import lombok.Getter;
 
 @Getter
-public class InstanceStatusInvalidException extends WorkflowException {
+public class InstanceConcurrentChangedException extends WorkflowException {
     private final Long instanceId;
-    private final NodeStatus expectStatus;
+    private final InstanceStatus expectStatus;
 
-    public InstanceStatusInvalidException(Long instanceId, NodeStatus expectStatus) {
+    public InstanceConcurrentChangedException(Long instanceId, InstanceStatus expectStatus) {
         super(WorkflowErrorCode.WF_INSTANCE_STATUS_INVALID);
         this.instanceId = instanceId;
         this.expectStatus = expectStatus;
     }
 
-    public InstanceStatusInvalidException(NodeStatus expectStatus) {
+    public InstanceConcurrentChangedException(InstanceStatus expectStatus) {
         super(WorkflowErrorCode.WF_INSTANCE_STATUS_INVALID);
         this.instanceId = null;
         this.expectStatus = expectStatus;

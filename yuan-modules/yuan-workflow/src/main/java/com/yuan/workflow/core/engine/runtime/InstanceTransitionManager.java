@@ -41,6 +41,8 @@ public class InstanceTransitionManager {
     private final AssigneeResolver assigneeResolver;
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final WfTransitionLogService transitionLogService;
+    private final WfEventManager wfEventManager;
+    private final TaskStateManager taskStateManager;
 
 
     public void advance(WfNodeInstance currentNode, ApproveCmd cmd) {
@@ -56,7 +58,7 @@ public class InstanceTransitionManager {
 
         List<LfNode> nodeList = flowParser.getNextNode(def, currentFlowNode, vars);
         for (LfNode next : nodeList) {
-            transitionLog(instance, currentNode, next, TransitionAction.APPROVE, OperatorType.USER, cmd,null,null);
+            transitionLog(instance, currentNode, next, TransitionAction.APPROVE, OperatorType.USER, cmd, null, null);
             advanceToTarget(instance, def, next, cmd, vars);
         }
     }
@@ -72,11 +74,11 @@ public class InstanceTransitionManager {
 
         if (flowParser.isGateway(lfNode)) {
             List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
-            nodeInstanceStateManager.finishDone(currentNode);
+            nodeInstanceStateManager.autoApprove(currentNode, cmd);
             for (LfNode next : nodeList) {
                 cmd.setComment(null);
-                String conditionExpr =  flowParser.parseConditionExpr(next);
-                transitionLog(instance, currentNode, next, TransitionAction.GATEWAY, OperatorType.SYSTEM, cmd,conditionExpr,vars);
+                String conditionExpr = flowParser.parseConditionExpr(next);
+                transitionLog(instance, currentNode, next, TransitionAction.GATEWAY, OperatorType.SYSTEM, cmd, conditionExpr, vars);
                 advanceToTarget(instance, def, next, cmd, vars);
             }
             return;
@@ -90,10 +92,11 @@ public class InstanceTransitionManager {
         }
 
         if (flowParser.isEnd(lfNode)) {
-            nodeInstanceStateManager.finishDone(currentNode);
-            instanceStateManager.finishApproved(instance, cmd);
+            nodeInstanceStateManager.autoApprove(currentNode, cmd);
+            instanceStateManager.approve(instance, cmd);
+            wfEventManager.approve(instance,cmd.getOperatorId());
             cmd.setComment(null);
-            transitionLog(instance, currentNode, null, TransitionAction.END, OperatorType.SYSTEM, cmd,null,null);
+            transitionLog(instance, currentNode, null, TransitionAction.END, OperatorType.SYSTEM, cmd, null, null);
             return;
         }
 
@@ -118,13 +121,14 @@ public class InstanceTransitionManager {
 
         if (nodeList.isEmpty()) {
             log.warn("no first finish node. defId={},defVersion={}", def.getId(), def.getVersion());
-            instanceStateManager.finishApproved(instance, cmd);
+            instanceStateManager.approve(instance, cmd);
+            wfEventManager.approve(instance,cmd.getOperatorId());
             transitionLog(instance, node, null,
-                    TransitionAction.END, OperatorType.SYSTEM, cmd,null,null);
+                    TransitionAction.END, OperatorType.SYSTEM, cmd, null, null);
         }
         for (LfNode next : nodeList) {
             transitionLog(instance, node, next,
-                    TransitionAction.START, OperatorType.USER, cmd,null,null);
+                    TransitionAction.START, OperatorType.USER, cmd, null, null);
             advanceToTarget(instance, def, next, cmd, cmd.getVariables());
         }
 
@@ -133,7 +137,7 @@ public class InstanceTransitionManager {
 
     public void reject(WfInstance instance, WfNodeInstance node, LfNode lfNode, RejectCmd cmd) {
         transitionLog(instance, node, lfNode,
-                TransitionAction.REJECT, OperatorType.USER, cmd,null,null);
+                TransitionAction.REJECT, OperatorType.USER, cmd, null, null);
     }
 
 
@@ -144,24 +148,24 @@ public class InstanceTransitionManager {
             log.error("Target activity id not found,defId={},defVersion={},targetActivityId={}", def.getId(), def.getVersion(), cmd.getTargetActivityId());
             throw new ProcessDefinitionParseException(WorkflowErrorCode.WF_DEFINITION_NODE_NOT_FOUND, def.getId(), def.getVersion());
         }
-        transitionLog(instance, currentNode, target, TransitionAction.ROLLBACK, OperatorType.USER, cmd,null,null);
+        transitionLog(instance, currentNode, target, TransitionAction.ROLLBACK, OperatorType.USER, cmd, null, null);
         advanceToTarget(instance, def, target, cmd, cmd.getVariables());
     }
 
     public void transfer(WfInstance instance, WfNodeInstance node, TransferTaskCmd cmd) {
         transitionLog(instance, node, null,
-                TransitionAction.TRANSFER, OperatorType.USER, cmd,null,null);
+                TransitionAction.TRANSFER, OperatorType.USER, cmd, null, null);
     }
 
 
     public void withDraw(WfInstance instance, WfNodeInstance from, LfNode to, WithdrawCmd cmd) {
         transitionLog(instance, from, to,
-                TransitionAction.WITHDRAW, OperatorType.USER, cmd,null,null);
+                TransitionAction.WITHDRAW, OperatorType.USER, cmd, null, null);
     }
 
     public void addSign(WfInstance instance, WfNodeInstance node, AddSignCmd cmd) {
         transitionLog(instance, node, null,
-                TransitionAction.ADD_SIGN, OperatorType.USER, cmd,null,null);
+                TransitionAction.ADD_SIGN, OperatorType.USER, cmd, null, null);
     }
 
     private void transitionLog(WfInstance instance,
@@ -171,7 +175,7 @@ public class InstanceTransitionManager {
                                OperatorType operatorType,
                                WorkflowCmd cmd,
                                String conditionExpr,
-                               Map<String,Object> varSnapshot) {
+                               Map<String, Object> varSnapshot) {
         transitionLogService.recordSuccess(RecordTransitionCmd.builder()
                 .tenantId(instance.getTenantId())
                 .defId(instance.getDefinitionId())
