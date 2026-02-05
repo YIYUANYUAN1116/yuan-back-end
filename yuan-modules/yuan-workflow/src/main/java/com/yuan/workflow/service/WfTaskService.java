@@ -8,6 +8,7 @@ import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
@@ -55,9 +56,9 @@ public interface WfTaskService {
 
     void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds);
 
-    TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery);
+    TableDataInfo<WorkItemRowVO> myTask(WfWorklistQueryBo bo, PageQuery pageQuery);
 
-    TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery);
+    TableDataInfo<WorkItemRowVO> myApproval(WfWorklistQueryBo bo, PageQuery pageQuery);
 
     void deleteByInstanceIds(Collection<Long> ids);
 

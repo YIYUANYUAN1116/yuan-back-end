@@ -15,6 +15,7 @@ import com.yuan.system.api.UserQueryApi;
 import com.yuan.system.dto.SysUserDTO;
 import com.yuan.workflow.domain.*;
 import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.enums.TaskStatus;
@@ -155,29 +156,30 @@ public class WfTaskServiceImpl implements WfTaskService {
     }
 
     @Override
-    public TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
-        if (!LoginHelper.isSuperAdmin()){
-            lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
-        }
-        lqw.eq(WfTask::getStatus,TaskStatus.TODO);
-        lqw.orderByDesc(WfTask::getCreateTime);
-        Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
+    public TableDataInfo<WorkItemRowVO> myTask(WfWorklistQueryBo bo, PageQuery pageQuery) {
+//        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
+//        if (!LoginHelper.isSuperAdmin()){
+//            lqw.eq(WfTask::getAssigneeId, LoginHelper.getUserId());
+//        }
+//        lqw.eq(WfTask::getStatus,TaskStatus.TODO);
+//        lqw.orderByDesc(WfTask::getCreateTime);
+//        Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
+        Page<WfTask> wfTaskPage = baseMapper.selectMyTask(pageQuery.build(),bo,LoginHelper.isSuperAdmin(),LoginHelper.getUserId());
         return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }
 
     @Override
-    public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
-        if (!LoginHelper.isSuperAdmin()){
-            lqw
-                    .eq(WfTask::getAssigneeId, LoginHelper.getUserId())
-                    .or()
-                    .eq(WfTask::getTransferFrom, LoginHelper.getUserId());
-        }
-        lqw.eq(WfTask::getStatus,TaskStatus.DONE);
-        lqw.orderByDesc(WfTask::getFinishTime);
-        Page<WfTask> wfTaskPage = baseMapper.selectPage(pageQuery.build(), lqw);
+    public TableDataInfo<WorkItemRowVO> myApproval(WfWorklistQueryBo bo, PageQuery pageQuery) {
+//        LambdaQueryWrapper<WfTask> lqw = buildQueryWrapper(bo);
+//        if (!LoginHelper.isSuperAdmin()){
+//            lqw
+//                    .eq(WfTask::getAssigneeId, LoginHelper.getUserId())
+//                    .or()
+//                    .eq(WfTask::getTransferFrom, LoginHelper.getUserId());
+//        }
+//        lqw.eq(WfTask::getStatus,TaskStatus.DONE);
+//        lqw.orderByDesc(WfTask::getFinishTime);
+        Page<WfTask> wfTaskPage = baseMapper.selectMyApproval(pageQuery.build(),bo,LoginHelper.isSuperAdmin(),LoginHelper.getUserId());
         return TableDataInfo.build(enrichFromTaskPage(wfTaskPage));
     }
 

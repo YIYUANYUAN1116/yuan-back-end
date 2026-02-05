@@ -3,8 +3,7 @@ package com.yuan.workflow.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.domain.bo.WfInstanceBo;
-import com.yuan.workflow.domain.bo.WfTaskBo;
+import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
 import com.yuan.workflow.service.WfInstanceService;
 import com.yuan.workflow.service.WfTaskService;
@@ -29,21 +28,21 @@ public class WorkPlaceController {
     @SaCheckPermission("workplace:task:list")
     @GetMapping("/my-task")
     @Operation(summary = "我的代办",operationId = "workPlaceMyTask")
-    public TableDataInfo<WorkItemRowVO> myTask(WfTaskBo bo, PageQuery pageQuery) {
+    public TableDataInfo<WorkItemRowVO> myTask(WfWorklistQueryBo bo, PageQuery pageQuery) {
         return wfTaskService.myTask(bo, pageQuery);
     }
 
     @SaCheckPermission("workplace:approve:list")
     @GetMapping("/my-approval")
     @Operation(summary = "我的已办",operationId = "workPlaceApprovals")
-    public TableDataInfo<WorkItemRowVO> myApproval(WfTaskBo bo, PageQuery pageQuery) {
+    public TableDataInfo<WorkItemRowVO> myApproval(WfWorklistQueryBo bo, PageQuery pageQuery) {
         return wfTaskService.myApproval(bo, pageQuery);
     }
 
     @SaCheckPermission("workplace:apply:list")
     @GetMapping("/my-apply")
     @Operation(summary = "我的申请",operationId = "workPlaceMyApply")
-    public TableDataInfo<WorkItemRowVO> apply(WfInstanceBo bo, PageQuery pageQuery) {
+    public TableDataInfo<WorkItemRowVO> apply(WfWorklistQueryBo bo, PageQuery pageQuery) {
         return wfInstanceService.myApply(bo, pageQuery);
     }
 }

@@ -72,4 +72,8 @@ public class WfTaskBo implements Serializable {
      */
     private LocalDateTime finishTime;
 
+    /*********************************************************/
+    private String bizType;
+    private String instanceStatus;
+
 }

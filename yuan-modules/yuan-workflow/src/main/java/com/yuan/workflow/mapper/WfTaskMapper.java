@@ -1,9 +1,11 @@
 package com.yuan.workflow.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.core.mapper.BaseMapperPlus;
-import org.apache.ibatis.annotations.Mapper;
 import com.yuan.workflow.domain.WfTask;
+import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,4 +41,14 @@ public interface WfTaskMapper extends BaseMapperPlus<WfTask, WfTaskVo> {
                              @Param("action")  String action,
                              @Param("fromStatus") String fromStatus,
                              @Param("toStatus") String toStatus);
+
+    Page<WfTask> selectMyTask(@Param("page") Page<WfTask> build,
+                              @Param("bo") WfWorklistQueryBo bo,
+                              @Param("isSuperAdmin") boolean isSuperAdmin,
+                              @Param("userId") Long userId);
+
+    Page<WfTask> selectMyApproval(@Param("page") Page<WfTask> build,
+                                  @Param("bo") WfWorklistQueryBo bo,
+                                  @Param("isSuperAdmin") boolean isSuperAdmin,
+                                  @Param("userId") Long userId);
 }

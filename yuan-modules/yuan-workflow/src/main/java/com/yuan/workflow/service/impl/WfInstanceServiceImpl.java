@@ -20,6 +20,7 @@ import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
+import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.exception.BizRefException;
@@ -41,11 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -197,12 +194,12 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     }
 
     @Override
-    public TableDataInfo<WorkItemRowVO> myApply(WfInstanceBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<WfInstance> lqw = buildLambdaQueryWrapper(bo);
-        if (!LoginHelper.isSuperAdmin()){
-            lqw.eq(WfInstance::getStarterId, LoginHelper.getUserId());
-        }
-        Page<WfInstance> wfInstancePage = baseMapper.selectPage(pageQuery.build(), lqw);
+    public TableDataInfo<WorkItemRowVO> myApply(WfWorklistQueryBo bo, PageQuery pageQuery) {
+//        LambdaQueryWrapper<WfInstance> lqw = buildLambdaQueryWrapper(bo);
+//        if (!LoginHelper.isSuperAdmin()){
+//            lqw.eq(WfInstance::getStarterId, LoginHelper.getUserId());
+//        }
+        Page<WfInstance> wfInstancePage = baseMapper.selectMyApplyPage(pageQuery.build(), bo,LoginHelper.isSuperAdmin(),LoginHelper.getUserId());
         return TableDataInfo.build(enrichFromInstancePage(wfInstancePage));
     }
 

@@ -181,13 +181,15 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
         cmd.setBizId(apply.getId());
         cmd.setBizNo(apply.getApplyNo());
         cmd.setStarterId(LoginHelper.getUserId());
+        cmd.setStarterName(LoginHelper.getNickname());
+        cmd.setStarterDeptName(LoginHelper.getDeptName());
         cmd.setStarterDeptId(LoginHelper.getDeptId());
         cmd.setTitle(apply.getApplicantName() + " 请假 " + (apply.getLeaveDays() == null ? "" : apply.getLeaveDays()) + " 天");
         cmd.setDefinitionKey(ApplyConstants.OA_LEAVE);
         cmd.setComment(apply.getReason());
         // 网关/指派需要的变量
         Map<String, Object> vars = new HashMap<>();
-        vars.put("days", apply.getLeaveDays());
+        vars.put(ApplyConstants.DAYS, apply.getLeaveDays());
         cmd.setVariables(vars);
 
         // 4) 发起流程
@@ -206,7 +208,7 @@ public class OaLeaveApplyServiceImpl implements OaLeaveApplyService {
         bo.setApplyNo(bizNo);
         bo.setApplicantId(LoginHelper.getUserId());
         bo.setApplicantDept(LoginHelper.getDeptId());
-        bo.setApplicantName(LoginHelper.getUsername());
+        bo.setApplicantName(LoginHelper.getNickname());
         bo.setApplicantDeptName(LoginHelper.getDeptName());
     }
 }

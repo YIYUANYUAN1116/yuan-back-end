@@ -18,6 +18,33 @@
                  left join wf_task_log tl on tl.task_id = t.id
     </sql>
 
+    <sql id="wfWorklistQuery">
+        <if test="bo != null and bo.bizType != null">
+            and wr.biz_type = #{bo.bizType}
+        </if>
+
+        <if test="bo != null and bo.bizNo != null">
+            and wr.biz_no LIKE CONCAT('%', #{bo.bizNo}, '%')
+        </if>
+
+        <if test="bo != null and bo.instanceStatus != null">
+            and wr.status = #{bo.instanceStatus}
+        </if>
+
+        <if test="bo != null and bo.starterName != null">
+            and wi.starter_name LIKE CONCAT('%', #{bo.starterName}, '%')
+        </if>
+        <if test="bo != null and bo.instanceStartTime != null">
+            and wr.start_time = #{bo.instanceStartTime}
+        </if>
+        <if test="bo != null and bo.instanceEndTime != null">
+            and wr.end_time = #{bo.instanceEndTime}
+        </if>
+        <if test="bo != null and bo.taskAction != null">
+            and t.action = #{bo.taskAction}
+        </if>
+    </sql>
+
     <update id="finishAll">
         UPDATE wf_task
         SET status = #{status},
@@ -63,6 +90,32 @@
     <select id="selectVoByNodeInstanceId" resultMap="taskVoMap">
         <include refid="selectTaskVo"/>
         where t.del_flag = '0' and tl.del_flag = '0' and t.node_instance_id = #{nodeInstanceId}
+    </select>
+
+
+    <select id="selectMyTask" resultType="com.yuan.workflow.domain.WfTask">
+        select t.*
+        from wf_task t
+        left join wf_biz_ref wr on wr.instance_id = t.instance_id and  wr.ref_type = 'PRIMARY'
+        left join wf_instance wi on wi.id = t.instance_id
+        where t.status = 'TODO'
+        <include refid="wfWorklistQuery"/>
+        <if test="isSuperAdmin == false">
+            AND t.assignee_id = #{userId}
+        </if>
+        order by t.create_time desc
+    </select>
+    <select id="selectMyApproval" resultType="com.yuan.workflow.domain.WfTask">
+        select t.*
+        from wf_task t
+        left join wf_biz_ref wr on wr.instance_id = t.instance_id and  wr.ref_type = 'PRIMARY'
+        left join wf_instance wi on wi.id = t.instance_id
+        where t.status = 'DONE'
+        <include refid="wfWorklistQuery"/>
+        <if test="isSuperAdmin == false">
+            AND t.operator_id = #{userId} or t.transfer_from = #{userId}
+        </if>
+        order by t.finish_time desc
     </select>
 
 

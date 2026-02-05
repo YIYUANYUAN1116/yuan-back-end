@@ -12,4 +12,35 @@
         left join wf_biz_ref wr on wr.instance_id = wi.id and  wr.ref_type = 'PRIMARY'
             ${ew.getCustomSqlSegment}
     </select>
+    <select id="selectMyApplyPage" resultType="com.yuan.workflow.domain.WfInstance">
+        select wi.*
+        from wf_instance wi
+        left join wf_biz_ref wr on wr.instance_id = wi.id and  wr.ref_type = 'PRIMARY'
+        <where>
+            <if test="bo != null and bo.bizType != null">
+               and wr.biz_type = #{bo.bizType}
+            </if>
+
+            <if test="bo != null and bo.bizNo != null">
+                and wr.biz_no LIKE CONCAT('%', #{bo.bizNo}, '%')
+            </if>
+
+            <if test="bo != null and bo.instanceStatus != null">
+                and wi.status = #{bo.instanceStatus}
+            </if>
+
+            <if test="bo != null and bo.instanceStartTime != null">
+                and wi.start_time = #{bo.instanceStartTime}
+            </if>
+            <if test="bo != null and bo.instanceEndTime != null">
+                and wi.end_time = #{bo.instanceEndTime}
+            </if>
+            <if test="bo != null and bo.endReason != null">
+                and wi.end_reason = #{bo.endReason}
+            </if>
+            <if test="isSuperAdmin == false">
+                AND wi.starter_id = #{userId}
+            </if>
+        </where>
+    </select>
 </mapper>

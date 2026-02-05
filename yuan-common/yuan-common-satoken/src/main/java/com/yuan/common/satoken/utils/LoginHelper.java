@@ -148,6 +148,10 @@ public class LoginHelper {
         return getLoginUser().getUsername();
     }
 
+    public static String getNickname() {
+        return getLoginUser().getNickName();
+    }
+
     /**
      * 获取用户类型
      */

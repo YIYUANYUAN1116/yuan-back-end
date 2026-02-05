@@ -8,4 +8,7 @@ public interface ApplyConstants {
      * 请假
      */
     String OA_LEAVE = "Leave";
+
+
+    String DAYS = "days";
 }
