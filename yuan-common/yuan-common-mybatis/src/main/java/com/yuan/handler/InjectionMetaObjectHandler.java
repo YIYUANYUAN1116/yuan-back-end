@@ -53,6 +53,10 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 this.strictInsertFill(metaObject, "createTime", Date.class, date);
                 this.strictInsertFill(metaObject, "updateTime", Date.class, date);
             }
+            Object version = getFieldValByName("version", metaObject);
+            if (version == null) {
+                setFieldValByName("version", 0, metaObject);
+            }
         } catch (Exception e) {
             throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
         }

@@ -52,6 +52,8 @@ public class InstanceStateManager {
                 .set(WfInstance::getEndReason,reason)
                 .set(WfInstance::getLastOperatorId, operatorId)
                 .set(WfInstance::getLastOperatorName, operatorName)
+                .setSql("version = version + 1")
+                .eq(WfInstance::getVersion,instance.getVersion())
                 .eq(WfInstance::getId, instance.getId())
                 .eq(WfInstance::getStatus, InstanceStatus.RUNNING)
         );

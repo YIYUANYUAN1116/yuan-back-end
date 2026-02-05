@@ -1,9 +1,6 @@
 package com.yuan.workflow.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.TaskAction;
 import com.yuan.workflow.domain.enums.TaskStatus;
@@ -71,6 +68,10 @@ public class WfTask extends TenantEntity {
      * 审批意见
      */
     private String comment;
+
+    @Version
+    @TableField(fill = FieldFill.INSERT)
+    private Integer version;
 
 
     /**

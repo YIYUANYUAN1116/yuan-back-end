@@ -42,7 +42,7 @@ public class InstanceTransitionManager {
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final WfTransitionLogService transitionLogService;
     private final WfEventManager wfEventManager;
-    private final TaskStateManager taskStateManager;
+
 
 
     public void advance(WfNodeInstance currentNode, ApproveCmd cmd) {

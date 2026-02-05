@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StreamUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -23,7 +22,6 @@ import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.domain.enums.NodeStatus;
-import com.yuan.workflow.domain.exception.BizRefException;
 import com.yuan.workflow.domain.exception.InstanceNotFoundException;
 import com.yuan.workflow.domain.vo.*;
 import com.yuan.workflow.domain.vo.detail.OpsVO;
@@ -209,7 +207,8 @@ public class WfInstanceServiceImpl implements WfInstanceService {
         if (bizRef == null) {
             log.warn("[WF][InstanceDetail] bizRef not found, bizNo={},tenantId={}",
                     bizNo,LoginHelper.getTenantId());
-            throw new BizRefException(WorkflowErrorCode.WF_BIZ_NOT_FOUND);
+//            throw new BizRefException(WorkflowErrorCode.WF_BIZ_NOT_FOUND);
+            return null;
         }
         WfInstanceVo wfInstance = baseMapper.selectVoById(bizRef.getInstanceId());
         if (wfInstance == null) {

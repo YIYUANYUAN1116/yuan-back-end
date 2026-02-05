@@ -1,9 +1,6 @@
 package com.yuan.workflow.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.yuan.common.tenant.core.TenantEntity;
 import com.yuan.workflow.domain.enums.InstanceStatus;
 import com.yuan.workflow.enums.WfEndReason;
@@ -89,6 +86,11 @@ public class WfInstance extends TenantEntity {
     private WfEndReason endReason;
     private String endComment;
     private Long endBy;
+
+    @Version
+    @TableField(fill = FieldFill.INSERT)
+    private Integer version;
+
     @TableLogic
     private String delFlag;
 }

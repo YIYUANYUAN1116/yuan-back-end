@@ -11,13 +11,13 @@ public class NodeInstanceConcurrentChangedException extends WorkflowException {
     private final NodeStatus expectStatus;
 
     public NodeInstanceConcurrentChangedException(Long instanceId, NodeStatus expectStatus) {
-        super(WorkflowErrorCode.WF_NODE_STATUS_INVALID);
+        super(WorkflowErrorCode.WF_NODE_CONCURRENT_CHANGED);
         this.instanceId = instanceId;
         this.expectStatus = expectStatus;
     }
 
     public NodeInstanceConcurrentChangedException(NodeStatus expectStatus) {
-        super(WorkflowErrorCode.WF_NODE_STATUS_INVALID);
+        super(WorkflowErrorCode.WF_NODE_CONCURRENT_CHANGED);
         this.instanceId = null;
         this.expectStatus = expectStatus;
     }

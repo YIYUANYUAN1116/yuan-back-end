@@ -43,6 +43,7 @@ public class NodeInstanceStateManager {
         int update = nodeInstanceMapper.update(Wrappers.<WfNodeInstance>lambdaUpdate()
                 .eq(WfNodeInstance::getInstanceId, instanceId)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT)
+                .setSql("version = version + 1")
                 .set(WfNodeInstance::getStatus, NodeStatus.CANCELED)
                 .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
                 .set(WfNodeInstance::getOperatorId, operatorId));
@@ -59,6 +60,8 @@ public class NodeInstanceStateManager {
                 .set(WfNodeInstance::getStatus, NodeStatus.DONE)
                 .set(WfNodeInstance::getOperatorId, operatorId)
                 .set(WfNodeInstance::getFinishedTime, LocalDateTime.now())
+                .setSql("version = version + 1")
+                .eq(WfNodeInstance::getVersion, node.getVersion())
                 .eq(WfNodeInstance::getId, id)
                 .eq(WfNodeInstance::getStatus, NodeStatus.WAIT));
         if (row == 0){

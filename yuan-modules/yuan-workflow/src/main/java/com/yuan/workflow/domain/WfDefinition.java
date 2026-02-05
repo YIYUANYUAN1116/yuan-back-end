@@ -37,6 +37,7 @@ public class WfDefinition extends TenantEntity {
      * 版本号(递增)
      */
         @Version
+        @TableField(fill = FieldFill.INSERT)
     private Integer version;
 
     /**
@@ -59,6 +60,6 @@ public class WfDefinition extends TenantEntity {
      */
     private String remark;
 
-    @TableLogic
-    private String delFlag;
+//    @TableLogic
+//    private String delFlag;
 }

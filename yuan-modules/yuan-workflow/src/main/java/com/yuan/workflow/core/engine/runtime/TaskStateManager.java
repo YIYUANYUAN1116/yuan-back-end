@@ -42,12 +42,14 @@ public class TaskStateManager {
         int updated = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
                 .eq(WfTask::getId, task.getId())
                 .eq(WfTask::getStatus, TaskStatus.TODO)
+                .eq(WfTask::getVersion, task.getVersion())
                 .set(WfTask::getAction, TaskAction.TRANSFER)
                 .set(WfTask::getOperatorId, operatorId)
                 .set(WfTask::getAssigneeId, cmd.getToUserId())
                 .set(WfTask::getTransferFrom, operatorId)
                 .set(WfTask::getTransferTime, LocalDateTime.now())
-                .set(WfTask::getComment, comment));
+                .set(WfTask::getComment, comment)
+                .setSql("version = version + 1"));
         if (updated == 0) {
             log.error("[finish] update wfTask fail. taskId={},operatorId={},action={},expect={}", task.getId(), operatorId, TaskAction.TRANSFER.getCode(), TaskStatus.TODO.getCode());
             throw new TaskConcurrentChangedException(task.getId(), operatorId);
@@ -67,11 +69,13 @@ public class TaskStateManager {
         int updated = taskMapper.update(Wrappers.<WfTask>lambdaUpdate()
                 .eq(WfTask::getId, task.getId())
                 .eq(WfTask::getStatus, TaskStatus.TODO)
+                .eq(WfTask::getVersion, task.getVersion())
                 .set(WfTask::getStatus, TaskStatus.DONE)
                 .set(WfTask::getAction, action)
                 .set(WfTask::getFinishTime, LocalDateTime.now())
                 .set(WfTask::getOperatorId, operatorId)
-                .set(WfTask::getComment, comment));
+                .set(WfTask::getComment, comment)
+                .setSql("version = version + 1"));
         if (updated == 0) {
             log.error("[finish] update wfTask fail. taskId={},operatorId={},action={},expect={}", task.getId(), operatorId, action.getCode(), TaskStatus.TODO.getCode());
             throw new TaskConcurrentChangedException(task.getId(), operatorId);
