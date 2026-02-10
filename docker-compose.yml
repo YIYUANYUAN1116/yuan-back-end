@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  yuan-backend-admin:
+    container_name: yuan-backend-admin
+    restart: unless-stopped
+
+    build:
+      context: /data/app/yuan/backend/admin
+      dockerfile: Dockerfile
+
+    image: yuan-backend-admin:latest
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_ADDITIONAL_LOCATION: "file:/app/config/"
+      # 可选 JVM 参数
+      # JAVA_OPTS: "-Xms512m -Xmx1024m"
+
+    ports:
+      - "127.0.0.1:6011:6011"
+
+    volumes:
+      - /data/app/yuan/backend/admin/config:/app/config
+      - /data/app/yuan/backend/admin/logs:/app/logs
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --lower_case_table_names=1
+    environment:
+      MYSQL_ROOT_PASSWORD: yzd2021
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/mysql/data:/var/lib/mysql
+      - /data/mysql/conf:/etc/mysql/conf.d
+      - /data/mysql/logs:/var/log/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass yzd2021
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data/redis/data:/data
+      - /data/redis/logs:/logs
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: yzd202122
+      TZ: Asia/Shanghai
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /data/minio/data:/data
+      - /data/minio/conf:/root/.minio
+      - /data/minio/logs:/logs

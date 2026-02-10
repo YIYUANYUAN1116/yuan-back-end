@@ -1,0 +1,58 @@
+
+--- # 数据源配置
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    # 动态数据源文档 https://www.kancloud.cn/tracy5546/dynamic-datasource/content
+    dynamic:
+      datasource:
+        # 主库数据源
+        master:
+          type: ${spring.datasource.type}
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://mysql/yuan?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+          username: root
+          password: yzd2021
+
+      hikari:
+        # 最大连接池数量
+        maxPoolSize: 20
+        # 最小空闲线程数量
+        minIdle: 10
+        # 配置获取连接等待超时的时间
+        connectionTimeout: 30000
+        # 校验超时时间
+        validationTimeout: 5000
+        # 空闲连接存活最大时间，默认10分钟
+        idleTimeout: 600000
+        # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认30分钟
+        maxLifetime: 1800000
+        # 连接测试query（配置检测连接是否有效）
+        connectionTestQuery: SELECT 1
+        # 多久检查一次连接的活性
+        keepaliveTime: 30000
+
+--- # redis 单机配置(单机与集群只能开启一个另一个需要注释掉)
+spring.data:
+  redis:
+    # 地址
+    host: redis
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 0
+    # 密码(如没有密码请注释掉)
+    password: yzd2021
+    # 连接超时时间
+    timeout: 10S
+
+oss:
+  storage: S3_COMPATIBLE
+  bucket: yuan
+  presign-expire-seconds: 600
+  s3:
+    endpoint: minio:9000   # 换成 ceph/aws 就改这里
+    access-key: xxx
+    secret-key: xxx
+    region: us-east-1
+    path-style-access: true       # minio: true / aws: false(通常)
