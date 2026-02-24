@@ -21,6 +21,7 @@
         <module>yuan-generator</module>
         <module>yuan-workflow</module>
         <module>yuan-oa</module>
+        <module>yuan-ai</module>
     </modules>
 
     <properties>

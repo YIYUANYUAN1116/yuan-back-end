@@ -1,0 +1,105 @@
+package com.yuan.ai.controller;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.*;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import com.yuan.common.idempotent.annotation.RepeatSubmit;
+import com.yuan.common.log.annotation.Log;
+import com.yuan.common.web.core.BaseController;
+import com.yuan.core.page.PageQuery;
+import com.yuan.common.core.domain.R;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.log.enums.BusinessType;
+import com.yuan.common.excel.utils.ExcelUtil;
+import com.yuan.ai.domain.vo.ChatSessionVo;
+import com.yuan.ai.domain.bo.ChatSessionBo;
+import com.yuan.ai.service.ChatSessionService;
+import com.yuan.core.page.TableDataInfo;
+
+/**
+ * chat-session
+ *
+ * @author ageerle
+ * @date Mon Feb 16 14:59:22 CST 2026
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/ai/chatSession")
+public class ChatSessionController extends BaseController {
+
+    private final ChatSessionService chatSessionService;
+
+/**
+ * 查询chat-session列表
+ */
+@SaCheckPermission("ai:chatSession:list")
+@GetMapping("/list")
+    public TableDataInfo<ChatSessionVo> list(ChatSessionBo bo, PageQuery pageQuery) {
+        return chatSessionService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 导出chat-session列表
+     */
+    @SaCheckPermission("ai:chatSession:export")
+    @Log(title = "chat-session", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(ChatSessionBo bo, HttpServletResponse response) {
+        List<ChatSessionVo> list = chatSessionService.queryList(bo);
+        ExcelUtil.exportExcel(list, "chat-session", ChatSessionVo.class, response);
+    }
+
+    /**
+     * 获取chat-session详细信息
+     *
+     * @param id 主键
+     */
+    @SaCheckPermission("ai:chatSession:query")
+    @GetMapping("/{id}")
+    public R<ChatSessionVo> getInfo(@NotNull(message = "主键不能为空")
+                                     @PathVariable Long id) {
+        return R.ok(chatSessionService.queryById(id));
+    }
+
+    /**
+     * 新增chat-session
+     */
+    @SaCheckPermission("ai:chatSession:add")
+    @Log(title = "chat-session", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping()
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody ChatSessionBo bo) {
+        return toAjax(chatSessionService.insertByBo(bo));
+    }
+
+    /**
+     * 修改chat-session
+     */
+    @SaCheckPermission("ai:chatSession:edit")
+    @Log(title = "chat-session", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping()
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody ChatSessionBo bo) {
+        return toAjax(chatSessionService.updateByBo(bo));
+    }
+
+    /**
+     * 删除chat-session
+     *
+     * @param ids 主键串
+     */
+    @SaCheckPermission("ai:chatSession:remove")
+    @Log(title = "chat-session", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{ids}")
+    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+                          @PathVariable Long[] ids) {
+        return toAjax(chatSessionService.deleteWithValidByIds(List.of(ids), true));
+    }
+}

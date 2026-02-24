@@ -326,6 +326,12 @@
 
             <dependency>
                 <groupId>com.yuan</groupId>
+                <artifactId>yuan-ai</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yuan</groupId>
                 <artifactId>yuan-common-oss</artifactId>
                 <version>${revision}</version>
             </dependency>
