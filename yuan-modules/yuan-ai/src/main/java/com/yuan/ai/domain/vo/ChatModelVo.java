@@ -119,4 +119,10 @@ public class ChatModelVo implements Serializable {
     @ExcelProperty(value = "模型优先级(值越大优先级越高)")
     private Integer priority;
 
+    private String modelKey;
+    private String remoteModel;
+    private String providerType;
+    private String enabled;
+    private String supportStream;
+    private String supportJson;
 }

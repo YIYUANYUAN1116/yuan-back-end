@@ -97,4 +97,10 @@ public class ChatMessageVo implements Serializable {
     @ExcelDictFormat(readConverterExp = "$column.readConverterExp()")
     private String billingType;
 
+    private String tracId;
+    private String promptTokens;
+    private String completionTokens;
+    private String finishReason;
+    private String errorMsg;
+
 }

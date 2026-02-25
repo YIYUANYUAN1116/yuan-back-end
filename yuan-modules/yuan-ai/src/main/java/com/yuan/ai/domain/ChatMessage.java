@@ -94,4 +94,10 @@ public class ChatMessage implements Serializable {
     private String billingType;
 
 
+    private String tracId;
+    private String promptTokens;
+    private String completionTokens;
+    private String finishReason;
+    private String errorMsg;
+
 }

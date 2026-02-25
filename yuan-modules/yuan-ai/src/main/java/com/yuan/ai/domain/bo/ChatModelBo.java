@@ -98,4 +98,10 @@ public class ChatModelBo implements Serializable {
      */
     private Integer priority;
 
+    private String modelKey;
+    private String remoteModel;
+    private String providerType;
+    private String enabled;
+    private String supportStream;
+    private String supportJson;
 }

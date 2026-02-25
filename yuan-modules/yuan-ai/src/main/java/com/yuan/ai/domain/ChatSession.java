@@ -72,5 +72,7 @@ public class ChatSession implements Serializable {
      */
     private String conversationId;
 
-
+    private String tenantId;
+    private String defaultModelKey;
+    private LocalDateTime lastMessageTime;
 }

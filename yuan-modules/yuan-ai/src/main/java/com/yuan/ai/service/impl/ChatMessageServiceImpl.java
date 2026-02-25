@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.ai.domain.ChatMessage;
 import com.yuan.ai.domain.bo.ChatMessageBo;
+import com.yuan.ai.domain.model.ChatRequest;
 import com.yuan.ai.domain.vo.ChatMessageVo;
 import com.yuan.ai.mapper.ChatMessageMapper;
 import com.yuan.ai.service.ChatMessageService;
@@ -15,6 +16,8 @@ import com.yuan.core.page.TableDataInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -117,5 +120,41 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+    @Override
+    public long insertUserMessage(ChatRequest req, String userContent) {
+        ChatMessage m = new ChatMessage();
+        m.setSessionId(req.getSessionId());
+        m.setUserId(req.getUserId());
+        m.setRole("user");
+        m.setContent(userContent);
+        m.setModelName(req.getModelKey()); // 先记 modelKey
+        m.setTotalTokens(0);
+        m.setDeductCost(BigDecimal.valueOf(0.0));
+        m.setCreateTime(LocalDateTime.now());
+        baseMapper.insert(m);
+        return m.getId();
+    }
+    @Override
+    public long insertAssistantPlaceholder(ChatRequest req, String modelNameToSave) {
+        ChatMessage m = new ChatMessage();
+        m.setSessionId(req.getSessionId());
+        m.setUserId(req.getUserId());
+        m.setRole("assistant");
+        m.setContent("");
+        m.setModelName(modelNameToSave);
+        m.setTotalTokens(0);
+        m.setDeductCost(BigDecimal.valueOf(0.0));
+        m.setCreateTime(LocalDateTime.now());
+        baseMapper.insert(m);
+        return m.getId();
+    }
+    @Override
+    public void updateAssistantContent(long messageId, String content) {
+        ChatMessage upd = new ChatMessage();
+        upd.setId(messageId);
+        upd.setContent(content);
+        upd.setUpdateTime(LocalDateTime.now());
+        baseMapper.updateById(upd);
     }
 }

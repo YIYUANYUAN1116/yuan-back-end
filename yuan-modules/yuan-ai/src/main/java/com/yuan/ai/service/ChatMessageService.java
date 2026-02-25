@@ -1,5 +1,6 @@
 package com.yuan.ai.service;
 
+import com.yuan.ai.domain.model.ChatRequest;
 import com.yuan.ai.domain.vo.ChatMessageVo;
 import com.yuan.ai.domain.bo.ChatMessageBo;
     import com.yuan.core.page.TableDataInfo;
@@ -45,4 +46,10 @@ public interface ChatMessageService {
      * 校验并批量删除chat-message信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    long insertUserMessage(ChatRequest req, String userContent);
+
+    long insertAssistantPlaceholder(ChatRequest req, String modelNameToSave);
+
+    void updateAssistantContent(long messageId, String content);
 }

@@ -1,9 +1,11 @@
 package com.yuan.ai.service;
 
-import com.yuan.ai.domain.vo.ChatModelVo;
+import com.yuan.ai.domain.ChatModel;
 import com.yuan.ai.domain.bo.ChatModelBo;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
+import com.yuan.ai.domain.model.ChatRequest;
+import com.yuan.ai.domain.vo.ChatModelVo;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,4 +47,8 @@ public interface ChatModelService {
      * 校验并批量删除chat_model信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    ChatModel getByModelKeyOrName(ChatRequest req, String modelKeyOrName);
+
+    ChatModel pickAutoModel(ChatRequest req);
 }

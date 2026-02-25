@@ -1,10 +1,14 @@
 package com.yuan.ai.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.ai.chat.messages.Message;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.io.Serializable;
 
 /**
  * chat_model对象 chat_model
@@ -16,7 +20,7 @@ import java.io.Serializable;
 @TableName("chat_model")
 public class ChatModel implements Serializable {
 
-
+    private Message message;
     /**
      * 主键
      */
@@ -118,5 +122,12 @@ public class ChatModel implements Serializable {
      */
     private Integer priority;
 
+    private String modelKey;
+    private String remoteModel;
+    private String providerType;
+    private String enabled;
+    private String supportStream;
+    private String supportJson;
+    private String baseUrl;
 
 }

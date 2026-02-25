@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.ai.domain.ChatModel;
 import com.yuan.ai.domain.bo.ChatModelBo;
+import com.yuan.ai.domain.model.ChatRequest;
 import com.yuan.ai.domain.vo.ChatModelVo;
 import com.yuan.ai.mapper.ChatModelMapper;
 import com.yuan.ai.service.ChatModelService;
+import com.yuan.ai.support.TenantResolver;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
@@ -29,6 +31,7 @@ import java.util.List;
 public class ChatModelServiceImpl implements ChatModelService {
 
     private final ChatModelMapper baseMapper;
+    private final TenantResolver tenantResolver;
 
     /**
      * 查询chat_model
@@ -122,5 +125,37 @@ public class ChatModelServiceImpl implements ChatModelService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public ChatModel getByModelKeyOrName(ChatRequest req, String modelKeyOrName) {
+        String tenantId = tenantResolver.resolveTenantId(req);
+
+        // 优先按 model_key 查（若你还没加列，这个条件可能一直为 null）
+        ChatModel byKey = baseMapper.selectOne(new LambdaQueryWrapper<ChatModel>()
+                .eq(ChatModel::getTenantId, tenantId)
+                .eq(ChatModel::getModelKey, modelKeyOrName)
+                .orderByDesc(ChatModel::getPriority)
+                .last("limit 1"));
+
+        if (byKey != null) return byKey;
+
+        // 兼容：按 model_name 查
+        return baseMapper.selectOne(new LambdaQueryWrapper<ChatModel>()
+                .eq(ChatModel::getTenantId, tenantId)
+                .eq(ChatModel::getModelName, modelKeyOrName)
+                .orderByDesc(ChatModel::getPriority)
+                .last("limit 1"));
+    }
+
+    @Override
+    public ChatModel pickAutoModel(ChatRequest req) {
+        String tenantId = tenantResolver.resolveTenantId(req);
+        // 简化：取展示的最高优先级
+        return baseMapper.selectOne(new LambdaQueryWrapper<ChatModel>()
+                .eq(ChatModel::getTenantId, tenantId)
+                .eq(ChatModel::getModelShow, "1")
+                .orderByDesc(ChatModel::getPriority)
+                .last("limit 1"));
     }
 }
