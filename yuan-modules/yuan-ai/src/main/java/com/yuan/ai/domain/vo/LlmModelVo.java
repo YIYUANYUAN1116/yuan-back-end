@@ -1,0 +1,55 @@
+package com.yuan.ai.domain.vo;
+
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.LlmModel;
+import io.github.linpeilie.annotations.AutoMapper;
+import lombok.Data;
+
+import java.io.Serializable;
+
+
+/**
+ * llm_model视图对象 llm_model
+ *
+ * @author yuan
+ * @date Thu Feb 26 21:44:17 CST 2026
+ */
+@Data
+@ExcelIgnoreUnannotated
+@AutoMapper(target = LlmModel.class)
+public class LlmModelVo implements Serializable {
+
+    private Long id;
+    /**
+     * providerCode
+     */
+    @ExcelProperty(value = "providerCode")
+    private String providerCode;
+    /**
+     * remote model name, e.g. gpt-4o-mini
+     */
+    @ExcelProperty(value = "remote model name, e.g. gpt-4o-mini")
+    private String modelName;
+    /**
+     * displayName
+     */
+    @ExcelProperty(value = "displayName")
+    private String displayName;
+    /**
+     * {"stream":true,"json":true,"tools":true,"vision":false,"thinking":false}
+     */
+    @ExcelProperty(value = "capabilityJson")
+    private String capabilityJson;
+    /**
+     * contextWindow
+     */
+    @ExcelProperty(value = "contextWindow")
+    private Integer contextWindow;
+    /**
+     * enabled
+     */
+    @ExcelProperty(value = "enabled")
+    private Integer enabled;
+
+}

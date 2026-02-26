@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 /**
- * chat-message对象 chat_message
+ * chat_message对象 chat_message
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 @Data
 @TableName("chat_message")
@@ -18,80 +18,95 @@ public class ChatMessage implements Serializable {
 
 
     /**
-     * 主键
+     * id
      */
         @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 会话id
+     * tenantId
      */
-    private Long sessionId;
+    private String tenantId;
 
     /**
-     * 用户id
+     * conversationId
+     */
+    private Long conversationId;
+
+    /**
+     * userId
      */
     private Long userId;
 
     /**
-     * 消息内容
-     */
-    private String content;
-
-    /**
-     * 对话角色
+     * system/user/assistant/tool
      */
     private String role;
 
     /**
-     * 扣除金额
+     * content
      */
-    private BigDecimal deductCost;
+    private String content;
 
     /**
-     * 累计 Tokens
+     * contentFormat
      */
-    private Integer totalTokens;
+    private String contentFormat;
 
     /**
-     * 模型名称
+     * parentId
      */
-    private String modelName;
+    private Long parentId;
 
     /**
-     * 创建部门
+     * PENDING/STREAMING/DONE/FAILED
      */
-    private Long createDept;
+    private String status;
 
     /**
-     * 创建者
+     * endpointKey
      */
-    private Long createBy;
+    private String endpointKey;
 
     /**
-     * 创建时间
+     * invocationId
+     */
+    private Long invocationId;
+
+    /**
+     * tokenIn
+     */
+    private Integer tokenIn;
+
+    /**
+     * tokenOut
+     */
+    private Integer tokenOut;
+
+    /**
+     * costAmount
+     */
+    private BigDecimal costAmount;
+
+    /**
+     * finishReason
+     */
+    private String finishReason;
+
+    /**
+     * errorMsg
+     */
+    private String errorMsg;
+
+    /**
+     * createTime
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
+     * updateTime
      */
     private LocalDateTime updateTime;
-
-    /**
-     * 备注
-     */
-    private String remark;
-
-    /**
-     * 计费类型（1-token计费，2-次数计费，null-普通消息）
-     */
-    private String billingType;
 
 
 }

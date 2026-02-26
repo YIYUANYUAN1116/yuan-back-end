@@ -1,23 +1,22 @@
 package com.yuan.ai.domain.vo;
 
+    import java.math.BigDecimal;
+    import java.time.LocalDateTime;
+    import java.io.Serializable;
+import com.yuan.ai.domain.ChatMessage;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.yuan.common.excel.annotation.ExcelDictFormat;
-import com.yuan.common.excel.convert.ExcelDictConvert;
-import com.yuan.ai.domain.ChatMessage;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 
 /**
- * chat-message视图对象 chat_message
+ * chat_message视图对象 chat_message
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -26,75 +25,89 @@ public class ChatMessageVo implements Serializable {
 
     private Long id;
     /**
-     * 会话id
+     * tenantId
      */
-    @ExcelProperty(value = "会话id")
-    private Long sessionId;
+    @ExcelProperty(value = "tenantId")
+    private String tenantId;
     /**
-     * 用户id
+     * conversationId
      */
-    @ExcelProperty(value = "用户id")
+    @ExcelProperty(value = "conversationId")
+    private Long conversationId;
+    /**
+     * userId
+     */
+    @ExcelProperty(value = "userId")
     private Long userId;
     /**
-     * 消息内容
+     * system/user/assistant/tool
      */
-    @ExcelProperty(value = "消息内容")
-    private String content;
-    /**
-     * 对话角色
-     */
-    @ExcelProperty(value = "对话角色")
+    @ExcelProperty(value = "system/user/assistant/tool")
     private String role;
     /**
-     * 扣除金额
+     * content
      */
-    @ExcelProperty(value = "扣除金额")
-    private BigDecimal deductCost;
+    @ExcelProperty(value = "content")
+    private String content;
     /**
-     * 累计 Tokens
+     * contentFormat
      */
-    @ExcelProperty(value = "累计 Tokens")
-    private Integer totalTokens;
+    @ExcelProperty(value = "contentFormat")
+    private String contentFormat;
     /**
-     * 模型名称
+     * parentId
      */
-    @ExcelProperty(value = "模型名称")
-    private String modelName;
+    @ExcelProperty(value = "parentId")
+    private Long parentId;
     /**
-     * 创建部门
+     * PENDING/STREAMING/DONE/FAILED
      */
-    @ExcelProperty(value = "创建部门")
-    private Long createDept;
+    @ExcelProperty(value = "PENDING/STREAMING/DONE/FAILED")
+    private String status;
     /**
-     * 创建者
+     * endpointKey
      */
-    @ExcelProperty(value = "创建者")
-    private Long createBy;
+    @ExcelProperty(value = "endpointKey")
+    private String endpointKey;
     /**
-     * 创建时间
+     * invocationId
      */
-    @ExcelProperty(value = "创建时间")
+    @ExcelProperty(value = "invocationId")
+    private Long invocationId;
+    /**
+     * tokenIn
+     */
+    @ExcelProperty(value = "tokenIn")
+    private Integer tokenIn;
+    /**
+     * tokenOut
+     */
+    @ExcelProperty(value = "tokenOut")
+    private Integer tokenOut;
+    /**
+     * costAmount
+     */
+    @ExcelProperty(value = "costAmount")
+    private BigDecimal costAmount;
+    /**
+     * finishReason
+     */
+    @ExcelProperty(value = "finishReason")
+    private String finishReason;
+    /**
+     * errorMsg
+     */
+    @ExcelProperty(value = "errorMsg")
+    private String errorMsg;
+    /**
+     * createTime
+     */
+    @ExcelProperty(value = "createTime")
     private LocalDateTime createTime;
     /**
-     * 更新者
+     * updateTime
      */
-    @ExcelProperty(value = "更新者")
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @ExcelProperty(value = "更新时间")
+    @ExcelProperty(value = "updateTime")
     private LocalDateTime updateTime;
-    /**
-     * 备注
-     */
-    @ExcelProperty(value = "备注")
-    private String remark;
-    /**
-     * 计费类型（1-token计费，2-次数计费，null-普通消息）
-     */
-    @ExcelProperty(value = "计费类型", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "$column.readConverterExp()")
-    private String billingType;
 
 }

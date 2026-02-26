@@ -9,40 +9,50 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * chat-messageService接口
+ * chat_messageService接口
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 public interface ChatMessageService {
 
     /**
-     * 查询chat-message
+     * 查询chat_message
      */
         ChatMessageVo queryById(Long id);
 
         /**
-         * 查询chat-message列表
+         * 查询chat_message列表
          */
         TableDataInfo<ChatMessageVo> queryPageList(ChatMessageBo bo, PageQuery pageQuery);
 
     /**
-     * 查询chat-message列表
+     * 查询chat_message列表
      */
     List<ChatMessageVo> queryList(ChatMessageBo bo);
 
     /**
-     * 新增chat-message
+     * 新增chat_message
      */
     Boolean insertByBo(ChatMessageBo bo);
 
     /**
-     * 修改chat-message
+     * 修改chat_message
      */
     Boolean updateByBo(ChatMessageBo bo);
 
     /**
-     * 校验并批量删除chat-message信息
+     * 校验并批量删除chat_message信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    long insertUserMsg(String tenantId, long conversationId, Long userId, String endpointKey, String content);
+
+    long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, String endpointKey);
+
+    void bindInvocation(long messageId, long invocationId);
+
+    void finishAssistant(long messageId, String content);
+
+    void failAssistant(long messageId, String partial, String errorMsg);
 }
