@@ -1,19 +1,15 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.LlmEndpoint;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * llm_endpoint业务对象 llm_endpoint
@@ -82,4 +78,10 @@ public class LlmEndpointBo implements Serializable {
     @NotNull(message = "updateTime不能为空", groups = { AddGroup.class, EditGroup.class })
     private LocalDateTime updateTime;
 
+    private String chatCompletionsPath;
+    private String embeddingsPath;
+    private String authHeaderName;
+    private String authHeaderPrefix;
+    private String extraHeadersJson;
+    private String extraParamsJson;
 }

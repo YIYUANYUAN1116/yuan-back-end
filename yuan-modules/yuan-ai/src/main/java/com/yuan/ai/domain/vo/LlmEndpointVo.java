@@ -78,4 +78,10 @@ public class LlmEndpointVo implements Serializable {
     @ExcelProperty(value = "updateTime")
     private LocalDateTime updateTime;
 
+    private String chatCompletionsPath;
+    private String embeddingsPath;
+    private String authHeaderName;
+    private String authHeaderPrefix;
+    private String extraHeadersJson;
+    private String extraParamsJson;
 }

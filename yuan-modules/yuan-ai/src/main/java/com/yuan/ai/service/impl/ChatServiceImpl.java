@@ -5,15 +5,13 @@ import com.yuan.ai.domain.ChatConversation;
 import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.dto.ChatRequest;
-import com.yuan.ai.provider.ChatProvider;
+import com.yuan.ai.provider.UnifiedChatProvider;
 import com.yuan.ai.service.*;
 import com.yuan.ai.support.SseHelper;
 import com.yuan.common.satoken.utils.LoginHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +20,7 @@ public class ChatServiceImpl implements ChatService {
     private final LlmModelService modelService;
     private final ChatConversationService conversationService;
     private final ChatMessageService messageService;
-    private final List<ChatProvider> providers;
+    private final UnifiedChatProvider chatProvider;
     private final SseHelper sse;
 
     @Override
@@ -70,14 +68,8 @@ public class ChatServiceImpl implements ChatService {
         // 5) assistant placeholder
         long assistantMsgId = messageService.insertAssistantPlaceholder(tenantId, conv.getId(), req.getUserId(), ep.getEndpointKey());
 
-        // 6) provider route by provider_code
-        ChatProvider provider = providers.stream()
-                .filter(p -> p.supports(ep.getProviderCode()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No provider for provider_code=" + ep.getProviderCode()));
-
         // 7) run
-        return provider.chat(req, ep, model, conv.getId(), assistantMsgId, emitter);
+        return chatProvider.chat(req, ep, model, conv.getId(), assistantMsgId, emitter);
 
     }
 }

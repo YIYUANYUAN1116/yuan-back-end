@@ -42,6 +42,14 @@ public class LlmEndpoint implements Serializable {
      */
     private String baseUrl;
 
+    private String chatCompletionsPath;
+    private String embeddingsPath;
+    private String authHeaderName;
+    private String authHeaderPrefix;
+    private String extraHeadersJson;
+    private String extraParamsJson;
+
+
     /**
      * DEMO ONLY; prod should use api_key_ref + secret manager
      */
