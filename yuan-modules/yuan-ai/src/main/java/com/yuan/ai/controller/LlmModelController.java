@@ -3,8 +3,10 @@ package com.yuan.ai.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.ai.domain.bo.LlmModelBo;
 import com.yuan.ai.domain.vo.LlmModelVo;
+import com.yuan.ai.mapper.LlmModelMapper;
 import com.yuan.ai.service.LlmModelService;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -41,6 +43,7 @@ import java.util.List;
 public class LlmModelController extends BaseController {
 
     private final LlmModelService llmModelService;
+    private final LlmModelMapper llmModelMapper;
 
 /**
  * 查询llm_model列表
@@ -113,5 +116,12 @@ public class LlmModelController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(llmModelService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    @SaCheckPermission("ai:llmModel:query")
+    @GetMapping("/selectModel")
+    @Operation(summary = "获取供应商选择框列表",operationId = "selectModel")
+    public R<List<StrSelectModel>> selectModel(@RequestParam String endpointKey) {
+        return R.ok(llmModelMapper.selectModel(endpointKey));
     }
 }

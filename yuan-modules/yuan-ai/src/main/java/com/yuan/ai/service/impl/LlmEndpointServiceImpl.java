@@ -66,7 +66,7 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
                     lqw.eq(StringUtils.isNotBlank(bo.getBaseUrl()), LlmEndpoint::getBaseUrl, bo.getBaseUrl());
                     lqw.eq(StringUtils.isNotBlank(bo.getApiKey()), LlmEndpoint::getApiKey, bo.getApiKey());
                     lqw.eq(bo.getDefaultModelId() != null, LlmEndpoint::getDefaultModelId, bo.getDefaultModelId());
-                    lqw.eq(bo.getEnabled() != null, LlmEndpoint::getEnabled, bo.getEnabled());
+                    lqw.eq(bo.getStatus() != null, LlmEndpoint::getStatus, bo.getStatus());
                     lqw.eq(bo.getPriority() != null, LlmEndpoint::getPriority, bo.getPriority());
                     lqw.eq(StringUtils.isNotBlank(bo.getTagsJson()), LlmEndpoint::getTagsJson, bo.getTagsJson());
                     lqw.eq(bo.getCreateTime() != null, LlmEndpoint::getCreateTime, bo.getCreateTime());
@@ -121,7 +121,7 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
         return baseMapper.selectOne(new LambdaQueryWrapper<LlmEndpoint>()
                 .eq(LlmEndpoint::getTenantId, tenantId)
                 .eq(LlmEndpoint::getEndpointKey, endpointKey)
-                .eq(LlmEndpoint::getEnabled, 1)
+                .eq(LlmEndpoint::getStatus, 1)
                 .last("limit 1"));
     }
 
@@ -129,7 +129,7 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
     public LlmEndpoint pickHighestPriority(String tenantId) {
         return baseMapper.selectOne(new LambdaQueryWrapper<LlmEndpoint>()
                 .eq(LlmEndpoint::getTenantId, tenantId)
-                .eq(LlmEndpoint::getEnabled, 1)
+                .eq(LlmEndpoint::getStatus, 1)
                 .orderByDesc(LlmEndpoint::getPriority)
                 .last("limit 1"));
     }

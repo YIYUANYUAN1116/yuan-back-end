@@ -1,15 +1,15 @@
 package com.yuan.ai.domain.vo;
 
-    import java.math.BigDecimal;
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.ChatMessage;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.ChatMessage;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 /**
@@ -22,8 +22,8 @@ import java.util.Date;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = ChatMessage.class)
 public class ChatMessageVo implements Serializable {
-
-    private Long id;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+     private Long id;
     /**
      * tenantId
      */

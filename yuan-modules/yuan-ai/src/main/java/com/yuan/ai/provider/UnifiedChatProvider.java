@@ -3,6 +3,8 @@ package com.yuan.ai.provider;
 import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.dto.ChatRequest;
+import com.yuan.ai.domain.vo.LlmProviderVo;
+import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.provider.builder.ChatMessageBuilder;
 import com.yuan.ai.provider.invoker.InvokerRegistry;
 import com.yuan.ai.provider.invoker.ProviderInvoker;
@@ -30,7 +32,7 @@ public class UnifiedChatProvider implements ChatProvider {
     private final LlmInvocationService invocationService;
     private final ChatMessageBuilder messageBuilder;
     private final InvokerRegistry invokerRegistry;
-
+    private final LlmProviderMapper providerMapper;
     @Override
     public SseEmitter chat(ChatRequest req, LlmEndpoint ep, LlmModel model,
                            long conversationId, long assistantMsgId, SseEmitter emitter) {

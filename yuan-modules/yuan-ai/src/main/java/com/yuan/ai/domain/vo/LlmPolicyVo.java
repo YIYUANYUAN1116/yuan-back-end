@@ -5,7 +5,8 @@ import com.yuan.ai.domain.LlmPolicy;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
-import lombok.Data;
+    import io.swagger.v3.oas.annotations.media.Schema;
+    import lombok.Data;
 
 import java.util.Date;
 
@@ -20,8 +21,8 @@ import java.util.Date;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = LlmPolicy.class)
 public class LlmPolicyVo implements Serializable {
-
-    private Long id;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+     private Long id;
     /**
      * tenantId
      */

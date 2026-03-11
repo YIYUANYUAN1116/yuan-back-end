@@ -4,9 +4,11 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.ai.domain.LlmModel;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -19,8 +21,11 @@ import java.io.Serializable;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = LlmModel.class)
 public class LlmModelVo implements Serializable {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+     private Long id;
 
-    private Long id;
+    private String endpointKey;
+
     /**
      * providerCode
      */
@@ -49,7 +54,15 @@ public class LlmModelVo implements Serializable {
     /**
      * enabled
      */
-    @ExcelProperty(value = "enabled")
-    private Integer enabled;
+    @ExcelProperty(value = "status")
+    private String status;
+
+    @ExcelProperty(value = "createTime")
+    private LocalDateTime createTime;
+    /**
+     * updateTime
+     */
+    @ExcelProperty(value = "updateTime")
+    private LocalDateTime updateTime;
 
 }

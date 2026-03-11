@@ -1,8 +1,10 @@
 package com.yuan.ai.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-import java.io.Serializable;
 
 /**
  * llm_model对象 llm_model
@@ -12,14 +14,18 @@ import java.io.Serializable;
  */
 @Data
 @TableName("llm_model")
-public class LlmModel implements Serializable {
+public class LlmModel extends BaseEntity {
 
 
     /**
      * id
      */
-        @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    private String tenantId;
+
+    private String endpointKey;
 
     /**
      * providerCode
@@ -49,7 +55,7 @@ public class LlmModel implements Serializable {
     /**
      * enabled
      */
-    private Integer enabled;
+    private String status;
 
 
 }

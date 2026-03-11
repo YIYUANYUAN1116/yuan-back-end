@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.ai.domain.ChatSession;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,8 +21,8 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = ChatSession.class)
 public class ChatSessionVo implements Serializable {
-
-    private Long id;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+     private Long id;
     /**
      * 用户id
      */

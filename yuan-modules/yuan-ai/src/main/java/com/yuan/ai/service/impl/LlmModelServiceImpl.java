@@ -65,7 +65,7 @@ public class LlmModelServiceImpl implements LlmModelService {
                     lqw.eq(StringUtils.isNotBlank(bo.getDisplayName()), LlmModel::getDisplayName, bo.getDisplayName());
                     lqw.eq(StringUtils.isNotBlank(bo.getCapabilityJson()), LlmModel::getCapabilityJson, bo.getCapabilityJson());
                     lqw.eq(bo.getContextWindow() != null, LlmModel::getContextWindow, bo.getContextWindow());
-                    lqw.eq(bo.getEnabled() != null, LlmModel::getEnabled, bo.getEnabled());
+                    lqw.eq(bo.getStatus() != null, LlmModel::getStatus, bo.getStatus());
         return lqw;
     }
 

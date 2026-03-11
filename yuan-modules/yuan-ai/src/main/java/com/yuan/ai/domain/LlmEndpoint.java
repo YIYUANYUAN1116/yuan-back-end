@@ -1,9 +1,10 @@
 package com.yuan.ai.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 
 /**
  * llm_endpoint对象 llm_endpoint
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("llm_endpoint")
-public class LlmEndpoint implements Serializable {
+public class LlmEndpoint extends BaseEntity {
 
 
     /**
@@ -31,6 +32,8 @@ public class LlmEndpoint implements Serializable {
      * front-end selection key
      */
     private String endpointKey;
+
+    private String endpointName;
 
     /**
      * providerCode
@@ -63,7 +66,7 @@ public class LlmEndpoint implements Serializable {
     /**
      * enabled
      */
-    private Integer enabled;
+    private String status;
 
     /**
      * priority
@@ -75,15 +78,6 @@ public class LlmEndpoint implements Serializable {
      */
     private String tagsJson;
 
-    /**
-     * createTime
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * updateTime
-     */
-    private LocalDateTime updateTime;
 
 
 }

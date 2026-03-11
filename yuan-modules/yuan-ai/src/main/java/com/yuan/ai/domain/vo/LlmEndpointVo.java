@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.yuan.ai.domain.LlmEndpoint;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,8 +21,8 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = LlmEndpoint.class)
 public class LlmEndpointVo implements Serializable {
-
-    private Long id;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+     private Long id;
     /**
      * tenantId
      */
@@ -32,6 +33,8 @@ public class LlmEndpointVo implements Serializable {
      */
     @ExcelProperty(value = "front-end selection key")
     private String endpointKey;
+
+    private String endpointName;
     /**
      * providerCode
      */
@@ -55,8 +58,8 @@ public class LlmEndpointVo implements Serializable {
     /**
      * enabled
      */
-    @ExcelProperty(value = "enabled")
-    private Integer enabled;
+    @ExcelProperty(value = "status")
+    private String status;
     /**
      * priority
      */

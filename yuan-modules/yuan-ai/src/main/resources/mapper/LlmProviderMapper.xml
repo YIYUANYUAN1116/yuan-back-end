@@ -4,4 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.ai.mapper.LlmProviderMapper">
 
+    <select id="selectProvider" resultType="com.yuan.common.core.domain.model.StrSelectModel">
+        select code as value,
+               name as label
+        from llm_provider
+        where del_flag = 0
+    </select>
 </mapper>

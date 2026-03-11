@@ -8,6 +8,7 @@ import com.yuan.ai.domain.dto.ChatRequest;
 import com.yuan.ai.provider.UnifiedChatProvider;
 import com.yuan.ai.service.*;
 import com.yuan.ai.support.SseHelper;
+import com.yuan.common.core.constant.SystemConstants;
 import com.yuan.common.satoken.utils.LoginHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class ChatServiceImpl implements ChatService {
         }
         // 2) load model
         LlmModel model = modelService.getById(ep.getDefaultModelId());
-        if (model == null || model.getEnabled() == null || model.getEnabled() != 1) {
+        if (model == null || model.getStatus() == null || !model.getStatus().equals(SystemConstants.NORMAL)) {
             sse.error(emitter, new IllegalArgumentException("Model disabled or not found: " + ep.getDefaultModelId()));
             return emitter;
         }

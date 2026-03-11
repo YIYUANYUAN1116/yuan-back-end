@@ -1,13 +1,14 @@
 package com.yuan.ai.domain.vo;
 
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.LlmProvider;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.LlmProvider;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -21,7 +22,7 @@ import java.util.Date;
 @ExcelIgnoreUnannotated
 @AutoMapper(target = LlmProvider.class)
 public class LlmProviderVo implements Serializable {
-
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
     /**
      * OPENAI_COMPAT/AZURE/OLLAMA/SELF_HOST
@@ -43,5 +44,8 @@ public class LlmProviderVo implements Serializable {
      */
     @ExcelProperty(value = "createTime")
     private LocalDateTime createTime;
-
+    private String remark;
+    private Long createBy;
+    private Long updateBy;
+    private Date updateTime;
 }

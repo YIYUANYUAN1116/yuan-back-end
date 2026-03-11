@@ -2,8 +2,12 @@ package com.yuan.ai.mapper;
 
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.vo.LlmModelVo;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.core.mapper.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * llm_modelMapper接口
@@ -14,4 +18,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface LlmModelMapper extends BaseMapperPlus<LlmModel, LlmModelVo> {
 
+    List<StrSelectModel> selectModel(@Param("endpointKey") String endpointKey);
 }

@@ -1,9 +1,10 @@
 package com.yuan.ai.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.yuan.core.domain.BaseEntity;
 import lombok.Data;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 
 /**
  * llm_provider对象 llm_provider
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("llm_provider")
-public class LlmProvider implements Serializable {
+public class LlmProvider extends BaseEntity {
 
 
     /**
@@ -37,10 +38,5 @@ public class LlmProvider implements Serializable {
      */
     private String protocol;
 
-    /**
-     * createTime
-     */
-    private LocalDateTime createTime;
-
-
+    private String remark;
 }

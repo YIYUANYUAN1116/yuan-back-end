@@ -5,7 +5,6 @@ import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,6 +27,8 @@ public class LlmModelBo implements Serializable {
      */
     @NotBlank(message = "providerCode不能为空", groups = { AddGroup.class, EditGroup.class })
     private String providerCode;
+
+    private String endpointKey;
     /**
      * remote model name, e.g. gpt-4o-mini
      */
@@ -40,7 +41,6 @@ public class LlmModelBo implements Serializable {
     /**
      * {"stream":true,"json":true,"tools":true,"vision":false,"thinking":false}
      */
-    @NotBlank(message = "capabilityJson不能为空", groups = { AddGroup.class, EditGroup.class })
     private String capabilityJson;
     /**
      * contextWindow
@@ -49,7 +49,6 @@ public class LlmModelBo implements Serializable {
     /**
      * enabled
      */
-    @NotNull(message = "enabled不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Integer enabled;
+    private String status;
 
 }

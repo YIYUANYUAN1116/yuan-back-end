@@ -3,8 +3,10 @@ package com.yuan.ai.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.ai.domain.bo.LlmProviderBo;
 import com.yuan.ai.domain.vo.LlmProviderVo;
+import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.service.LlmProviderService;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -41,6 +43,7 @@ import java.util.List;
 public class LlmProviderController extends BaseController {
 
     private final LlmProviderService llmProviderService;
+    private final LlmProviderMapper llmProviderMapper;
 
 /**
  * 查询llm_provider列表
@@ -114,4 +117,13 @@ public class LlmProviderController extends BaseController {
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(llmProviderService.deleteWithValidByIds(List.of(ids), true));
     }
+
+
+    @SaCheckPermission("ai:llmProvider:query")
+    @GetMapping("/selectProvider")
+    @Operation(summary = "获取供应商选择框列表",operationId = "selectProvider")
+    public R<List<StrSelectModel>> selectProvider() {
+        return R.ok(llmProviderMapper.selectProvider());
+    }
+
 }

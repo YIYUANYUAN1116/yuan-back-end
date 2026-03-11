@@ -3,8 +3,10 @@ package com.yuan.ai.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.ai.domain.bo.LlmEndpointBo;
 import com.yuan.ai.domain.vo.LlmEndpointVo;
+import com.yuan.ai.mapper.LlmEndpointMapper;
 import com.yuan.ai.service.LlmEndpointService;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -41,6 +43,7 @@ import java.util.List;
 public class LlmEndpointController extends BaseController {
 
     private final LlmEndpointService llmEndpointService;
+    private final LlmEndpointMapper llmEndpointMapper;
 
 /**
  * 查询llm_endpoint列表
@@ -113,5 +116,13 @@ public class LlmEndpointController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(llmEndpointService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+
+    @SaCheckPermission("ai:llmEndpoint:query")
+    @GetMapping("/selectEndpoint")
+    @Operation(summary = "获取供应商选择框列表",operationId = "selectEndpoint")
+    public R<List<StrSelectModel>> selectEndpoint(@RequestParam String providerCode) {
+        return R.ok(llmEndpointMapper.selectEndpoint(providerCode));
     }
 }
