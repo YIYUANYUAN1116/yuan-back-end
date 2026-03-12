@@ -1,4 +1,4 @@
-package com.yuan.workflow.core.engine.support;
+package com.yuan.workflow.core.engine.runtime.context;
 
 import com.yuan.workflow.domain.WfBizRef;
 import com.yuan.workflow.domain.WfDefinition;
@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
  */
 @Component
 @RequiredArgsConstructor
-public class WfContextLoader {
+public class RuntimeContextLoader {
   private final WfTaskMapper taskMapper;
   private final WfNodeInstanceMapper nodeInstanceMapper;
   private final WfInstanceMapper instanceMapper;

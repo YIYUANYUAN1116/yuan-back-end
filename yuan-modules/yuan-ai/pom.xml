@@ -89,6 +89,10 @@
             <groupId>com.yuan</groupId>
             <artifactId>yuan-common-oss</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-ai-api</artifactId>
+        </dependency>
 
     </dependencies>
 

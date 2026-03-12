@@ -1,12 +1,18 @@
 package com.yuan.workflow.core.engine.runtime;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.yuan.workflow.cmd.*;
+import com.yuan.workflow.cmd.ApproveCmd;
+import com.yuan.workflow.cmd.RejectCmd;
+import com.yuan.workflow.cmd.RollbackCmd;
+import com.yuan.workflow.cmd.WithdrawCmd;
+import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.exception.NodeInstanceConcurrentChangedException;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.enums.NodeStatus;
+import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.mapper.WfNodeInstanceMapper;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,6 +24,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class NodeInstanceStateManager {
     private final WfNodeInstanceMapper nodeInstanceMapper;
+    private final InstanceStateManager instanceStateManager;
 
     public void approve(WfNodeInstance node, ApproveCmd cmd){
         update(node,cmd);
@@ -31,9 +38,23 @@ public class NodeInstanceStateManager {
         update(node,cmd);
     }
 
-    public void autoApprove(WfNodeInstance node, WorkflowCmd cmd){
+    public void sysAutoApprove(WfNodeInstance node, WorkflowCmd cmd){
         cmd.setOperatorId(0L);
         cmd.setOperatorName("系统处理");
+        update(node,cmd);
+    }
+
+    public void aiCompleteAuto(WfNodeInstance node, WorkflowCmd cmd){
+        cmd.setOperatorId(0L);
+        cmd.setOperatorName("AI处理");
+        cmd.setComment("AI 处理成功");
+        update(node,cmd);
+    }
+
+    public void aiFailAuto(WfNodeInstance node, WorkflowCmd cmd){
+        cmd.setOperatorId(0L);
+        cmd.setOperatorName("AI处理");
+        cmd.setComment("AI 处理失败");
         update(node,cmd);
     }
 
@@ -69,4 +90,19 @@ public class NodeInstanceStateManager {
             throw new NodeInstanceConcurrentChangedException(id, NodeStatus.WAIT);
         }
     }
+
+
+
+    public WfNodeInstance createNodeInstance(Long instanceId, LfNode lfNode, NodeStatus nodeStatus) {
+        WfNodeInstance ni = new WfNodeInstance();
+        ni.setInstanceId(instanceId);
+        ni.setNodeKey(lfNode.getId());
+        ni.setNodeType(NodeType.of(lfNode.getProperties().getWfType()));
+        ni.setNodeName(lfNode.getText().getValue());
+        ni.setStatus(nodeStatus);
+        ni.setOrderNo(instanceStateManager.nextNodeOrderNo(instanceId));
+        nodeInstanceMapper.insert(ni);
+        return ni;
+    }
+
 }

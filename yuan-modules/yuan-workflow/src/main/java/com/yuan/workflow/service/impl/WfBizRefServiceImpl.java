@@ -116,20 +116,6 @@ public class WfBizRefServiceImpl implements WfBizRefService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
-    @Override
-    public void bindWfBizRef(StartCmd cmd, Long instanceId) {
-        WfBizRef ref = new WfBizRef();
-        ref.setBizType(cmd.getBizType());
-        ref.setBizId(cmd.getBizId());
-        ref.setBizNo(cmd.getBizNo());
-        ref.setInstanceId(instanceId);
-        ref.setStatus(InstanceStatus.RUNNING);
-        ref.setCreateBy(cmd.getStarterId());
-        ref.setRef_type("PRIMARY");
-        ref.setCreateTime(new Date());
-        ref.setUpdateTime(new Date());
-        baseMapper.insert(ref);
-    }
 
     @Override
     public List<WfBizRef> listByInstanceIds(Set<Long> instanceIds) {

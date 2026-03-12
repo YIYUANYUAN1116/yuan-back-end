@@ -5,8 +5,6 @@ import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.dto.SysUserDTO;
-import com.yuan.workflow.domain.WfInstance;
-import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfTaskBo;
 import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
 import com.yuan.workflow.domain.vo.WfTaskVo;
@@ -14,7 +12,6 @@ import com.yuan.workflow.domain.vo.WorkItemRowVO;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * wftService接口
@@ -53,8 +50,6 @@ public interface WfTaskService {
      * 校验并批量删除wft信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
-
-    void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds);
 
     TableDataInfo<WorkItemRowVO> myTask(WfWorklistQueryBo bo, PageQuery pageQuery);
 

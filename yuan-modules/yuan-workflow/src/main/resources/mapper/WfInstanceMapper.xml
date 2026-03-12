@@ -43,4 +43,10 @@
             </if>
         </where>
     </select>
+    <select id="selectByIdForUpdate" resultType="com.yuan.workflow.domain.WfInstance">
+        SELECT id, node_order_seq
+        FROM wf_instance
+        WHERE id = #{instanceId}
+            FOR UPDATE
+    </select>
 </mapper>
