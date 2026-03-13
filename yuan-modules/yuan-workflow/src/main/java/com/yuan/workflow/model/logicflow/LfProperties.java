@@ -1,5 +1,6 @@
 package com.yuan.workflow.model.logicflow;
 
+import com.yuan.workflow.core.engine.runtime.arrival.AiNodeConfig;
 import com.yuan.workflow.model.Expression;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class LfProperties {
     private String wfType;
     private LfAssignee assignee;
     private Expression condition;
+    private AiNodeConfig aiNodeConfig;
 }

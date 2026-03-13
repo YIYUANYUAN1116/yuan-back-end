@@ -9,4 +9,8 @@ public class WorkflowEngineException extends WorkflowException {
     public WorkflowEngineException() {
         super(WorkflowErrorCode.WF_ENGINE_ERROR);
     }
+
+    public WorkflowEngineException(String message) {
+        super(message);
+    }
 }

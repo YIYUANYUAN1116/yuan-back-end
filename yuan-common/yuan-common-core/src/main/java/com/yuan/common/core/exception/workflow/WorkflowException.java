@@ -16,4 +16,9 @@ public class WorkflowException extends RuntimeException {
         super(errorCode.getDefaultMessage(), cause);
         this.errorCode = errorCode;
     }
+
+    public WorkflowException(String message) {
+        super(message);
+        this.errorCode = null;
+    }
 }

@@ -1,4 +1,4 @@
-package com.yuan.ai.constant;
+package com.yuan.common.core.constant;
 
 public interface AiResolveSourceConstants {
 

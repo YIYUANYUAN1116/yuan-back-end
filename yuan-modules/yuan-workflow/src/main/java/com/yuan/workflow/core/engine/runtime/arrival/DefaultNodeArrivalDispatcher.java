@@ -17,7 +17,7 @@ public class DefaultNodeArrivalDispatcher implements NodeArrivalDispatcher {
 
     @Override
     public void onArrive(NodeArrivalContext context) {
-        String nodeType = context.getTargetNode().getType();
+        String nodeType = context.getTargetNode().getProperties().getWfType();
 
         for (NodeArrivalHandler handler : handlers) {
             if (handler.supports(nodeType)) {
