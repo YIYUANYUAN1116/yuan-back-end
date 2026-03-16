@@ -1,8 +1,10 @@
 package com.yuan.workflow.core.engine.runtime.arrival;
 
 
+import com.yuan.common.core.constant.AiBizTypeConstants;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
+import com.yuan.common.core.utils.TraceIdUtil;
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
 import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
@@ -11,13 +13,13 @@ import com.yuan.workflow.core.engine.runtime.WfEventManager;
 import com.yuan.workflow.core.engine.runtime.context.NodeArrivalContext;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
+import com.yuan.workflow.domain.dto.WfAiNodeRequest;
+import com.yuan.workflow.domain.dto.WfAiNodeResult;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -43,25 +45,36 @@ public class AiTaskArrivalHandler implements NodeArrivalHandler {
         WorkflowCmd cmd = context.getTriggerCmd();
 
         try {
+            WfAiNodeRequest request = new WfAiNodeRequest();
+            request.setInstanceId(instance.getId());
+            request.setNodeInstanceId(nodeInstance.getId());
+            request.setOperatorId(cmd.getOperatorId());
+            request.setTraceId(TraceIdUtil.newTraceIdPrefix(AiBizTypeConstants.WORKFLOW));
 
-            // 1. 执行 AI，拿到输出变量
-            Map<String, Object> aiVars = wfAiNodeService.execute(
-                    instance,
-                    nodeInstance,
-                    targetNode,
-                    context.getVariables()
-            );
+            request.setTemplateCode("");
+            request.setTemplateContent("");
+            request.setSystemPrompt("");
+            request.setEndpointKey("");
+            request.setAutoSelectModel(Boolean.TRUE);
+            request.setEnableThinking(true);
 
-            // 3. 写回流程变量
-            if (aiVars != null && !aiVars.isEmpty()) {
-                variableManager.mergeAndSave(instance, aiVars);
+            request.setVariables(context.getVariables());
+
+            WfAiNodeResult result = wfAiNodeService.analyze(request);
+
+            if (!Boolean.TRUE.equals(result.getSuccess())) {
+                throw new IllegalStateException("AI节点执行失败: " + result.getErrorMessage());
+            }
+
+            if (result.getOutputVariables() != null && !result.getOutputVariables().isEmpty()) {
+                variableManager.mergeAndSave(instance, result.getOutputVariables());
             }
 
 
-            // 4. 完成节点
+            // 3. 完成节点
             nodeInstanceStateManager.aiCompleteAuto(nodeInstance,cmd);
 
-            // 5. 继续推进
+            // 4. 继续推进
             processAdvancer.advance(nodeInstance, context.getTriggerCmd());
 
         } catch (Exception e) {

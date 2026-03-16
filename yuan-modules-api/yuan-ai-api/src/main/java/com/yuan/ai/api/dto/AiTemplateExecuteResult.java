@@ -1,53 +1,51 @@
 package com.yuan.ai.api.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 @Data
+@Builder
 public class AiTemplateExecuteResult {
 
-    /**
-     * PASS / REVIEW / REJECT
-     */
-    private String decision;
+    private Boolean success;
 
     /**
-     * 评分
+     * 最终渲染后的 prompt
      */
-    private BigDecimal score;
+    private String prompt;
 
     /**
-     * 摘要
+     * 模型返回内容
      */
-    private String summary;
+    private String content;
 
     /**
-     * 问题列表
+     * 调用记录ID
      */
-    private List<Map<String, Object>> issues;
+    private Long invocationId;
 
     /**
-     * 原始文本
+     * 使用的 endpoint
      */
-    private String rawText;
+    private String endpointKey;
 
     /**
-     * 原始结构化 JSON
-     */
-    private Map<String, Object> rawJson;
-
-    /**
-     * 实际命中的 provider / model，便于审计和排查
+     * 使用的 provider
      */
     private String providerCode;
 
-    private String modelCode;
+    /**
+     * 使用的 model
+     */
+    private String modelName;
 
     /**
-     * 命中来源：REQUEST / TENANT_SCENE / PLATFORM_SCENE / TEMPLATE_DEFAULT / GLOBAL_DEFAULT
+     * 耗时
      */
-    private String resolveSource;
+    private Integer latencyMs;
+
+    /**
+     * 错误信息
+     */
+    private String errorMessage;
 }

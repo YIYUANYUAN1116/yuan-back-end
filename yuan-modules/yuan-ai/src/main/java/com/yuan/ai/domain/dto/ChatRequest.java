@@ -40,4 +40,17 @@ public class ChatRequest {
     private Boolean enableThinking = Boolean.FALSE;
 
     private String token;
+
+    private Boolean persistChatMessage;
+    private String sceneCode;
+    private String bizType;
+    private Long bizId;
+
+    //persistChatMessage = false
+    //sceneCode = "workflow_ai"
+    //bizType = "workflow"
+    //bizId = instanceId
+
+    //persistChatMessage = true
+    //sceneCode = "chat"
 }

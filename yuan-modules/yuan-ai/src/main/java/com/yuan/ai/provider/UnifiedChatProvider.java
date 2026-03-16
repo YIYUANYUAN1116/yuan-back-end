@@ -1,9 +1,10 @@
 package com.yuan.ai.provider;
 
+import com.yuan.ai.api.dto.ChatExecuteResult;
 import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
+import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
-import com.yuan.ai.domain.vo.LlmProviderVo;
 import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.provider.builder.ChatMessageBuilder;
 import com.yuan.ai.provider.invoker.InvokerRegistry;
@@ -34,10 +35,13 @@ public class UnifiedChatProvider implements ChatProvider {
     private final InvokerRegistry invokerRegistry;
     private final LlmProviderMapper providerMapper;
     @Override
-    public SseEmitter chat(ChatRequest req, LlmEndpoint ep, LlmModel model,
-                           long conversationId, long assistantMsgId, SseEmitter emitter) {
+    public SseEmitter stream(ChatRequest req, ChatPrepareContext ctx, SseEmitter emitter) {
 
         sse.init(emitter);
+        LlmEndpoint ep = ctx.getEndpoint();
+        LlmModel model = ctx.getModel();
+        Long assistantMsgId = ctx.getAssistantMsgId();
+        Long conversationId = ctx.getConversationId();
 
         chatTaskExecutor.execute(() -> {
             long t0 = System.currentTimeMillis();
@@ -104,6 +108,77 @@ public class UnifiedChatProvider implements ChatProvider {
         });
 
         return emitter;
+    }
+
+    @Override
+    public ChatExecuteResult call(ChatRequest req, ChatPrepareContext ctx) {
+        long t0 = System.currentTimeMillis();
+        String tenantId = req.getTenantId();
+        LlmEndpoint ep = ctx.getEndpoint();
+        LlmModel model = ctx.getModel();
+        Long assistantMsgId = ctx.getAssistantMsgId();
+        Long conversationId = ctx.getConversationId();
+        String traceId = req.getTraceId();
+        String endpointKey = ep.getEndpointKey();
+        String providerCode = ep.getProviderCode();
+        String modelName = model.getModelName();
+
+        long invId = invocationService.begin(
+                tenantId, traceId, endpointKey, providerCode, modelName,
+                conversationId, assistantMsgId,
+                new LinkedHashMap<>() {{
+                    put("messages", req.getMessages());
+                    put("systemPrompt", req.getSystemPrompt());
+                    put("prompt", req.getPrompt());
+                    put("stream", false);
+                    put("enableThinking", req.getEnableThinking());
+                    put("sceneCode", req.getSceneCode());
+                    put("bizType", req.getBizType());
+                    put("bizId", req.getBizId());
+                }}
+        );
+
+        if (assistantMsgId != null) {
+            messageService.bindInvocation(assistantMsgId, invId);
+        }
+
+        try {
+            ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
+            List<Message> messages = messageBuilder.build(req);
+
+            String content = Objects.toString(invoker.call(req, ep, model, messages), "");
+
+            if (assistantMsgId != null) {
+                messageService.finishAssistant(assistantMsgId, content);
+            }
+
+            invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0));
+
+            return ChatExecuteResult.builder()
+                    .success(true)
+                    .content(content)
+                    .invocationId(invId)
+                    .modelName(modelName)
+                    .latencyMs((int) (System.currentTimeMillis() - t0))
+                    .build();
+
+        } catch (Exception e) {
+            String err = buildErrorMessage(e);
+
+            if (assistantMsgId != null) {
+                messageService.failAssistant(assistantMsgId, "", err);
+            }
+
+            invocationService.fail(invId, err, (int) (System.currentTimeMillis() - t0));
+
+            return ChatExecuteResult.builder()
+                    .success(false)
+                    .invocationId(invId)
+                    .modelName(modelName)
+                    .errorMessage(err)
+                    .latencyMs((int) (System.currentTimeMillis() - t0))
+                    .build();
+        }
     }
 
     private String buildErrorMessage(Throwable e) {

@@ -8,52 +8,77 @@ import java.util.Map;
 public class AiTemplateExecuteRequest {
 
     /**
-     * 租户ID
-     */
-    private String tenantId;
-
-    /**
-     * 业务类型，例如 WORKFLOW / OA / SYSTEM
-     */
-    private String bizType;
-
-    /**
-     * 场景码，例如 WORKFLOW_NODE / CHAT_DEFAULT
-     */
-    private String sceneCode;
-
-    /**
      * 模板编码
      */
     private String templateCode;
 
     /**
-     * 模型编码，可为空；为空则由AI模块自动选择
+     * 直接传模板内容，可选；有值时优先使用
      */
-    private String modelCode;
+    private String templateContent;
+
+    /**
+     * 模板变量
+     */
+    private Map<String, Object> variables;
+
+    /**
+     * 系统提示词
+     */
+    private String systemPrompt;
+
+    /**
+     * 逻辑模型编码，可选
+     */
+    private String endpointKey;
+
+    /**
+     * 是否自动选模型
+     */
+    private Boolean autoSelectModel = Boolean.TRUE;
+
+    /**
+     * 场景编码
+     */
+    private String sceneCode;
+
+    /**
+     * 业务类型
+     */
+    private String bizType;
 
     /**
      * 业务ID
      */
-    private String bizId;
+    private Long bizId;
 
     /**
-     * 操作人ID
+     * 操作人
      */
-    private Long operatorId;
+    private Long userId;
 
     /**
-     * 模板参数
+     * 应用ID
      */
-    private Map<String, Object> params;
+    private String appId;
 
     /**
-     * 是否期望 JSON 输出
+     * traceId
      */
-    private Boolean jsonOutput;
+    private String traceId;
 
     /**
-     * 超时
+     * 是否保留 chat message，workflow 通常 false
      */
-    private Integer timeoutMs;
+    private Boolean persistChatMessage = Boolean.FALSE;
+
+    /**
+     * 是否开启思维链式能力之类的模型参数
+     */
+    private Boolean enableThinking;
+
+    /**
+     * 扩展参数
+     */
+    private Map<String, Object> ext;
 }

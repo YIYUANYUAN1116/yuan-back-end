@@ -82,46 +82,6 @@ public class ProcessAdvancer {
 
         // 3. 分发处理
         nodeArrivalDispatcher.onArrive(context);
-
-//        if (flowParser.isGateway(lfNode)) {
-//            List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
-//            nodeInstanceStateManager.autoApprove(currentNode, cmd);
-//            for (LfNode next : nodeList) {
-//                cmd.setComment(null);
-//                String conditionExpr = flowParser.parseConditionExpr(next);
-//                transitionLogManager.transitionLog(instance, currentNode, next, TransitionAction.GATEWAY, OperatorType.SYSTEM, cmd, conditionExpr, vars);
-//                advanceToTarget(instance, def, next, cmd, vars);
-//            }
-//            return;
-//        }
-//
-//
-//        if (flowParser.isUserTask(lfNode)) {
-//            Set<Long> userIds = assigneeResolver.resolve(lfNode);
-//            wfTaskService.createTasks(instance, currentNode, userIds);
-//            return;
-//        }
-//
-//        if (flowParser.isEnd(lfNode)) {
-//            nodeInstanceStateManager.autoApprove(currentNode, cmd);
-//            instanceStateManager.approve(instance, cmd);
-//            wfEventManager.approve(instance,cmd.getOperatorId());
-//            cmd.setComment(null);
-//            transitionLogManager.transitionLog(instance, currentNode, null, TransitionAction.END, OperatorType.SYSTEM, cmd, null, null);
-//            return;
-//        }
-//
-//        if (flowParser.isSystem(lfNode)) {
-//            //todo 系统节点
-//            log.info("[advanceToTarget] LfNode type is system_task instance id:{}, lfNode:{}"
-//                    , instance.getId(), lfNode);
-//            return;
-//        }
-//
-//        log.error("[advanceToTarget] LfNode type invalid instance id:{}, lfNode:{}"
-//                , instance.getId(), lfNode);
-//        throw new WorkflowException(WorkflowErrorCode.WF_NODE_TYPE_INVALID);
-
     }
 
 
