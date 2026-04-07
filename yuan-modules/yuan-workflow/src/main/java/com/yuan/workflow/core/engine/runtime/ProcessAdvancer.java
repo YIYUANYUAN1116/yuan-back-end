@@ -81,7 +81,13 @@ public class ProcessAdvancer {
                 .build();
 
         // 3. 分发处理
-        nodeArrivalDispatcher.onArrive(context);
+        List<LfNode> lfNodes = nodeArrivalDispatcher.onArrive(context);
+
+        if (lfNodes != null && !lfNodes.isEmpty()){
+            for (LfNode node : lfNodes) {
+                advanceToTarget(instance, def, node, cmd, vars);
+            }
+        }
     }
 
 

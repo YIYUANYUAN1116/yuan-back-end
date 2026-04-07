@@ -12,8 +12,11 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.enums.OperatorType;
 import com.yuan.workflow.enums.TransitionAction;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class EndArrivalHandler implements NodeArrivalHandler {
     }
 
     @Override
-    public void handle(NodeArrivalContext context) {
+    public List<LfNode> handle(NodeArrivalContext context) {
         WfInstance instance = context.getInstance();
         WfNodeInstance nodeInstance = context.getTargetNodeInstance();
         WorkflowCmd cmd = context.getTriggerCmd();
@@ -49,6 +52,6 @@ public class EndArrivalHandler implements NodeArrivalHandler {
         wfEventManager.approve(instance, cmd.getOperatorId());
         cmd.setComment(null);
         transitionLogManager.transitionLog(instance, nodeInstance, null, TransitionAction.END, OperatorType.SYSTEM, cmd, null, null);
-
+        return null;
     }
 }

@@ -11,6 +11,7 @@ import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class UserTaskArrivalHandler implements NodeArrivalHandler {
     }
 
     @Override
-    public void handle(NodeArrivalContext context) {
+    public List<LfNode> handle(NodeArrivalContext context) {
         WfInstance instance = context.getInstance();
         WfNodeInstance nodeInstance = context.getTargetNodeInstance();
         LfNode targetNode = context.getTargetNode();
@@ -52,5 +53,6 @@ public class UserTaskArrivalHandler implements NodeArrivalHandler {
 
         Set<Long> userIds = assigneeResolver.resolve(targetNode);
         taskStateManager.createTodoTasks(instance, nodeInstance, userIds);
+        return null;
     }
 }

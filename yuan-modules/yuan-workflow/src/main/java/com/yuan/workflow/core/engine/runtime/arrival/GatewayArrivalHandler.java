@@ -2,7 +2,6 @@ package com.yuan.workflow.core.engine.runtime.arrival;
 
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
-import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
 import com.yuan.workflow.core.engine.runtime.TransitionLogManager;
 import com.yuan.workflow.core.engine.runtime.context.NodeArrivalContext;
 import com.yuan.workflow.core.parser.FlowParser;
@@ -26,7 +25,6 @@ public class GatewayArrivalHandler implements NodeArrivalHandler {
     private final FlowParser flowParser;
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final TransitionLogManager  transitionLogManager;
-    private final ProcessAdvancer processAdvancer;
 
     @Override
     public boolean supports(String nodeType) {
@@ -34,7 +32,7 @@ public class GatewayArrivalHandler implements NodeArrivalHandler {
     }
 
     @Override
-    public void handle(NodeArrivalContext context) {
+    public List<LfNode> handle(NodeArrivalContext context) {
         WfDefinition def = context.getDefinition();
         LfNode lfNode = context.getTargetNode();
         Map<String, Object> vars = context.getVariables();
@@ -45,10 +43,10 @@ public class GatewayArrivalHandler implements NodeArrivalHandler {
         List<LfNode> nodeList = flowParser.getNextNode(def, lfNode, vars);
         nodeInstanceStateManager.sysAutoApprove(nodeInstance, cmd);
         for (LfNode next : nodeList) {
-            cmd.setComment(null);
             String conditionExpr = flowParser.parseConditionExpr(next);
             transitionLogManager.transitionLog(instance, nodeInstance, next, TransitionAction.GATEWAY, OperatorType.SYSTEM, cmd, conditionExpr, vars);
-            processAdvancer.advanceToTarget(instance, def, next, cmd, vars);
+//            processAdvancer.advanceToTarget(instance, def, next, cmd, vars);
         }
+        return nodeList;
     }
 }

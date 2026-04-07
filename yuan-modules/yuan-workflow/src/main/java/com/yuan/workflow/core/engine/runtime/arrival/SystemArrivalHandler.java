@@ -2,9 +2,12 @@ package com.yuan.workflow.core.engine.runtime.arrival;
 
 import com.yuan.workflow.core.engine.runtime.context.NodeArrivalContext;
 import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -17,7 +20,8 @@ public class SystemArrivalHandler implements NodeArrivalHandler{
     }
 
     @Override
-    public void handle(NodeArrivalContext context) {
+    public List<LfNode> handle(NodeArrivalContext context) {
         log.info("SystemArrivalHandler handle");
+        return null;
     }
 }

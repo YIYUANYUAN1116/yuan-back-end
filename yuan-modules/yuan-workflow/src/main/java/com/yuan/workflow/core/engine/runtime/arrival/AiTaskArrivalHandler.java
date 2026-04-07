@@ -7,19 +7,25 @@ import com.yuan.common.core.exception.workflow.WorkflowException;
 import com.yuan.common.core.utils.TraceIdUtil;
 import com.yuan.workflow.cmd.WorkflowCmd;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
-import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
+import com.yuan.workflow.core.engine.runtime.TransitionLogManager;
 import com.yuan.workflow.core.engine.runtime.VariableManager;
 import com.yuan.workflow.core.engine.runtime.WfEventManager;
 import com.yuan.workflow.core.engine.runtime.context.NodeArrivalContext;
+import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.dto.WfAiNodeRequest;
 import com.yuan.workflow.domain.dto.WfAiNodeResult;
 import com.yuan.workflow.domain.enums.NodeType;
+import com.yuan.workflow.enums.OperatorType;
+import com.yuan.workflow.enums.TransitionAction;
 import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -28,9 +34,10 @@ public class AiTaskArrivalHandler implements NodeArrivalHandler {
 
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final VariableManager variableManager;
-    private final ProcessAdvancer processAdvancer;
     private final WfAiNodeService wfAiNodeService;
     private final WfEventManager wfEventManager;
+    private final FlowParser flowParser;
+    private final TransitionLogManager transitionLogManager;
 
     @Override
     public boolean supports(String nodeType) {
@@ -38,7 +45,7 @@ public class AiTaskArrivalHandler implements NodeArrivalHandler {
     }
 
     @Override
-    public void handle(NodeArrivalContext context) {
+    public List<LfNode> handle(NodeArrivalContext context) {
         WfInstance instance = context.getInstance();
         WfNodeInstance nodeInstance = context.getTargetNodeInstance();
         LfNode targetNode = context.getTargetNode();
@@ -73,9 +80,14 @@ public class AiTaskArrivalHandler implements NodeArrivalHandler {
 
             // 3. 完成节点
             nodeInstanceStateManager.aiCompleteAuto(nodeInstance,cmd);
+            Map<String, Object> vars = variableManager.getVars(instance);
+            List<LfNode> nextNode = flowParser.getNextNode(context.getDefinition(), targetNode, vars);
+            for (LfNode next : nextNode) {
+                transitionLogManager.transitionLog(instance, nodeInstance, next, TransitionAction.AI_SUGGEST, OperatorType.SYSTEM, cmd, null, vars);
 
-            // 4. 继续推进
-            processAdvancer.advance(nodeInstance, context.getTriggerCmd());
+            }
+
+            return nextNode;
 
         } catch (Exception e) {
             nodeInstanceStateManager.aiFailAuto(nodeInstance, cmd);

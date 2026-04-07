@@ -4,6 +4,7 @@ package com.yuan.workflow.core.engine.runtime.arrival;
 import com.yuan.common.core.exception.workflow.WorkflowErrorCode;
 import com.yuan.common.core.exception.workflow.WorkflowException;
 import com.yuan.workflow.core.engine.runtime.context.NodeArrivalContext;
+import com.yuan.workflow.model.logicflow.LfNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +17,12 @@ public class DefaultNodeArrivalDispatcher implements NodeArrivalDispatcher {
     private final List<NodeArrivalHandler> handlers;
 
     @Override
-    public void onArrive(NodeArrivalContext context) {
+    public List<LfNode> onArrive(NodeArrivalContext context) {
         String nodeType = context.getTargetNode().getProperties().getWfType();
 
         for (NodeArrivalHandler handler : handlers) {
             if (handler.supports(nodeType)) {
-                handler.handle(context);
-                return;
+                return handler.handle(context);
             }
         }
 
