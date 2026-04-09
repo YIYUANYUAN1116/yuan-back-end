@@ -72,8 +72,6 @@ yuan-oa # 业务模块
 - ProviderInvoker（模型执行层）
 - InvokerRegistry（多模型路由）
 
-> AI 在系统中作为“辅助能力”，不直接参与业务决策，保证系统可控性与可审计性。
-
 ---
 
 ## 🔌 核心特性
@@ -97,15 +95,12 @@ yuan-oa # 业务模块
 ---
 
 ## 📌 后续规划
-
-- 多租户支持
 - 模型路由策略优化
-- 工作流可视化设计器
 - AI 辅助决策能力（增强审计能力）
 
 ---
 
-📖 License
+## 📖 License
 MIT License
-👤 作者
+## 👤 作者
 Yuan Aaron
