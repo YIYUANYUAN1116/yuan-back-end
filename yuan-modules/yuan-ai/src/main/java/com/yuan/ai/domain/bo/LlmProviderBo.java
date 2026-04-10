@@ -27,12 +27,12 @@ public class LlmProviderBo implements Serializable {
      * OPENAI_COMPAT/AZURE/OLLAMA/SELF_HOST
      */
     @NotBlank(message = "code不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String code;
+    private String providerCode;
     /**
      * name
      */
     @NotBlank(message = "name不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String name;
+    private String providerName;
     /**
      * openai_compat/azure/ollama/...
      */

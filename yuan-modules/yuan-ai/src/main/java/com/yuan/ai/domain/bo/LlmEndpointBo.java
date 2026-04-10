@@ -35,6 +35,8 @@ public class LlmEndpointBo implements Serializable {
     private String endpointName;
 
     private Long providerId;
+
+    private String providerName;
     /**
      * OpenAI-compatible baseUrl like https://api.openai.com or http://localhost:11434/v1
      */

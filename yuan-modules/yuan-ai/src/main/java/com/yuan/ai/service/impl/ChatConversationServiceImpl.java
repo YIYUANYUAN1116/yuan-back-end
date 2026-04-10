@@ -69,6 +69,7 @@ public class ChatConversationServiceImpl implements ChatConversationService {
                     lqw.eq(bo.getLastMessageAt() != null, ChatConversation::getLastMessageAt, bo.getLastMessageAt());
                     lqw.eq(bo.getCreateTime() != null, ChatConversation::getCreateTime, bo.getCreateTime());
                     lqw.eq(bo.getUpdateTime() != null, ChatConversation::getUpdateTime, bo.getUpdateTime());
+                    lqw.orderByDesc(ChatConversation::getCreateTime);
         return lqw;
     }
 

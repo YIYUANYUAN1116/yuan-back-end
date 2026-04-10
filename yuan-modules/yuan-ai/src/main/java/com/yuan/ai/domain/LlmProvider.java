@@ -26,12 +26,12 @@ public class LlmProvider extends BaseEntity {
     /**
      * OPENAI_COMPAT/AZURE/OLLAMA/SELF_HOST
      */
-    private String code;
+    private String providerCode;
 
     /**
      * name
      */
-    private String name;
+    private String providerName;
 
     /**
      * openai_compat/azure/ollama/...

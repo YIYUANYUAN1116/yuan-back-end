@@ -48,7 +48,7 @@ public class SpringAiChatClientInvoker implements ProviderInvoker {
 
     private ChatClient getOrCreate(LlmEndpoint ep, LlmModel model) {
         LlmProviderVo providerVo = providerMapper.selectVoById(ep.getProviderId());
-        String providerCode = StringUtils.trimToEmpty(providerVo.getCode()).toUpperCase();
+        String providerCode = StringUtils.trimToEmpty(providerVo.getProviderCode()).toUpperCase();
         SpringAiChatClientFactory factory = factories.stream()
                 .filter(f -> f.supports(providerCode))
                 .findFirst()

@@ -26,11 +26,15 @@ public class LlmModelVo implements Serializable {
 
     private String endpointName;
 
+    private Long endpointId;
+
     /**
      * providerCode
      */
     @ExcelProperty(value = "providerName")
     private String providerName;
+
+    private Long providerId;
     /**
      * remote model name, e.g. gpt-4o-mini
      */

@@ -53,7 +53,7 @@ public class UnifiedChatProvider implements ChatProvider {
             Long providerId = ep.getProviderId();
             String modelName = model.getModelName();
             LlmProviderVo llmProviderVo = providerMapper.selectVoById(providerId);
-            String providerCode = llmProviderVo.getCode();
+            String providerCode = llmProviderVo.getProviderCode();
             long invId = invocationService.begin(
                     tenantId, traceId, ep.getId(), providerId, modelName,
                     conversationId, assistantMsgId,
@@ -147,7 +147,7 @@ public class UnifiedChatProvider implements ChatProvider {
 
         try {
             LlmProviderVo llmProviderVo = providerMapper.selectVoById(providerId);
-            String providerCode = llmProviderVo.getCode();
+            String providerCode = llmProviderVo.getProviderCode();
             ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
             List<Message> messages = messageBuilder.build(req);
 

@@ -28,12 +28,12 @@ public class LlmProviderVo implements Serializable {
      * OPENAI_COMPAT/AZURE/OLLAMA/SELF_HOST
      */
     @ExcelProperty(value = "OPENAI_COMPAT/AZURE/OLLAMA/SELF_HOST")
-    private String code;
+    private String providerCode;
     /**
      * name
      */
     @ExcelProperty(value = "name")
-    private String name;
+    private String providerName;
     /**
      * openai_compat/azure/ollama/...
      */

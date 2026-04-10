@@ -60,8 +60,8 @@ public class LlmProviderServiceImpl implements LlmProviderService {
     private LambdaQueryWrapper<LlmProvider> buildQueryWrapper(LlmProviderBo bo) {
         LambdaQueryWrapper<LlmProvider> lqw = Wrappers.lambdaQuery();
                     lqw.eq(bo.getId() != null, LlmProvider::getId, bo.getId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getCode()), LlmProvider::getCode, bo.getCode());
-                    lqw.eq(StringUtils.isNotBlank(bo.getName()), LlmProvider::getName, bo.getName());
+                    lqw.eq(StringUtils.isNotBlank(bo.getProviderCode()), LlmProvider::getProviderCode, bo.getProviderCode());
+                    lqw.eq(StringUtils.isNotBlank(bo.getProviderName()), LlmProvider::getProviderName, bo.getProviderName());
                     lqw.eq(StringUtils.isNotBlank(bo.getProtocol()), LlmProvider::getProtocol, bo.getProtocol());
                     lqw.eq(bo.getCreateTime() != null, LlmProvider::getCreateTime, bo.getCreateTime());
         return lqw;

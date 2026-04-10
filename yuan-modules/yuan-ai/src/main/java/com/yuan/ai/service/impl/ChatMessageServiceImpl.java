@@ -77,6 +77,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     lqw.eq(StringUtils.isNotBlank(bo.getErrorMsg()), ChatMessage::getErrorMsg, bo.getErrorMsg());
                     lqw.eq(bo.getCreateTime() != null, ChatMessage::getCreateTime, bo.getCreateTime());
                     lqw.eq(bo.getUpdateTime() != null, ChatMessage::getUpdateTime, bo.getUpdateTime());
+
+        lqw.orderByAsc(ChatMessage::getCreateTime);
+        lqw.orderByAsc(ChatMessage::getId);
         return lqw;
     }
 

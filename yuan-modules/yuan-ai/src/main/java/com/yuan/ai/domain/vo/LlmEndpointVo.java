@@ -39,6 +39,7 @@ public class LlmEndpointVo implements Serializable {
      * providerCode
      */
     private String providerName;
+    private Long providerId;
     /**
      * OpenAI-compatible baseUrl like https://api.openai.com or http://localhost:11434/v1
      */

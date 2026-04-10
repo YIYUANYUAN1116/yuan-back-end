@@ -43,8 +43,9 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
          */
         @Override
         public TableDataInfo<LlmEndpointVo> queryPageList(LlmEndpointBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<LlmEndpoint> lqw = buildQueryWrapper(bo);
-            Page<LlmEndpointVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+//            LambdaQueryWrapper<LlmEndpoint> lqw = buildQueryWrapper(bo);
+//            Page<LlmEndpointVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            Page<LlmEndpointVo> result = baseMapper.selectEndpointVoPage(pageQuery.build(), bo);
             return TableDataInfo.build(result);
         }
 

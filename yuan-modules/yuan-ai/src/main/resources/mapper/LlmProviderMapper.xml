@@ -6,7 +6,7 @@
 
     <select id="selectProvider" resultType="com.yuan.common.core.domain.model.SelectModel">
         select id as value,
-               name as label
+               provider_name as label
         from llm_provider
         where del_flag = 0
     </select>

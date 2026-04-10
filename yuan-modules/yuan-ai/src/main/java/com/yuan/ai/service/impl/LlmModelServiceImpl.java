@@ -44,7 +44,8 @@ public class LlmModelServiceImpl implements LlmModelService {
         @Override
         public TableDataInfo<LlmModelVo> queryPageList(LlmModelBo bo, PageQuery pageQuery) {
             LambdaQueryWrapper<LlmModel> lqw = buildQueryWrapper(bo);
-            Page<LlmModelVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+//            Page<LlmModelVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            Page<LlmModelVo> result = baseMapper.selectModelVoPage(bo,pageQuery.build());
             return TableDataInfo.build(result);
         }
 
