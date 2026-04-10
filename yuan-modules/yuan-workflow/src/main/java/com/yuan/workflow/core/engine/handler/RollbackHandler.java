@@ -1,18 +1,15 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.RollbackCmd;
-import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
 import com.yuan.workflow.core.engine.runtime.TaskStateManager;
-import com.yuan.workflow.core.engine.runtime.VariableManager;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
-import com.yuan.workflow.core.parser.FlowParser;
+import com.yuan.workflow.core.engine.runtime.context.RuntimeContextLoader;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
-import com.yuan.workflow.service.WfTransitionLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,20 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
 
-    private final WfContextLoader contextLoader;
-    private final VariableManager variableManager;
+    private final RuntimeContextLoader contextLoader;
     private final TaskStateManager taskStateManager;
     private final WfOperationGuard wfOperationGuard;
-    private final FlowParser flowParser;
     private final NodeInstanceStateManager nodeInstanceStateManager;
-    private final InstanceTransitionManager instanceTransitionManager;
-    private final WfTransitionLogService transitionLogService;
+    private final ProcessAdvancer processAdvancer;
 
     @Override
     @Transactional
     public Void handle(RollbackCmd cmd) {
 
-        WfContextLoader.TaskCtx taskCtx = contextLoader.loadTaskCtx(cmd.getTaskId());
+        RuntimeContextLoader.TaskCtx taskCtx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = taskCtx.task();
         WfDefinition def = taskCtx.def();
         WfNodeInstance node = taskCtx.node();
@@ -54,7 +48,7 @@ public class RollbackHandler implements CommandHandler<RollbackCmd,Void>{
         //修改节点状态
         nodeInstanceStateManager.rollback(node,cmd);
 
-        instanceTransitionManager.rollback(def,instance,node,cmd);
+        processAdvancer.rollback(def,instance,node,cmd);
 
         return null;
     }

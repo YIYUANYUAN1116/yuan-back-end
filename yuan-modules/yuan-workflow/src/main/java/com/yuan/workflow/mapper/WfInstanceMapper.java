@@ -25,4 +25,6 @@ public interface WfInstanceMapper extends BaseMapperPlus<WfInstance, WfInstanceV
                                        @Param("bo") WfWorklistQueryBo bo,
                                        @Param("isSuperAdmin") boolean isSuperAdmin,
                                        @Param("userId")Long userId);
+
+    WfInstance selectByIdForUpdate(@Param("instanceId") Long instanceId);
 }

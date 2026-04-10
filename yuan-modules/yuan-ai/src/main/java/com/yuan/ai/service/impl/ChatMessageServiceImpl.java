@@ -15,14 +15,15 @@ import com.yuan.core.page.TableDataInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * chat-messageService业务层处理
+ * chat_messageService业务层处理
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 @RequiredArgsConstructor
 @Service
@@ -31,7 +32,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatMessageMapper baseMapper;
 
     /**
-     * 查询chat-message
+     * 查询chat_message
      */
     @Override
     public ChatMessageVo queryById(Long id) {
@@ -39,7 +40,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
         /**
-         * 查询chat-message列表
+         * 查询chat_message列表
          */
         @Override
         public TableDataInfo<ChatMessageVo> queryPageList(ChatMessageBo bo, PageQuery pageQuery) {
@@ -49,7 +50,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         }
 
     /**
-     * 查询chat-message列表
+     * 查询chat_message列表
      */
     @Override
     public List<ChatMessageVo> queryList(ChatMessageBo bo) {
@@ -60,25 +61,30 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private LambdaQueryWrapper<ChatMessage> buildQueryWrapper(ChatMessageBo bo) {
         LambdaQueryWrapper<ChatMessage> lqw = Wrappers.lambdaQuery();
                     lqw.eq(bo.getId() != null, ChatMessage::getId, bo.getId());
-                    lqw.eq(bo.getSessionId() != null, ChatMessage::getSessionId, bo.getSessionId());
+                    lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), ChatMessage::getTenantId, bo.getTenantId());
+                    lqw.eq(bo.getConversationId() != null, ChatMessage::getConversationId, bo.getConversationId());
                     lqw.eq(bo.getUserId() != null, ChatMessage::getUserId, bo.getUserId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getContent()), ChatMessage::getContent, bo.getContent());
                     lqw.eq(StringUtils.isNotBlank(bo.getRole()), ChatMessage::getRole, bo.getRole());
-                    lqw.eq(bo.getDeductCost() != null, ChatMessage::getDeductCost, bo.getDeductCost());
-                    lqw.eq(bo.getTotalTokens() != null, ChatMessage::getTotalTokens, bo.getTotalTokens());
-                    lqw.eq(StringUtils.isNotBlank(bo.getModelName()), ChatMessage::getModelName, bo.getModelName());
-                    lqw.eq(bo.getCreateDept() != null, ChatMessage::getCreateDept, bo.getCreateDept());
-                    lqw.eq(bo.getCreateBy() != null, ChatMessage::getCreateBy, bo.getCreateBy());
+                    lqw.eq(StringUtils.isNotBlank(bo.getContent()), ChatMessage::getContent, bo.getContent());
+                    lqw.eq(StringUtils.isNotBlank(bo.getContentFormat()), ChatMessage::getContentFormat, bo.getContentFormat());
+                    lqw.eq(bo.getParentId() != null, ChatMessage::getParentId, bo.getParentId());
+                    lqw.eq(StringUtils.isNotBlank(bo.getStatus()), ChatMessage::getStatus, bo.getStatus());
+                    lqw.eq(bo.getInvocationId() != null, ChatMessage::getInvocationId, bo.getInvocationId());
+                    lqw.eq(bo.getTokenIn() != null, ChatMessage::getTokenIn, bo.getTokenIn());
+                    lqw.eq(bo.getTokenOut() != null, ChatMessage::getTokenOut, bo.getTokenOut());
+                    lqw.eq(bo.getCostAmount() != null, ChatMessage::getCostAmount, bo.getCostAmount());
+                    lqw.eq(StringUtils.isNotBlank(bo.getFinishReason()), ChatMessage::getFinishReason, bo.getFinishReason());
+                    lqw.eq(StringUtils.isNotBlank(bo.getErrorMsg()), ChatMessage::getErrorMsg, bo.getErrorMsg());
                     lqw.eq(bo.getCreateTime() != null, ChatMessage::getCreateTime, bo.getCreateTime());
-                    lqw.eq(bo.getUpdateBy() != null, ChatMessage::getUpdateBy, bo.getUpdateBy());
                     lqw.eq(bo.getUpdateTime() != null, ChatMessage::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getRemark()), ChatMessage::getRemark, bo.getRemark());
-                    lqw.eq(StringUtils.isNotBlank(bo.getBillingType()), ChatMessage::getBillingType, bo.getBillingType());
+
+        lqw.orderByAsc(ChatMessage::getCreateTime);
+        lqw.orderByAsc(ChatMessage::getId);
         return lqw;
     }
 
     /**
-     * 新增chat-message
+     * 新增chat_message
      */
     @Override
     public Boolean insertByBo(ChatMessageBo bo) {
@@ -92,7 +98,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     /**
-     * 修改chat-message
+     * 修改chat_message
      */
     @Override
     public Boolean updateByBo(ChatMessageBo bo) {
@@ -109,7 +115,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     /**
-     * 批量删除chat-message
+     * 批量删除chat_message
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
@@ -117,5 +123,69 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public long insertUserMsg(String tenantId, long conversationId, Long userId, Long modelId, String content) {
+        ChatMessage m = new ChatMessage();
+        m.setTenantId(tenantId);
+        m.setConversationId(conversationId);
+        m.setUserId(userId == null ? 0L : userId);
+        m.setRole("user");
+        m.setContent(content);
+        m.setContentFormat("text");
+        m.setStatus("DONE");
+        m.setModelId(modelId);
+        m.setCreateTime(LocalDateTime.now());
+        m.setUpdateTime(LocalDateTime.now());
+        baseMapper.insert(m);
+        return m.getId();
+    }
+
+    @Override
+    public long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, Long modelId) {
+        ChatMessage m = new ChatMessage();
+        m.setTenantId(tenantId);
+        m.setConversationId(conversationId);
+        m.setUserId(userId == null ? 0L : userId);
+        m.setRole("assistant");
+        m.setContent("");
+        m.setContentFormat("text");
+        m.setStatus("STREAMING");
+        m.setModelId(modelId);
+        m.setCreateTime(LocalDateTime.now());
+        m.setUpdateTime(LocalDateTime.now());
+        baseMapper.insert(m);
+        return m.getId();
+    }
+
+    @Override
+    public void bindInvocation(long messageId, long invocationId) {
+        ChatMessage upd = new ChatMessage();
+        upd.setId(messageId);
+        upd.setInvocationId(invocationId);
+        upd.setUpdateTime(LocalDateTime.now());
+        baseMapper.updateById(upd);
+    }
+
+    @Override
+    public void finishAssistant(long messageId, String content) {
+        ChatMessage upd = new ChatMessage();
+        upd.setId(messageId);
+        upd.setContent(content);
+        upd.setStatus("DONE");
+        upd.setUpdateTime(LocalDateTime.now());
+        baseMapper.updateById(upd);
+    }
+
+    @Override
+    public void failAssistant(long messageId, String partial, String errorMsg) {
+        ChatMessage upd = new ChatMessage();
+        upd.setId(messageId);
+        upd.setContent(partial);
+        upd.setStatus("FAILED");
+        upd.setErrorMsg(errorMsg);
+        upd.setUpdateTime(LocalDateTime.now());
+        baseMapper.updateById(upd);
     }
 }

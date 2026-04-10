@@ -4,6 +4,7 @@ import com.yuan.ai.domain.ChatMessage;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -12,10 +13,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * chat-message业务对象 chat_message
+ * chat_message业务对象 chat_message
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 @Data
 
@@ -25,61 +26,80 @@ public class ChatMessageBo implements Serializable {
     private Long id;
 
     /**
-     * 会话id
+     * tenantId
      */
-    private Long sessionId;
+    @NotBlank(message = "tenantId不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String tenantId;
     /**
-     * 用户id
+     * conversationId
      */
-    @NotNull(message = "用户id不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "conversationId不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long conversationId;
+    /**
+     * userId
+     */
+    @NotNull(message = "userId不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
     /**
-     * 消息内容
+     * system/user/assistant/tool
+     */
+    @NotBlank(message = "system/user/assistant/tool不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String role;
+    /**
+     * content
      */
     private String content;
     /**
-     * 对话角色
+     * contentFormat
      */
-    private String role;
+    @NotBlank(message = "contentFormat不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String contentFormat;
     /**
-     * 扣除金额
+     * parentId
      */
-    private BigDecimal deductCost;
+    private Long parentId;
     /**
-     * 累计 Tokens
+     * PENDING/STREAMING/DONE/FAILED
      */
-    private Integer totalTokens;
+    @NotBlank(message = "PENDING/STREAMING/DONE/FAILED不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String status;
     /**
-     * 模型名称
+     * endpointKey
      */
-    private String modelName;
+    private Long modelId;
     /**
-     * 创建部门
+     * invocationId
      */
-    private Long createDept;
+    private Long invocationId;
     /**
-     * 创建者
+     * tokenIn
      */
-    private Long createBy;
+    private Integer tokenIn;
     /**
-     * 创建时间
+     * tokenOut
      */
+    private Integer tokenOut;
+    /**
+     * costAmount
+     */
+    private BigDecimal costAmount;
+    /**
+     * finishReason
+     */
+    private String finishReason;
+    /**
+     * errorMsg
+     */
+    private String errorMsg;
+    /**
+     * createTime
+     */
+    @NotNull(message = "createTime不能为空", groups = { AddGroup.class, EditGroup.class })
     private LocalDateTime createTime;
     /**
-     * 更新者
+     * updateTime
      */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
+    @NotNull(message = "updateTime不能为空", groups = { AddGroup.class, EditGroup.class })
     private LocalDateTime updateTime;
-    /**
-     * 备注
-     */
-    private String remark;
-    /**
-     * 计费类型（1-token计费，2-次数计费，null-普通消息）
-     */
-    private String billingType;
 
 }

@@ -21,7 +21,7 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
     private final WfInstanceMapper wfInstanceMapper;
     private final WfOperationGuard wfOperationGuard;
     private final InstanceStateManager instanceStateManager;
-    private final InstanceTransitionManager instanceTransitionManager;
+    private final ProcessAdvancer processAdvancer;
     private final TaskStateManager taskStateManager;
     private final NodeInstanceStateManager nodeInstanceStateManager;
     private final WfEventManager eventManager;
@@ -41,7 +41,7 @@ public class WithdrawHandler implements  CommandHandler<WithdrawCmd,Void>{
 
         instanceStateManager.withDraw(wfInstance,cmd);
 
-        instanceTransitionManager.withDraw(wfInstance,null,null,cmd);
+        processAdvancer.withDraw(wfInstance,null,null,cmd);
 
         eventManager.withdraw(wfInstance,cmd.getOperatorId());
         return null;

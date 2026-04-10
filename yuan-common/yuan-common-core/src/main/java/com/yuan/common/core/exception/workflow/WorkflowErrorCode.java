@@ -33,6 +33,7 @@ public enum WorkflowErrorCode {
     WF_INSTANCE_STATUS_INVALID("WF_INSTANCE_STATUS_INVALID", "流程实例状态不合法"),
     WF_INSTANCE_CANNOT_WITHDRAW("WF_INSTANCE_CANNOT_WITHDRAW", "当前流程不允许撤销"),
     WF_INSTANCE_NOT_STARTER("WF_INSTANCE_NOT_STARTER", "只有发起人可以执行该操作"),
+    WF_INSTANCE_NEXT_NO_ERROR("WF_INSTANCE_NEXT_NO_ERROR", "获取节点序列号失败"),
 
     // ===== Node / Activity =====
     WF_NODE_NOT_FOUND("WF_NODE_NOT_FOUND", "流程节点不存在"),
@@ -80,7 +81,10 @@ public enum WorkflowErrorCode {
 
     // ===== biz ===== 已存在
     WF_BIZ_ALREADY_EXISTS("WF_BIZ_ALREADY_EXISTS", "该申请已提交，请勿重复提交"),
-    WF_BIZ_NOT_FOUND("WF_BIZ_NOT_FOUND", "该业务不存在流程关联");
+    WF_BIZ_NOT_FOUND("WF_BIZ_NOT_FOUND", "该业务不存在流程关联"),
+
+    //============ ai ==========
+    WF_AI_EXECUTE_FAIL("WF_AI_EXECUTE_FAIL", "AI节点审核失败");
     private final String code;
     private final String defaultMessage;
 }

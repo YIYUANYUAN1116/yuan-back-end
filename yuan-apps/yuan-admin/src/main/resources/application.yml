@@ -28,6 +28,21 @@ spring:
     deserialization:
       # 允许对象忽略json中不存在的属性
       fail_on_unknown_properties: false
+  ai:
+    openai:
+      api-key: sk-xx
+      base-url: https://api.pandarobot.chat/
+    mcp:
+      client:
+        enabled: false
+        name: ruoyi-ai-mcp
+        sse:
+          connections:
+            server:
+              url: http://127.0.0.1:8081
+        stdio:
+          servers-configuration: classpath:mcp-server.json
+        request-timeout: 300s
 
 # Sa-Token配置
 sa-token:

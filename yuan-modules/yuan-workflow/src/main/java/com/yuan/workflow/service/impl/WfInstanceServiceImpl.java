@@ -171,27 +171,6 @@ public class WfInstanceServiceImpl implements WfInstanceService {
     }
 
     @Override
-    @Transactional
-    public WfInstance createInstance(StartCmd cmd, WfDefinition def) {
-        WfInstance instance = new WfInstance();
-        instance.setTenantId(cmd.getTenantId());
-        instance.setDefinitionId(def.getId());
-        instance.setDefinitionKey(def.getDefinitionKey());
-        instance.setDefinitionVersion(def.getVersion());
-        instance.setStatus(InstanceStatus.RUNNING);
-        instance.setStarterId(cmd.getStarterId());
-        instance.setStarterName(cmd.getStarterName());
-        instance.setLastOperatorId(cmd.getOperatorId());
-        instance.setLastOperatorName(cmd.getOperatorName());
-        instance.setStarterDeptId(cmd.getStarterDeptId());
-        instance.setStarterDeptName(cmd.getStarterDeptName());
-        instance.setDefinitionName(def.getDefinitionName());
-        instance.setVariables(JsonUtils.toJsonString(cmd.getVariables()));
-        baseMapper.insert(instance);
-        return instance;
-    }
-
-    @Override
     public TableDataInfo<WorkItemRowVO> myApply(WfWorklistQueryBo bo, PageQuery pageQuery) {
 //        LambdaQueryWrapper<WfInstance> lqw = buildLambdaQueryWrapper(bo);
 //        if (!LoginHelper.isSuperAdmin()){

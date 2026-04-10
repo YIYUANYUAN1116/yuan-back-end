@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.ai.mapper.LlmModelMapper">
+
+    <select id="selectModelByEndpoint" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select display_name as label,
+               id as value
+        from llm_model
+        where del_flag = 0 and status = 0 and endpoint_id = #{endpointId}
+    </select>
+
+    <select id="selectModel" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select display_name as label,
+               id as value
+        from llm_model
+        where del_flag = 0 and status = 0
+    </select>
+
+    <select id="selectModelVoPage" resultType="com.yuan.ai.domain.vo.LlmModelVo">
+        SELECT
+        m.*,
+        p.provider_name,
+        e.endpoint_name
+        FROM llm_model m
+        LEFT JOIN llm_provider p ON m.provider_id = p.id
+        LEFT JOIN llm_endpoint e ON m.endpoint_id = e.id
+        WHERE m.del_flag = 0 and p.del_flag = 0 and e.del_flag = 0
+        <if test="bo.providerId != null">
+            AND m.provider_id = #{bo.providerId}
+        </if>
+        <if test="bo.endpointId != null">
+            AND m.endpoint_id = #{bo.endpointId}
+        </if>
+        <if test="bo.modelName != null and bo.modelName != ''">
+            AND m.model_name LIKE CONCAT('%', #{bo.modelName}, '%')
+        </if>
+        <if test="bo.displayName != null and bo.displayName != ''">
+            AND m.display_name LIKE CONCAT('%', #{bo.displayName}, '%')
+        </if>
+        <if test="bo.contextWindow != null">
+            AND m.context_window = #{bo.contextWindow}
+        </if>
+        <if test="bo.status != null and bo.status != ''">
+            AND m.status = #{bo.status}
+        </if>
+        <if test="bo.providerName != null and bo.providerName != ''">
+            AND p.provider_name LIKE CONCAT('%', #{bo.providerName}, '%')
+        </if>
+        <if test="bo.endpointName != null and bo.endpointName != ''">
+            AND e.endpoint_name LIKE CONCAT('%', #{bo.endpointName}, '%')
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.ai.mapper.LlmEndpointMapper">
+
+    <select id="selectEndpointByProvider" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select id as value,
+               endpoint_name as label
+        from llm_endpoint
+        where del_flag = 0 and status = 0 and provider_id = #{providerId}
+    </select>
+
+    <select id="selectEndpointVoPage" resultType="com.yuan.ai.domain.vo.LlmEndpointVo">
+        SELECT
+        e.*,
+        p.provider_name
+        FROM llm_endpoint e
+        LEFT JOIN llm_provider p ON e.provider_id = p.id
+        WHERE 1=1
+        <if test="bo.tenantId != null and bo.tenantId != ''">
+            AND e.tenant_id = #{bo.tenantId}
+        </if>
+        <if test="bo.endpointCode != null and bo.endpointCode != ''">
+            AND e.endpoint_code = #{bo.endpointCode}
+        </if>
+        <if test="bo.endpointName != null and bo.endpointName != ''">
+            AND e.endpoint_name LIKE CONCAT('%', #{bo.endpointName}, '%')
+        </if>
+        <if test="bo.providerId != null">
+            AND e.provider_id = #{bo.providerId}
+        </if>
+        <if test="bo.providerName != null and bo.providerName != ''">
+            AND p.provider_name LIKE CONCAT('%', #{bo.providerName}, '%')
+        </if>
+        <if test="bo.baseUrl != null and bo.baseUrl != ''">
+            AND e.base_url = #{bo.baseUrl}
+        </if>
+        <if test="bo.apiKey != null and bo.apiKey != ''">
+            AND e.api_key = #{bo.apiKey}
+        </if>
+        <if test="bo.defaultModelId != null">
+            AND e.default_model_id = #{bo.defaultModelId}
+        </if>
+        <if test="bo.status != null and bo.status != ''">
+            AND e.status = #{bo.status}
+        </if>
+        <if test="bo.priority != null">
+            AND e.priority = #{bo.priority}
+        </if>
+        <if test="bo.tagsJson != null and bo.tagsJson != ''">
+            AND e.tags_json = #{bo.tagsJson}
+        </if>
+        <if test="bo.chatCompletionsPath != null and bo.chatCompletionsPath != ''">
+            AND e.chat_completions_path = #{bo.chatCompletionsPath}
+        </if>
+        <if test="bo.embeddingsPath != null and bo.embeddingsPath != ''">
+            AND e.embeddings_path = #{bo.embeddingsPath}
+        </if>
+        <if test="bo.authHeaderName != null and bo.authHeaderName != ''">
+            AND e.auth_header_name = #{bo.authHeaderName}
+        </if>
+        <if test="bo.authHeaderPrefix != null and bo.authHeaderPrefix != ''">
+            AND e.auth_header_prefix = #{bo.authHeaderPrefix}
+        </if>
+        <if test="bo.extraHeadersJson != null and bo.extraHeadersJson != ''">
+            AND e.extra_headers_json = #{bo.extraHeadersJson}
+        </if>
+        <if test="bo.extraParamsJson != null and bo.extraParamsJson != ''">
+            AND e.extra_params_json = #{bo.extraParamsJson}
+        </if>
+    </select>
+</mapper>

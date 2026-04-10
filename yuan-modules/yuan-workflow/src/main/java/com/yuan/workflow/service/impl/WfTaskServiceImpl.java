@@ -142,18 +142,7 @@ public class WfTaskServiceImpl implements WfTaskService {
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 
-    @Override
-    public void createTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds) {
-        for (Long uid : userIds) {
-            WfTask task = new WfTask();
-            task.setTenantId(instance.getTenantId());
-            task.setInstanceId(instance.getId());
-            task.setNodeInstanceId(nodeInstance.getId());
-            task.setAssigneeId(uid);
-            task.setStatus(TaskStatus.TODO);
-            baseMapper.insert(task);
-        }
-    }
+
 
     @Override
     public TableDataInfo<WorkItemRowVO> myTask(WfWorklistQueryBo bo, PageQuery pageQuery) {

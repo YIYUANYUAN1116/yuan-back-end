@@ -1,14 +1,17 @@
 package com.yuan.workflow.core.engine.handler;
 
 import com.yuan.workflow.cmd.RejectCmd;
-import com.yuan.workflow.core.engine.runtime.*;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
-import com.yuan.workflow.core.event.SpringWfEventPublisher;
+import com.yuan.workflow.core.engine.runtime.InstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
+import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
+import com.yuan.workflow.core.engine.runtime.TaskStateManager;
+import com.yuan.workflow.core.engine.runtime.VariableManager;
+import com.yuan.workflow.core.engine.runtime.WfEventManager;
+import com.yuan.workflow.core.engine.runtime.context.RuntimeContextLoader;
 import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.guard.WfOperationGuard;
-import com.yuan.workflow.mapper.WfBizRefMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class RejectHandler implements CommandHandler<RejectCmd,Void>{
-    private final WfContextLoader contextLoader;
+    private final RuntimeContextLoader contextLoader;
     private final VariableManager variableManager;
     private final TaskStateManager taskStateManager;
-    private final SpringWfEventPublisher eventPublisher;
     private final InstanceStateManager instanceStateManager;
     private final WfOperationGuard wfOperationGuard;
     private final NodeInstanceStateManager nodeInstanceStateManager;
-    private final InstanceTransitionManager transitionManager;
-    private final WfBizRefMapper bizRefMapper;
+    private final ProcessAdvancer transitionManager;
     private final WfEventManager eventManager;
 
 
@@ -37,7 +38,7 @@ public class RejectHandler implements CommandHandler<RejectCmd,Void>{
         Long operatorId = cmd.getOperatorId();
 
         //  load 上下文
-        WfContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
+        RuntimeContextLoader.TaskCtx ctx = contextLoader.loadTaskCtx(cmd.getTaskId());
         WfTask task = ctx.task();
         WfInstance instance = ctx.instance();
         WfNodeInstance node = ctx.node();

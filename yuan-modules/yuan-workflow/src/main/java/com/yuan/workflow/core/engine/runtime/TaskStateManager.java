@@ -3,6 +3,7 @@ package com.yuan.workflow.core.engine.runtime;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yuan.workflow.cmd.*;
 import com.yuan.workflow.domain.WfInstance;
+import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTask;
 import com.yuan.workflow.domain.WfTaskLog;
 import com.yuan.workflow.domain.enums.TaskAction;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -128,6 +130,20 @@ public class TaskStateManager {
 
     public void addSign(WfTask task, AddSignCmd cmd) {
         //todo 加签，加签需要做并签
+    }
+
+
+
+    public void createTodoTasks(WfInstance instance, WfNodeInstance nodeInstance, Set<Long> userIds) {
+        for (Long uid : userIds) {
+            WfTask task = new WfTask();
+            task.setTenantId(instance.getTenantId());
+            task.setInstanceId(instance.getId());
+            task.setNodeInstanceId(nodeInstance.getId());
+            task.setAssigneeId(uid);
+            task.setStatus(TaskStatus.TODO);
+            taskMapper.insert(task);
+        }
     }
 
 }

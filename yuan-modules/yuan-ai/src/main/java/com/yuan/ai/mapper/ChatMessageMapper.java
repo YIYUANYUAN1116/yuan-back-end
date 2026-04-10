@@ -6,10 +6,10 @@ import com.yuan.core.mapper.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * chat-messageMapper接口
+ * chat_messageMapper接口
  *
- * @author ageerle
- * @date Mon Feb 16 14:59:03 CST 2026
+ * @author yuan
+ * @date Thu Feb 26 21:44:39 CST 2026
  */
 @Mapper
 public interface ChatMessageMapper extends BaseMapperPlus<ChatMessage, ChatMessageVo> {

@@ -93,4 +93,6 @@ public class WfInstance extends TenantEntity {
 
     @TableLogic
     private String delFlag;
+
+    private Integer nodeOrderSeq;
 }

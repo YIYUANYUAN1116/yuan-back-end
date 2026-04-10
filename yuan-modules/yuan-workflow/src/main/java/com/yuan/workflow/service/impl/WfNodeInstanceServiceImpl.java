@@ -14,7 +14,6 @@ import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.WfTransitionLog;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
 import com.yuan.workflow.domain.enums.NodeStatus;
-import com.yuan.workflow.domain.enums.NodeType;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.detail.WfTimelineEventVo;
 import com.yuan.workflow.enums.OperatorType;
@@ -28,7 +27,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -131,28 +136,6 @@ public class WfNodeInstanceServiceImpl implements WfNodeInstanceService {
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 
-    @Override
-    public WfNodeInstance createNodeInstance(Long instanceId, LfNode lfNode, NodeStatus nodeStatus, int orderNo) {
-        WfNodeInstance ni = new WfNodeInstance();
-        ni.setInstanceId(instanceId);
-        ni.setNodeKey(lfNode.getId());
-        ni.setNodeType(NodeType.of(lfNode.getProperties().getWfType()));
-        ni.setNodeName(lfNode.getText().getValue());
-        ni.setStatus(nodeStatus);
-        ni.setOrderNo(orderNo);
-        baseMapper.insert(ni);
-        return ni;
-    }
-
-    /**
-     * 获取nextOrderNo
-     * @param instanceId
-     * @return
-     */
-    @Override
-    public int nextOrderNo(Long instanceId) {
-        return baseMapper.nextOrderNo(instanceId);
-    }
 
     @Override
     public List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds) {

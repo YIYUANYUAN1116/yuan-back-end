@@ -4,11 +4,9 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.workflow.domain.WfNodeInstance;
 import com.yuan.workflow.domain.bo.WfNodeInstanceBo;
-import com.yuan.workflow.domain.enums.NodeStatus;
 import com.yuan.workflow.domain.vo.WfNodeInstanceVo;
 import com.yuan.workflow.domain.vo.detail.WfTimelineEventVo;
 import com.yuan.workflow.model.logicflow.LfGraph;
-import com.yuan.workflow.model.logicflow.LfNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,10 +49,6 @@ public interface WfNodeInstanceService {
      * 校验并批量删除wfn信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
-
-    WfNodeInstance createNodeInstance(Long instanceId, LfNode lfNode, NodeStatus nodeStatus, int orderNo);
-
-    int nextOrderNo(Long instanceId);
 
     List<WfNodeInstance> listWaitNodesByInstanceIds(Set<Long> instanceIds);
 

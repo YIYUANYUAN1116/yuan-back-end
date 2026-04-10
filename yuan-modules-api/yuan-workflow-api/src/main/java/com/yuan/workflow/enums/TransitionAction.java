@@ -9,5 +9,6 @@ public enum TransitionAction {
     ROLLBACK,
     WITHDRAW,
     TRANSFER,
-    ADD_SIGN
+    ADD_SIGN,
+    AI_SUGGEST
 }

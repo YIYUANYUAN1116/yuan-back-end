@@ -2,14 +2,11 @@ package com.yuan.workflow.service;
 
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
-import com.yuan.workflow.cmd.StartCmd;
-import com.yuan.workflow.domain.WfDefinition;
-import com.yuan.workflow.domain.WfInstance;
 import com.yuan.workflow.domain.bo.WfInstanceBo;
 import com.yuan.workflow.domain.bo.WfWorklistQueryBo;
-import com.yuan.workflow.domain.vo.detail.WfApprovalDetailVO;
 import com.yuan.workflow.domain.vo.WfInstanceVo;
 import com.yuan.workflow.domain.vo.WorkItemRowVO;
+import com.yuan.workflow.domain.vo.detail.WfApprovalDetailVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,8 +48,6 @@ public interface WfInstanceService {
      * 校验并批量删除wfi信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
-
-    WfInstance createInstance(StartCmd cmd, WfDefinition def);
 
     TableDataInfo<WorkItemRowVO> myApply(WfWorklistQueryBo bo, PageQuery pageQuery);
 

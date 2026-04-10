@@ -2,11 +2,11 @@ package com.yuan.workflow.core.engine.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yuan.workflow.cmd.RollbackToPreviousCmd;
-import com.yuan.workflow.core.engine.runtime.InstanceTransitionManager;
+import com.yuan.workflow.core.engine.runtime.ProcessAdvancer;
 import com.yuan.workflow.core.engine.runtime.NodeInstanceStateManager;
 import com.yuan.workflow.core.engine.runtime.TaskStateManager;
 import com.yuan.workflow.core.engine.runtime.VariableManager;
-import com.yuan.workflow.core.engine.support.WfContextLoader;
+import com.yuan.workflow.core.engine.runtime.context.RuntimeContextLoader;
 import com.yuan.workflow.core.parser.FlowParser;
 import com.yuan.workflow.domain.WfDefinition;
 import com.yuan.workflow.domain.WfNodeInstance;
@@ -28,13 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RollbackToPreviousHandler implements CommandHandler<RollbackToPreviousCmd, Void> {
 
-    private final WfContextLoader contextLoader;
+    private final RuntimeContextLoader contextLoader;
     private final VariableManager variableManager;
     private final TaskStateManager taskStateManager;
     private final WfOperationGuard wfOperationGuard;
     private final FlowParser flowParser;
     private final NodeInstanceStateManager nodeInstanceStateManager;
-    private final InstanceTransitionManager instanceTransitionManager;
+    private final ProcessAdvancer processAdvancer;
     private final WfNodeInstanceMapper nodeInstanceMapper;
     private final WfTransitionLogService transitionLogService;
 

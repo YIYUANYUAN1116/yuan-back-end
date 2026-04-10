@@ -33,6 +33,11 @@
             <groupId>com.yuan</groupId>
             <artifactId>yuan-oa</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-ai</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

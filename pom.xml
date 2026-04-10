@@ -320,6 +320,12 @@
 
             <dependency>
                 <groupId>com.yuan</groupId>
+                <artifactId>yuan-ai-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yuan</groupId>
                 <artifactId>yuan-oa</artifactId>
                 <version>${revision}</version>
             </dependency>
