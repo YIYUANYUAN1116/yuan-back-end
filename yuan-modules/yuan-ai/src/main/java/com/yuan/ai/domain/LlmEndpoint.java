@@ -31,15 +31,11 @@ public class LlmEndpoint extends BaseEntity {
     /**
      * front-end selection key
      */
-    private String endpointKey;
+    private String endpointCode;
 
     private String endpointName;
 
-    /**
-     * providerCode
-     */
-    private String providerCode;
-
+    private Long providerId;
     /**
      * OpenAI-compatible baseUrl like https://api.openai.com or http://localhost:11434/v1
      */

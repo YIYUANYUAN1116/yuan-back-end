@@ -60,7 +60,8 @@ public class LlmModelServiceImpl implements LlmModelService {
     private LambdaQueryWrapper<LlmModel> buildQueryWrapper(LlmModelBo bo) {
         LambdaQueryWrapper<LlmModel> lqw = Wrappers.lambdaQuery();
                     lqw.eq(bo.getId() != null, LlmModel::getId, bo.getId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getProviderCode()), LlmModel::getProviderCode, bo.getProviderCode());
+                    lqw.eq(bo.getProviderId() != null, LlmModel::getProviderId, bo.getProviderId());
+                    lqw.eq(bo.getEndpointId() != null, LlmModel::getEndpointId, bo.getEndpointId());
                     lqw.eq(StringUtils.isNotBlank(bo.getModelName()), LlmModel::getModelName, bo.getModelName());
                     lqw.eq(StringUtils.isNotBlank(bo.getDisplayName()), LlmModel::getDisplayName, bo.getDisplayName());
                     lqw.eq(StringUtils.isNotBlank(bo.getCapabilityJson()), LlmModel::getCapabilityJson, bo.getCapabilityJson());

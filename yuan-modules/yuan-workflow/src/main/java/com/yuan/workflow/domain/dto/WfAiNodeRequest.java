@@ -16,7 +16,7 @@ public class WfAiNodeRequest {
     private String templateContent;
     private String systemPrompt;
 
-    private String endpointKey;
+    private String endpointCode;
     private Boolean autoSelectModel = Boolean.TRUE;
     private Boolean enableThinking;
 

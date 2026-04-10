@@ -33,15 +33,9 @@ public class LlmInvocation implements Serializable {
      */
     private String traceId;
 
-    /**
-     * endpointKey
-     */
-    private String endpointKey;
+    private Long endpointId;
 
-    /**
-     * providerCode
-     */
-    private String providerCode;
+    private Long providerId;
 
     /**
      * modelName

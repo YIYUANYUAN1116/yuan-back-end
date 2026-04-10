@@ -63,7 +63,7 @@ public class DefaultAiTemplateExecuteApi implements AiTemplateExecuteApi {
                     .prompt(finalPrompt)
                     .content(executeResult.getContent())
                     .invocationId(executeResult.getInvocationId())
-                    .endpointKey(executeResult.getEndpointKey())
+                    .endpointCode(executeResult.getEndpointCode())
                     .providerCode(executeResult.getProviderCode())
                     .modelName(executeResult.getModelName())
                     .latencyMs(executeResult.getLatencyMs())
@@ -80,7 +80,7 @@ public class DefaultAiTemplateExecuteApi implements AiTemplateExecuteApi {
                     .prompt(finalPrompt)
                     .content(null)
                     .invocationId(null)
-                    .endpointKey(null)
+                    .endpointCode(null)
                     .providerCode(null)
                     .modelName(null)
                     .latencyMs((int) (System.currentTimeMillis() - start))
@@ -112,7 +112,7 @@ public class DefaultAiTemplateExecuteApi implements AiTemplateExecuteApi {
     private ChatRequest buildChatRequest(AiTemplateExecuteRequest request, String finalPrompt) {
         ChatRequest chatRequest = new ChatRequest();
 
-        chatRequest.setEndpointKey(request.getEndpointKey());
+        chatRequest.setEndpointCode(request.getEndpointCode());
         chatRequest.setAutoSelectModel(
                 request.getAutoSelectModel() == null ? Boolean.TRUE : request.getAutoSelectModel()
         );

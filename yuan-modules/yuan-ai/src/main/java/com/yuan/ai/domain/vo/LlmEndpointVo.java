@@ -32,14 +32,13 @@ public class LlmEndpointVo implements Serializable {
      * front-end selection key
      */
     @ExcelProperty(value = "front-end selection key")
-    private String endpointKey;
+    private String endpointCode;
 
     private String endpointName;
     /**
      * providerCode
      */
-    @ExcelProperty(value = "providerCode")
-    private String providerCode;
+    private String providerName;
     /**
      * OpenAI-compatible baseUrl like https://api.openai.com or http://localhost:11434/v1
      */

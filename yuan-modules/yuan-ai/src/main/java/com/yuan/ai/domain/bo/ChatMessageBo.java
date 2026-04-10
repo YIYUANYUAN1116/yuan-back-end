@@ -1,23 +1,16 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.ChatMessage;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * chat_message业务对象 chat_message
@@ -73,7 +66,7 @@ public class ChatMessageBo implements Serializable {
     /**
      * endpointKey
      */
-    private String endpointKey;
+    private Long modelId;
     /**
      * invocationId
      */

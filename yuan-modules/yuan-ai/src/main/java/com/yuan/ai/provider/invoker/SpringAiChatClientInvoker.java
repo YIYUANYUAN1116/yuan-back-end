@@ -3,6 +3,8 @@ package com.yuan.ai.provider.invoker;
 import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.dto.ChatRequest;
+import com.yuan.ai.domain.vo.LlmProviderVo;
+import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.provider.factory.SpringAiChatClientFactory;
 import com.yuan.common.core.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class SpringAiChatClientInvoker implements ProviderInvoker {
 
     private final List<SpringAiChatClientFactory> factories;
     private final ConcurrentHashMap<String, ChatClient> cache = new ConcurrentHashMap<>();
+    private final LlmProviderMapper providerMapper;
 
     @Override
     public boolean supports(String providerCode) {
@@ -44,7 +47,8 @@ public class SpringAiChatClientInvoker implements ProviderInvoker {
     }
 
     private ChatClient getOrCreate(LlmEndpoint ep, LlmModel model) {
-        String providerCode = StringUtils.trimToEmpty(ep.getProviderCode()).toUpperCase();
+        LlmProviderVo providerVo = providerMapper.selectVoById(ep.getProviderId());
+        String providerCode = StringUtils.trimToEmpty(providerVo.getCode()).toUpperCase();
         SpringAiChatClientFactory factory = factories.stream()
                 .filter(f -> f.supports(providerCode))
                 .findFirst()

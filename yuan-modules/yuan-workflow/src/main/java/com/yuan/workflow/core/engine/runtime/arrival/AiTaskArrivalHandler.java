@@ -61,7 +61,7 @@ public class AiTaskArrivalHandler implements NodeArrivalHandler {
             request.setTemplateCode("");
             request.setTemplateContent("");
             request.setSystemPrompt("");
-            request.setEndpointKey("");
+            request.setEndpointCode("");
             request.setAutoSelectModel(Boolean.TRUE);
             request.setEnableThinking(true);
 

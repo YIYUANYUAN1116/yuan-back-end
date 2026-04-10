@@ -5,6 +5,7 @@ import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
+import com.yuan.ai.domain.vo.LlmProviderVo;
 import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.provider.builder.ChatMessageBuilder;
 import com.yuan.ai.provider.invoker.InvokerRegistry;
@@ -13,6 +14,7 @@ import com.yuan.ai.service.ChatMessageService;
 import com.yuan.ai.service.LlmInvocationService;
 import com.yuan.ai.support.SseHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UnifiedChatProvider implements ChatProvider {
@@ -47,12 +50,12 @@ public class UnifiedChatProvider implements ChatProvider {
             long t0 = System.currentTimeMillis();
             String tenantId = req.getTenantId();
             String traceId = req.getTraceId();
-            String endpointKey = ep.getEndpointKey();
-            String providerCode = ep.getProviderCode();
+            Long providerId = ep.getProviderId();
             String modelName = model.getModelName();
-
+            LlmProviderVo llmProviderVo = providerMapper.selectVoById(providerId);
+            String providerCode = llmProviderVo.getCode();
             long invId = invocationService.begin(
-                    tenantId, traceId, endpointKey, providerCode, modelName,
+                    tenantId, traceId, ep.getId(), providerId, modelName,
                     conversationId, assistantMsgId,
                     new LinkedHashMap<>() {{
                         put("messages", req.getMessages());
@@ -67,7 +70,7 @@ public class UnifiedChatProvider implements ChatProvider {
             try {
                 ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
                 List<Message> messages = messageBuilder.build(req);
-
+                sse.send(emitter,"conversationId",ctx.getConversationId());
                 boolean stream = req.getStream() == null || req.getStream();
 
                 if (stream) {
@@ -77,6 +80,7 @@ public class UnifiedChatProvider implements ChatProvider {
                     flux.doOnNext(delta -> {
                                 if (delta == null) return;
                                 full.append(delta);
+//                                log.info(delta);
                                 sse.send(emitter, "delta", delta);
                             })
                             .doOnError(e -> {
@@ -119,12 +123,11 @@ public class UnifiedChatProvider implements ChatProvider {
         Long assistantMsgId = ctx.getAssistantMsgId();
         Long conversationId = ctx.getConversationId();
         String traceId = req.getTraceId();
-        String endpointKey = ep.getEndpointKey();
-        String providerCode = ep.getProviderCode();
+        Long providerId = ep.getProviderId();
         String modelName = model.getModelName();
 
         long invId = invocationService.begin(
-                tenantId, traceId, endpointKey, providerCode, modelName,
+                tenantId, traceId, ep.getId(), providerId, modelName,
                 conversationId, assistantMsgId,
                 new LinkedHashMap<>() {{
                     put("messages", req.getMessages());
@@ -143,6 +146,8 @@ public class UnifiedChatProvider implements ChatProvider {
         }
 
         try {
+            LlmProviderVo llmProviderVo = providerMapper.selectVoById(providerId);
+            String providerCode = llmProviderVo.getCode();
             ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
             List<Message> messages = messageBuilder.build(req);
 

@@ -34,16 +34,9 @@ public class LlmInvocationVo implements Serializable {
      */
     @ExcelProperty(value = "traceId")
     private String traceId;
-    /**
-     * endpointKey
-     */
-    @ExcelProperty(value = "endpointKey")
-    private String endpointKey;
-    /**
-     * providerCode
-     */
-    @ExcelProperty(value = "providerCode")
-    private String providerCode;
+    private Long endpointId;
+
+    private Long providerId;
     /**
      * modelName
      */

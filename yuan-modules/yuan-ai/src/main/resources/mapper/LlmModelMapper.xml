@@ -4,10 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.ai.mapper.LlmModelMapper">
 
-    <select id="selectModel" resultType="com.yuan.common.core.domain.model.StrSelectModel">
+    <select id="selectModelByEndpoint" resultType="com.yuan.common.core.domain.model.SelectModel">
         select display_name as label,
-               model_name as value
+               id as value
         from llm_model
-        where del_flag = 0 and status = 0 and endpoint_key = #{endpointKey}
+        where del_flag = 0 and status = 0 and endpoint_id = #{endpointId}
+    </select>
+
+    <select id="selectModel" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select display_name as label,
+               id as value
+        from llm_model
+        where del_flag = 0 and status = 0
     </select>
 </mapper>

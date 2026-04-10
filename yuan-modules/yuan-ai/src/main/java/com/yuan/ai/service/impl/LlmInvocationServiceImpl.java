@@ -65,8 +65,6 @@ public class LlmInvocationServiceImpl implements LlmInvocationService {
                     lqw.eq(bo.getId() != null, LlmInvocation::getId, bo.getId());
                     lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), LlmInvocation::getTenantId, bo.getTenantId());
                     lqw.eq(StringUtils.isNotBlank(bo.getTraceId()), LlmInvocation::getTraceId, bo.getTraceId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getEndpointKey()), LlmInvocation::getEndpointKey, bo.getEndpointKey());
-                    lqw.eq(StringUtils.isNotBlank(bo.getProviderCode()), LlmInvocation::getProviderCode, bo.getProviderCode());
                     lqw.eq(StringUtils.isNotBlank(bo.getModelName()), LlmInvocation::getModelName, bo.getModelName());
                     lqw.eq(bo.getConversationId() != null, LlmInvocation::getConversationId, bo.getConversationId());
                     lqw.eq(bo.getMessageId() != null, LlmInvocation::getMessageId, bo.getMessageId());
@@ -127,14 +125,14 @@ public class LlmInvocationServiceImpl implements LlmInvocationService {
 
 
     @Override
-    public long begin(String tenantId, String traceId, String endpointKey, String providerCode, String modelName,
+    public long begin(String tenantId, String traceId, Long endpointId, Long providerId, String modelName,
                       Long conversationId, Long assistantMsgId, Map<String, Object> reqJson) {
         try {
             LlmInvocation inv = new LlmInvocation();
             inv.setTenantId(tenantId);
             inv.setTraceId(traceId);
-            inv.setEndpointKey(endpointKey);
-            inv.setProviderCode(providerCode);
+            inv.setEndpointId(endpointId);
+            inv.setProviderId(providerId);
             inv.setModelName(modelName);
             inv.setConversationId(conversationId);
             inv.setMessageId(assistantMsgId);

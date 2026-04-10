@@ -65,7 +65,6 @@ public class ChatConversationServiceImpl implements ChatConversationService {
                     lqw.eq(bo.getUserId() != null, ChatConversation::getUserId, bo.getUserId());
                     lqw.eq(bo.getAppId() != null, ChatConversation::getAppId, bo.getAppId());
                     lqw.eq(StringUtils.isNotBlank(bo.getTitle()), ChatConversation::getTitle, bo.getTitle());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDefaultEndpointKey()), ChatConversation::getDefaultEndpointKey, bo.getDefaultEndpointKey());
                     lqw.eq(StringUtils.isNotBlank(bo.getMetaJson()), ChatConversation::getMetaJson, bo.getMetaJson());
                     lqw.eq(bo.getLastMessageAt() != null, ChatConversation::getLastMessageAt, bo.getLastMessageAt());
                     lqw.eq(bo.getCreateTime() != null, ChatConversation::getCreateTime, bo.getCreateTime());
@@ -116,7 +115,7 @@ public class ChatConversationServiceImpl implements ChatConversationService {
     }
 
     @Override
-    public ChatConversation getOrCreate(String tenantId, Long conversationId, Long userId, Long appId, String defaultEndpointKey) {
+    public ChatConversation getOrCreate(String tenantId, Long conversationId, Long userId, Long appId, Long modelId,String title) {
         if (conversationId != null) {
             ChatConversation c = baseMapper.selectById(conversationId);
             if (c != null) return c;
@@ -125,7 +124,8 @@ public class ChatConversationServiceImpl implements ChatConversationService {
         c.setTenantId(tenantId);
         c.setUserId(userId == null ? 0L : userId);
         c.setAppId(appId);
-        c.setDefaultEndpointKey(defaultEndpointKey);
+        c.setTitle(title);
+        c.setModelId(modelId);
         c.setCreateTime(LocalDateTime.now());
         c.setUpdateTime(LocalDateTime.now());
         baseMapper.insert(c);

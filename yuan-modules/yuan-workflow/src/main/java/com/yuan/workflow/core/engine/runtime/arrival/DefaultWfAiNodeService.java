@@ -31,7 +31,7 @@ public class DefaultWfAiNodeService implements WfAiNodeService {
         executeRequest.setTemplateContent(request.getTemplateContent());
         executeRequest.setVariables(request.getVariables());
         executeRequest.setSystemPrompt(request.getSystemPrompt());
-        executeRequest.setEndpointKey(request.getEndpointKey());
+        executeRequest.setEndpointCode(request.getEndpointCode());
         executeRequest.setAutoSelectModel(request.getAutoSelectModel());
         executeRequest.setSceneCode("workflow_ai");
         executeRequest.setBizType("workflow");

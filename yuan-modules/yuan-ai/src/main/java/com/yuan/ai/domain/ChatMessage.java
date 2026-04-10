@@ -66,7 +66,7 @@ public class ChatMessage implements Serializable {
     /**
      * endpointKey
      */
-    private String endpointKey;
+    private Long modelId;
 
     /**
      * invocationId

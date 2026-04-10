@@ -6,11 +6,8 @@ import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
 import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
-import com.yuan.ai.service.ChatConversationService;
-import com.yuan.ai.service.ChatMessageService;
-import com.yuan.ai.service.ChatPrepareService;
-import com.yuan.ai.service.LlmEndpointService;
-import com.yuan.ai.service.LlmModelService;
+import com.yuan.ai.mapper.LlmEndpointMapper;
+import com.yuan.ai.service.*;
 import com.yuan.common.core.constant.SystemConstants;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.common.core.utils.TraceIdUtil;
@@ -28,6 +25,7 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
     private final LlmModelService modelService;
     private final ChatConversationService conversationService;
     private final ChatMessageService messageService;
+    private final LlmEndpointMapper endpointMapper;
 
     @Override
     public ChatPrepareContext prepare(ChatRequest req) {
@@ -38,20 +36,9 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
         if (StringUtils.isBlank(req.getTraceId())){
             req.setTraceId(TraceIdUtil.newTraceId());
         }
-
-        LlmEndpoint ep;
-        if (req.getEndpointKey() != null && !req.getEndpointKey().isBlank()) {
-            ep = endpointService.getEnabledByKey(tenantId, req.getEndpointKey());
-        } else if (Boolean.TRUE.equals(req.getAutoSelectModel())) {
-            ep = endpointService.pickHighestPriority(tenantId);
-        } else {
-            ep = null;
-        }
-        if (ep == null) {
-            throw new IllegalArgumentException("No enabled endpoint for tenant=" + tenantId);
-        }
-
-        LlmModel model = modelService.getById(ep.getDefaultModelId());
+        Long modelId = req.getModelId();
+        LlmModel model = modelService.getById(modelId);
+        LlmEndpoint ep = endpointMapper.selectById(model.getEndpointId());
         if (model == null || model.getStatus() == null || !model.getStatus().equals(SystemConstants.NORMAL)) {
             throw new IllegalArgumentException("Model disabled or not found: " + ep.getDefaultModelId());
         }
@@ -67,16 +54,17 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
                     req.getConversationId(),
                     req.getUserId(),
                     req.getAppId(),
-                    ep.getEndpointKey()
+                    modelId,
+                    req.getPrompt().substring(0, Math.min(req.getPrompt().length(), 10))
             );
             conversationService.touch(conv.getId());
 
-            String userContent = req.getMessages().isEmpty()
-                    ? ""
-                    : req.getMessages().get(req.getMessages().size() - 1).getContent();
+//            String userContent = req.getMessages().isEmpty()
+//                    ? ""
+//                    : req.getMessages().get(req.getMessages().size() - 1).getContent();
 
-            messageService.insertUserMsg(tenantId, conv.getId(), req.getUserId(), ep.getEndpointKey(), userContent);
-            assistantMsgId = messageService.insertAssistantPlaceholder(tenantId, conv.getId(), req.getUserId(), ep.getEndpointKey());
+            messageService.insertUserMsg(tenantId, conv.getId(), req.getUserId(), model.getId(), req.getPrompt());
+            assistantMsgId = messageService.insertAssistantPlaceholder(tenantId, conv.getId(), req.getUserId(), model.getId());
             conversationId = conv.getId();
         }
 

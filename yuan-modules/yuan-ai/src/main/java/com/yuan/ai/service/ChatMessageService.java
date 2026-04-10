@@ -46,9 +46,9 @@ public interface ChatMessageService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    long insertUserMsg(String tenantId, long conversationId, Long userId, String endpointKey, String content);
+    long insertUserMsg(String tenantId, long conversationId, Long userId, Long modelId, String content);
 
-    long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, String endpointKey);
+    long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, Long modelId);
 
     void bindInvocation(long messageId, long invocationId);
 

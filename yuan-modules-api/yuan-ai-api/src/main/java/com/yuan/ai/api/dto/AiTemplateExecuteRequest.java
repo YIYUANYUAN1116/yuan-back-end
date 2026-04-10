@@ -30,7 +30,7 @@ public class AiTemplateExecuteRequest {
     /**
      * 逻辑模型编码，可选
      */
-    private String endpointKey;
+    private String endpointCode;
 
     /**
      * 是否自动选模型

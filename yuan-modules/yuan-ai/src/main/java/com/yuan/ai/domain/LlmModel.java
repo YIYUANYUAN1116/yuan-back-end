@@ -24,13 +24,8 @@ public class LlmModel extends BaseEntity {
     private Long id;
 
     private String tenantId;
-
-    private String endpointKey;
-
-    /**
-     * providerCode
-     */
-    private String providerCode;
+    private Long endpointId;
+    private Long providerId;
 
     /**
      * remote model name, e.g. gpt-4o-mini

@@ -6,7 +6,7 @@ import com.yuan.ai.domain.vo.LlmProviderVo;
 import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.service.LlmProviderService;
 import com.yuan.common.core.domain.R;
-import com.yuan.common.core.domain.model.StrSelectModel;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -122,7 +122,7 @@ public class LlmProviderController extends BaseController {
     @SaCheckPermission("ai:llmProvider:query")
     @GetMapping("/selectProvider")
     @Operation(summary = "获取供应商选择框列表",operationId = "selectProvider")
-    public R<List<StrSelectModel>> selectProvider() {
+    public R<List<SelectModel>> selectProvider() {
         return R.ok(llmProviderMapper.selectProvider());
     }
 

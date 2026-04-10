@@ -47,7 +47,7 @@ public interface ChatConversationService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    ChatConversation getOrCreate(String tenantId, Long conversationId, Long userId, Long appId, String defaultEndpointKey);
+    ChatConversation getOrCreate(String tenantId, Long conversationId, Long userId, Long appId, Long modelId,String title);
 
     void touch(Long conversationId);
 }

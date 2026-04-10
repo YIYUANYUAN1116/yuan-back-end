@@ -22,13 +22,8 @@ public class LlmModelBo implements Serializable {
 
     private Long id;
 
-    /**
-     * providerCode
-     */
-    @NotBlank(message = "providerCode不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String providerCode;
-
-    private String endpointKey;
+    private Long providerId;
+    private Long endpointId;
     /**
      * remote model name, e.g. gpt-4o-mini
      */

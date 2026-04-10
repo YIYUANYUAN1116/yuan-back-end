@@ -33,8 +33,10 @@ public class OpenAiCompatChatClientFactory implements SpringAiChatClientFactory 
 
     @Override
     public boolean supports(String providerCode) {
+
         String c = StringUtils.trimToEmpty(providerCode).toUpperCase();
-        return c.equals("OPENAI_COMPAT") || c.equals("OPENAI") || c.equals("DEEPSEEK") || c.equals("OLLAMA_COMPAT");
+        return c.equals("OPENAI_COMPAT") || c.equals("OPENAI") || c.equals("DEEPSEEK") || c.equals("OLLAMA_COMPAT")
+                || c.equals("VOLCENGINE");
     }
 
     @Override

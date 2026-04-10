@@ -13,7 +13,7 @@ public class ChatExecuteResult {
 
     private Long invocationId;
 
-    private String endpointKey;
+    private String endpointCode;
 
     private String providerCode;
 

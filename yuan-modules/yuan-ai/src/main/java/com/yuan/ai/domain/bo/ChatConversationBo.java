@@ -49,7 +49,7 @@ public class ChatConversationBo implements Serializable {
     /**
      * defaultEndpointKey
      */
-    private String defaultEndpointKey;
+    private Long modelId;
     /**
      * metaJson
      */

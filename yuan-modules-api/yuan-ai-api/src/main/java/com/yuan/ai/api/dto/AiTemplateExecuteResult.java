@@ -27,7 +27,7 @@ public class AiTemplateExecuteResult {
     /**
      * 使用的 endpoint
      */
-    private String endpointKey;
+    private String endpointCode;
 
     /**
      * 使用的 provider

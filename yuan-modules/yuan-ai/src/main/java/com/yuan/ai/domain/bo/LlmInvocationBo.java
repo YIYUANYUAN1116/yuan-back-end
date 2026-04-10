@@ -1,23 +1,16 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.LlmInvocation;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * llm_invocation业务对象 llm_invocation
@@ -42,16 +35,10 @@ public class LlmInvocationBo implements Serializable {
      */
     @NotBlank(message = "traceId不能为空", groups = { AddGroup.class, EditGroup.class })
     private String traceId;
-    /**
-     * endpointKey
-     */
-    @NotBlank(message = "endpointKey不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String endpointKey;
-    /**
-     * providerCode
-     */
-    @NotBlank(message = "providerCode不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String providerCode;
+
+    private Long endpointId;
+
+    private Long providerId;
     /**
      * modelName
      */

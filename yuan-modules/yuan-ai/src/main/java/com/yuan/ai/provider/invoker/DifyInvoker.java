@@ -26,6 +26,7 @@ public class DifyInvoker implements ProviderInvoker {
 
     @Override
     public boolean supports(String providerCode) {
+        int[] ints = new int[2];
         return "DIFY".equalsIgnoreCase(StringUtils.trimToEmpty(providerCode));
     }
 

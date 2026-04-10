@@ -1,6 +1,5 @@
 package com.yuan.ai.domain.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -15,12 +14,12 @@ public class ChatRequest {
     @NotBlank
     private String traceId;
 
-    @NotEmpty
     private List<ChatMsg> messages;
 
     /** 前端首选：直接传 endpointKey */
-    private String endpointKey;
+    private Long modelId;
 
+    private String endpointCode;
     /** 自动选模型：endpointKey 为空时用路由规则 */
     private Boolean autoSelectModel = Boolean.TRUE;
 
@@ -45,12 +44,4 @@ public class ChatRequest {
     private String sceneCode;
     private String bizType;
     private Long bizId;
-
-    //persistChatMessage = false
-    //sceneCode = "workflow_ai"
-    //bizType = "workflow"
-    //bizId = instanceId
-
-    //persistChatMessage = true
-    //sceneCode = "chat"
 }

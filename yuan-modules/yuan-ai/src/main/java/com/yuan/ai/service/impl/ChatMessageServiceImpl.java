@@ -69,7 +69,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                     lqw.eq(StringUtils.isNotBlank(bo.getContentFormat()), ChatMessage::getContentFormat, bo.getContentFormat());
                     lqw.eq(bo.getParentId() != null, ChatMessage::getParentId, bo.getParentId());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), ChatMessage::getStatus, bo.getStatus());
-                    lqw.eq(StringUtils.isNotBlank(bo.getEndpointKey()), ChatMessage::getEndpointKey, bo.getEndpointKey());
                     lqw.eq(bo.getInvocationId() != null, ChatMessage::getInvocationId, bo.getInvocationId());
                     lqw.eq(bo.getTokenIn() != null, ChatMessage::getTokenIn, bo.getTokenIn());
                     lqw.eq(bo.getTokenOut() != null, ChatMessage::getTokenOut, bo.getTokenOut());
@@ -124,7 +123,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public long insertUserMsg(String tenantId, long conversationId, Long userId, String endpointKey, String content) {
+    public long insertUserMsg(String tenantId, long conversationId, Long userId, Long modelId, String content) {
         ChatMessage m = new ChatMessage();
         m.setTenantId(tenantId);
         m.setConversationId(conversationId);
@@ -133,7 +132,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         m.setContent(content);
         m.setContentFormat("text");
         m.setStatus("DONE");
-        m.setEndpointKey(endpointKey);
+        m.setModelId(modelId);
         m.setCreateTime(LocalDateTime.now());
         m.setUpdateTime(LocalDateTime.now());
         baseMapper.insert(m);
@@ -141,7 +140,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, String endpointKey) {
+    public long insertAssistantPlaceholder(String tenantId, long conversationId, Long userId, Long modelId) {
         ChatMessage m = new ChatMessage();
         m.setTenantId(tenantId);
         m.setConversationId(conversationId);
@@ -150,7 +149,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         m.setContent("");
         m.setContentFormat("text");
         m.setStatus("STREAMING");
-        m.setEndpointKey(endpointKey);
+        m.setModelId(modelId);
         m.setCreateTime(LocalDateTime.now());
         m.setUpdateTime(LocalDateTime.now());
         baseMapper.insert(m);

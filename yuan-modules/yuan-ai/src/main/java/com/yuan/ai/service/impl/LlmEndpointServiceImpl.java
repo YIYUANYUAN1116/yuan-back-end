@@ -60,9 +60,9 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
     private LambdaQueryWrapper<LlmEndpoint> buildQueryWrapper(LlmEndpointBo bo) {
         LambdaQueryWrapper<LlmEndpoint> lqw = Wrappers.lambdaQuery();
                     lqw.eq(bo.getId() != null, LlmEndpoint::getId, bo.getId());
+                    lqw.eq(bo.getProviderId() != null,LlmEndpoint::getProviderId,bo.getProviderId());
                     lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), LlmEndpoint::getTenantId, bo.getTenantId());
-                    lqw.eq(StringUtils.isNotBlank(bo.getEndpointKey()), LlmEndpoint::getEndpointKey, bo.getEndpointKey());
-                    lqw.eq(StringUtils.isNotBlank(bo.getProviderCode()), LlmEndpoint::getProviderCode, bo.getProviderCode());
+                    lqw.eq(StringUtils.isNotBlank(bo.getEndpointCode()), LlmEndpoint::getEndpointCode, bo.getEndpointCode());
                     lqw.eq(StringUtils.isNotBlank(bo.getBaseUrl()), LlmEndpoint::getBaseUrl, bo.getBaseUrl());
                     lqw.eq(StringUtils.isNotBlank(bo.getApiKey()), LlmEndpoint::getApiKey, bo.getApiKey());
                     lqw.eq(bo.getDefaultModelId() != null, LlmEndpoint::getDefaultModelId, bo.getDefaultModelId());
@@ -120,7 +120,7 @@ public class LlmEndpointServiceImpl implements LlmEndpointService {
     public LlmEndpoint getEnabledByKey(String tenantId, String endpointKey) {
         return baseMapper.selectOne(new LambdaQueryWrapper<LlmEndpoint>()
                 .eq(LlmEndpoint::getTenantId, tenantId)
-                .eq(LlmEndpoint::getEndpointKey, endpointKey)
+                .eq(LlmEndpoint::getEndpointCode, endpointKey)
                 .eq(LlmEndpoint::getStatus, 1)
                 .last("limit 1"));
     }

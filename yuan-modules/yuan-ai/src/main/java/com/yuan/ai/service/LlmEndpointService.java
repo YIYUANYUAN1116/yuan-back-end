@@ -1,10 +1,10 @@
 package com.yuan.ai.service;
 
 import com.yuan.ai.domain.LlmEndpoint;
-import com.yuan.ai.domain.vo.LlmEndpointVo;
 import com.yuan.ai.domain.bo.LlmEndpointBo;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
+import com.yuan.ai.domain.vo.LlmEndpointVo;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
 
 import java.util.Collection;
 import java.util.List;

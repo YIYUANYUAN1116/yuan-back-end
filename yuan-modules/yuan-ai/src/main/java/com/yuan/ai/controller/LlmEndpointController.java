@@ -6,7 +6,7 @@ import com.yuan.ai.domain.vo.LlmEndpointVo;
 import com.yuan.ai.mapper.LlmEndpointMapper;
 import com.yuan.ai.service.LlmEndpointService;
 import com.yuan.common.core.domain.R;
-import com.yuan.common.core.domain.model.StrSelectModel;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -120,9 +120,9 @@ public class LlmEndpointController extends BaseController {
 
 
     @SaCheckPermission("ai:llmEndpoint:query")
-    @GetMapping("/selectEndpoint")
-    @Operation(summary = "获取供应商选择框列表",operationId = "selectEndpoint")
-    public R<List<StrSelectModel>> selectEndpoint(@RequestParam String providerCode) {
-        return R.ok(llmEndpointMapper.selectEndpoint(providerCode));
+    @GetMapping("/selectEndpointByProvider")
+    @Operation(summary = "获取供应商选择框列表",operationId = "selectEndpointByProvider")
+    public R<List<SelectModel>> selectEndpointByProvider(@RequestParam @PathId Long providerId) {
+        return R.ok(llmEndpointMapper.selectEndpointByProvider(providerId));
     }
 }

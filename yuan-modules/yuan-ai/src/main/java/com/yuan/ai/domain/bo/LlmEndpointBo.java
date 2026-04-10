@@ -30,14 +30,11 @@ public class LlmEndpointBo implements Serializable {
     /**
      * front-end selection key
      */
-    private String endpointKey;
+    private String endpointCode;
 
     private String endpointName;
-    /**
-     * providerCode
-     */
-    @NotBlank(message = "供应商不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String providerCode;
+
+    private Long providerId;
     /**
      * OpenAI-compatible baseUrl like https://api.openai.com or http://localhost:11434/v1
      */

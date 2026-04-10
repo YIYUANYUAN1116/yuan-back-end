@@ -47,7 +47,7 @@ public class ChatConversationVo implements Serializable {
      * defaultEndpointKey
      */
     @ExcelProperty(value = "defaultEndpointKey")
-    private String defaultEndpointKey;
+    private Long modelId;
     /**
      * metaJson
      */

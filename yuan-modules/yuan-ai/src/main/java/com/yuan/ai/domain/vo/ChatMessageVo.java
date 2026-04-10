@@ -67,9 +67,7 @@ public class ChatMessageVo implements Serializable {
     /**
      * endpointKey
      */
-    @ExcelProperty(value = "endpointKey")
-    private String endpointKey;
-    /**
+    private Long modelId;    /**
      * invocationId
      */
     @ExcelProperty(value = "invocationId")

@@ -24,13 +24,13 @@ public class LlmModelVo implements Serializable {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
      private Long id;
 
-    private String endpointKey;
+    private String endpointName;
 
     /**
      * providerCode
      */
-    @ExcelProperty(value = "providerCode")
-    private String providerCode;
+    @ExcelProperty(value = "providerName")
+    private String providerName;
     /**
      * remote model name, e.g. gpt-4o-mini
      */

@@ -47,7 +47,7 @@ public interface LlmInvocationService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    long begin(String tenantId, String traceId, String endpointKey, String providerCode, String modelName,
+    long begin(String tenantId, String traceId, Long endpointId, Long providerId, String modelName,
                Long conversationId, Long assistantMsgId, Map<String, Object> reqJson);
 
     void success(long id, String responseText, int latencyMs);
