@@ -36,6 +36,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
                             .notMatch(
                                     "/auth/login",
                                     "/auth/logout",
+                                    "/system/sysTenant/strselect",
                                     "/swagger-ui/**",
                                     "/v3/api-docs/**",
                                     "/doc.html/**"

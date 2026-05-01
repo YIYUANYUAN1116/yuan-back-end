@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
 import com.yuan.core.page.PageQuery;
@@ -129,5 +130,10 @@ public class SysTenantServiceImpl implements SysTenantService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public List<StrSelectModel> strSelectModel() {
+        return baseMapper.strSelectModel();
     }
 }

@@ -341,6 +341,11 @@
                 <artifactId>yuan-common-oss</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>com.yuan</groupId>
+                <artifactId>yuan-generator</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

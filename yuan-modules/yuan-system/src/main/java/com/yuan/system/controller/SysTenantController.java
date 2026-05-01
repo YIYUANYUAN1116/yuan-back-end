@@ -2,6 +2,7 @@ package com.yuan.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -113,5 +114,12 @@ public class SysTenantController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] ids) {
         return toAjax(sysTenantService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+
+    @GetMapping("/strselect")
+    @Operation(summary = "租户选择列表",operationId = "sysTenant_strSelect")
+    public R<List<StrSelectModel>> strSelectModel() {
+        return R.ok(sysTenantService.strSelectModel());
     }
 }

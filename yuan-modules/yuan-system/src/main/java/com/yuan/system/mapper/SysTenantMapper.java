@@ -1,9 +1,12 @@
 package com.yuan.system.mapper;
 
+import com.yuan.common.core.domain.model.StrSelectModel;
 import org.apache.ibatis.annotations.Mapper;
 import com.yuan.core.mapper.BaseMapperPlus;
 import com.yuan.system.domain.SysTenant;
 import com.yuan.system.domain.vo.SysTenantVo;
+
+import java.util.List;
 
 /**
  * 多租户Mapper接口
@@ -14,4 +17,5 @@ import com.yuan.system.domain.vo.SysTenantVo;
 @Mapper
 public interface SysTenantMapper extends BaseMapperPlus<SysTenant, SysTenantVo> {
 
+    List<StrSelectModel> strSelectModel();
 }

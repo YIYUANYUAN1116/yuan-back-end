@@ -81,4 +81,6 @@ public interface SchemaFieldService {
      * @return 结果
      */
     Boolean deleteWithValidBySchemaIds(Collection<Long> schemaIds, Boolean isValid);
+
+    int syncUpdate(Long id);
 }

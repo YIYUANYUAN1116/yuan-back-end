@@ -38,6 +38,11 @@
             <groupId>com.yuan</groupId>
             <artifactId>yuan-ai</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yuan</groupId>
+            <artifactId>yuan-generator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

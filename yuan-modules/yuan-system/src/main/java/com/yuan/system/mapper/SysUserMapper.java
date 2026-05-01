@@ -31,7 +31,7 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     Page<SysUserVo> selectPageUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
 
     @InterceptorIgnore(tenantLine = "true")
-    SysUserVo selectUserByUsernameByLogin(String username);
+    SysUserVo selectUserByUsernameByLogin(String username,String tenantId);
 
     SysUserDTO selectDtoById(@Param("userId") Long userId);
 

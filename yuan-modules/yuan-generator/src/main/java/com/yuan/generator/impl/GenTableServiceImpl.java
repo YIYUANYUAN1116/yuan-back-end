@@ -3,12 +3,8 @@ package com.yuan.generator.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import com.yuan.common.core.constant.Constants;
+import com.yuan.common.core.utils.StringUtils;
 import com.yuan.generator.config.GenConfig;
 import com.yuan.generator.domain.vo.SchemaFieldVo;
 import com.yuan.generator.domain.vo.SchemaGroupVo;
@@ -19,6 +15,11 @@ import com.yuan.generator.service.SchemaGroupService;
 import com.yuan.generator.service.SchemaService;
 import com.yuan.generator.util.VelocityInitializer;
 import com.yuan.generator.util.VelocityUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -186,7 +187,7 @@ public class GenTableServiceImpl implements IGenTableService {
         String classname = toCamelCase(baseClassName, false); // 首字母小写的类名，如：sysRole
         String businessName = toCamelCase(baseClassName, false);
         String moduleName = schemaGroupVo.getCode();
-
+        schema.setModuleName(moduleName);
         // 基本信息
         context.put("tableName", tableName);
         context.put("tableComment", schema.getComment());
@@ -197,7 +198,7 @@ public class GenTableServiceImpl implements IGenTableService {
         context.put("functionAuthor", author);
         context.put("author", author);
         context.put("datetime", new Date());
-        context.put("packageName", packageName);
+        context.put("packageName", StringUtils.isEmpty(moduleName)?packageName+"."+moduleName:packageName);
         context.put("moduleName", moduleName);
         context.put("businessName", businessName);
 
@@ -340,6 +341,7 @@ public class GenTableServiceImpl implements IGenTableService {
     private String getSchemaFileName(String template, SchemaVo schema) {
         // 从配置文件读取配置
         String packageName = GenConfig.getPackageName();
+        packageName = StringUtils.isEmpty(schema.getModuleName())?packageName:packageName+"."+schema.getModuleName();
         String tablePrefix = GenConfig.getTablePrefix();
         boolean autoRemovePre = GenConfig.getAutoRemovePre();
 
@@ -360,6 +362,7 @@ public class GenTableServiceImpl implements IGenTableService {
         String className = toCamelCase(baseClassName, true);   // 首字母大写，如：SysRole
         // 首字母小写，如：sysRole
         String moduleName = getModuleName(packageName);
+
         String javaPath = "src/main/java/";
         String mybatisPath = "src/main/resources/mapper/";
 

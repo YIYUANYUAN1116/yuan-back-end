@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/dev/schemaGroup")
-@Tag(name = "SchemaFieldController",description = "数据模型分组")
+@Tag(name = "SchemaGroupController",description = "数据模型分组")
 public class SchemaGroupController extends BaseController {
 
     private final SchemaGroupService schemaGroupService;

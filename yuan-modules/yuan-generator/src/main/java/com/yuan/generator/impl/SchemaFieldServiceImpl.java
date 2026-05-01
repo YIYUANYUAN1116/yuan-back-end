@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.common.core.exception.base.BaseException;
+import com.yuan.generator.event.SchemaAddedEvent;
 import lombok.RequiredArgsConstructor;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -20,7 +22,9 @@ import com.yuan.generator.service.SchemaFieldService;
 import com.yuan.generator.service.SchemaGroupService;
 import com.yuan.generator.service.SchemaService;
 import com.yuan.helper.DataBaseHelper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +41,7 @@ public class SchemaFieldServiceImpl implements SchemaFieldService {
     private final SchemaFieldMapper baseMapper;
     private final SchemaService schemaService;
     private final SchemaGroupService schemaGroupService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 查询数据模型字段
@@ -178,6 +183,17 @@ public class SchemaFieldServiceImpl implements SchemaFieldService {
         return deleteWithValidByIds(fields.stream().map(SchemaField::getId).collect(Collectors.toList()), false);
     }
 
+    @Override
+    @Transactional
+    public int syncUpdate(Long id) {
+        SchemaVo schemaVo = schemaService.queryById(id);
+        if (schemaVo == null){
+            throw new BaseException("数据模型不存在");
+        }
+        eventPublisher.publishEvent(new SchemaAddedEvent(this, id, schemaVo.getTableName()));
+        return 0;
+    }
+
     /**
      * 根据表名获取代码生成元数据
      */
@@ -263,11 +279,12 @@ public class SchemaFieldServiceImpl implements SchemaFieldService {
             LambdaQueryWrapper<SchemaField> lqw = Wrappers.lambdaQuery();
             lqw.eq(SchemaField::getSchemaId, schemaId);
             // 检查是否已存在字段数据
-            List<SchemaFieldVo> existingFields = baseMapper.selectVoList(lqw);
-            if (CollUtil.isNotEmpty(existingFields)) {
-                // 如果已存在字段，则不重复插入
-                return true;
-            }
+            baseMapper.delete(lqw);
+//            List<SchemaFieldVo> existingFields = baseMapper.selectVoList(lqw);
+//            if (CollUtil.isNotEmpty(existingFields)) {
+//                // 如果已存在字段，则不重复插入
+//                return true;
+//            }
             // 转换为 SchemaField 对象并批量插入
             List<SchemaField> fieldsToInsert = new ArrayList<>();
             int sort = 1;

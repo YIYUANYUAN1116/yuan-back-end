@@ -1,5 +1,6 @@
 package com.yuan.system.service;
 
+import com.yuan.common.core.domain.model.StrSelectModel;
 import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import com.yuan.system.domain.bo.SysTenantBo;
@@ -45,4 +46,6 @@ public interface SysTenantService {
      * 校验并批量删除多租户信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    List<StrSelectModel> strSelectModel();
 }

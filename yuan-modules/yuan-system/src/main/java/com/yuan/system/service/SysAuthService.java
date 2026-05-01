@@ -8,6 +8,7 @@ import cn.hutool.crypto.digest.BCrypt;
 import com.yuan.common.core.constant.Constants;
 import com.yuan.common.core.constant.GlobalConstants;
 import com.yuan.common.core.domain.dto.RoleDTO;
+import com.yuan.common.core.domain.model.LoginBody;
 import com.yuan.common.core.domain.model.LoginUser;
 import com.yuan.common.core.enums.DeviceType;
 import com.yuan.common.core.enums.LoginType;
@@ -47,14 +48,13 @@ public class SysAuthService {
     /**
      * 登录验证
      *
-     * @param username 用户名
-     * @param password 密码
-     * @param code     验证码
-     * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid) {
-        SysUserVo user = loadUserByUsername(username);
+    public String login(LoginBody body) {
+        String username = body.getUsername();
+        String password = body.getPassword();
+        String tenantId = body.getTenantId();
+        SysUserVo user = loadUserByUsername(body.getUsername(),tenantId);
         checkLogin(LoginType.PASSWORD, user.getUserId(),user.getTenantId(), username, () -> !BCrypt.checkpw(password, user.getPassword()));
         // 此处可根据登录用户的数据不同 自行创建 loginUser
         LoginUser loginUser = buildLoginUser(user);
@@ -80,8 +80,8 @@ public class SysAuthService {
         userMapper.updateById(sysUser);
     }
 
-    private SysUserVo loadUserByUsername(String username) {
-        SysUserVo user = userMapper.selectUserByUsernameByLogin(username);
+    private SysUserVo loadUserByUsername(String username,String tenantId) {
+        SysUserVo user = userMapper.selectUserByUsernameByLogin(username,tenantId);
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在.", username);
             throw new UserException("user.not.exists", username);

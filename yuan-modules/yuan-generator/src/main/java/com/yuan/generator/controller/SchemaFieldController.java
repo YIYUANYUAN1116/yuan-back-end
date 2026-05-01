@@ -1,6 +1,7 @@
 package com.yuan.generator.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.yuan.common.doc.annotation.PathId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -122,5 +123,15 @@ public class SchemaFieldController extends BaseController {
     @Operation(summary = "根据模型ID查询字段列表",operationId = "schemaField_listBySchemaId")
     public R<List<SchemaFieldVo>> listBySchemaId(@NotNull(message = "模型ID不能为空") @PathVariable Long schemaId) {
         return R.ok(schemaFieldService.queryListBySchemaId(schemaId));
+    }
+
+    @SaCheckPermission("dev:schemaField:edit")
+    @Log(title = "同步数据库字段", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/{id}/syncUpdate")
+    @Operation(summary = "同步数据库字段",operationId = "schemaField_syncUpdate")
+    public R<Void> syncUpdate(@PathVariable @PathId Long id) {
+        schemaFieldService.syncUpdate(id);
+        return R.ok();
     }
 }

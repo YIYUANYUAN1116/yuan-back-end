@@ -28,6 +28,7 @@ public class SchemaVo implements Serializable {
      */
     private Long schemaGroupId;
 
+    private String moduleName;
     /**
      * 模型名称
      */

@@ -36,9 +36,7 @@ public class AuthController {
     public R<LoginVo> login(@Validated @RequestBody LoginBody body) {
         LoginVo loginVo = new LoginVo();
         // 生成令牌
-        String token = authService.login(
-                body.getUsername(), body.getPassword(),
-                body.getCode(), body.getUuid());
+        String token = authService.login(body);
         loginVo.setToken(token);
         // 兼容后台管理登录
         loginVo.setAccess_token(token);

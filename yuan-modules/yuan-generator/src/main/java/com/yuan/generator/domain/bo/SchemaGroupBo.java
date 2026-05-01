@@ -48,4 +48,6 @@ public class SchemaGroupBo implements Serializable {
      */
     private String remark;
 
+    private Integer sort;
+
 }
