@@ -198,7 +198,7 @@ public class GenTableServiceImpl implements IGenTableService {
         context.put("functionAuthor", author);
         context.put("author", author);
         context.put("datetime", new Date());
-        context.put("packageName", StringUtils.isEmpty(moduleName)?packageName+"."+moduleName:packageName);
+        context.put("packageName", StringUtils.isEmpty(moduleName)?packageName:packageName+"."+moduleName);
         context.put("moduleName", moduleName);
         context.put("businessName", businessName);
 

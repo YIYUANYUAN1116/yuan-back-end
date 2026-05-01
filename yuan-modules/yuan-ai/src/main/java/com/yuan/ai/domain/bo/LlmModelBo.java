@@ -29,6 +29,7 @@ public class LlmModelBo implements Serializable {
      * displayName
      */
     private String displayName;
+    private String modelType;
     /**
      * {"stream":true,"json":true,"tools":true,"vision":false,"thinking":false}
      */

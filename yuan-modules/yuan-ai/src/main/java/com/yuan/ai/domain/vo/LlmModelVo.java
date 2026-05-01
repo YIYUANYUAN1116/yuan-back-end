@@ -34,6 +34,8 @@ public class LlmModelVo implements Serializable {
     @ExcelProperty(value = "providerName")
     private String providerName;
 
+    private String modelType;
+
     private Long providerId;
     /**
      * remote model name, e.g. gpt-4o-mini

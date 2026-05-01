@@ -32,6 +32,8 @@ public class LlmModel extends BaseEntity {
      */
     private String modelName;
 
+    private String modelType;
+
     /**
      * displayName
      */
