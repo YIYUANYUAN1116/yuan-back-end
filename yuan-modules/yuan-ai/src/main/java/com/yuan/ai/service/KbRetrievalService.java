@@ -1,0 +1,10 @@
+package com.yuan.ai.service;
+
+import com.yuan.ai.domain.dto.KbRetrievalRequest;
+import com.yuan.ai.domain.dto.KbRetrievalResponse;
+
+public interface KbRetrievalService {
+    KbRetrievalResponse retrieve(KbRetrievalRequest request);
+
+    String buildPromptContext(KbRetrievalResponse response);
+}

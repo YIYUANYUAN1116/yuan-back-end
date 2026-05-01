@@ -14,22 +14,16 @@ import com.yuan.common.web.core.BaseController;
 import com.yuan.system.domain.bo.SysUserBo;
 import com.yuan.system.domain.bo.SysUserPasswordBo;
 import com.yuan.system.domain.bo.SysUserProfileBo;
-import com.yuan.system.domain.vo.AvatarVo;
 import com.yuan.system.domain.vo.ProfileVo;
 import com.yuan.system.domain.vo.SysUserVo;
 import com.yuan.system.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -57,6 +51,9 @@ public class SysProfileController extends BaseController {
     @Operation(summary = "个人信息",operationId="getProfile")
     public R<ProfileVo> profile() {
         SysUserVo user = userService.selectUserById(LoginHelper.getUserId());
+        if (StringUtils.isNotEmpty(user.getAvatar())) {
+            user.setAvatarUrl(ossClient.presignGet(user.getAvatar()));
+        }
         ProfileVo profileVo = new ProfileVo();
         profileVo.setUser(user);
         profileVo.setRoleGroup(userService.selectUserRoleGroup(user.getUserId()));
@@ -67,7 +64,7 @@ public class SysProfileController extends BaseController {
     /**
      * 修改用户
      */
-    @Log(title = "个人信息", businessType = BusinessType.UPDATE)
+    @Log(title = "修改用户", businessType = BusinessType.UPDATE)
     @PutMapping
     @Operation(summary = "修改用户",operationId="updateProfile")
     public R<Void> updateProfile(@RequestBody SysUserProfileBo profile) {
@@ -88,7 +85,7 @@ public class SysProfileController extends BaseController {
     /**
      * 重置密码
      */
-    @Log(title = "个人信息", businessType = BusinessType.UPDATE)
+    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
     @Operation(summary = "重置密码",operationId="updatePwd")
     public R<Void> updatePwd(@Validated @RequestBody SysUserPasswordBo bo) {
@@ -114,14 +111,15 @@ public class SysProfileController extends BaseController {
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "个人信息",operationId="avatar")
-    public R<AvatarVo> avatar(@RequestPart("avatarFile") MultipartFile avatarFile) {
+    @Operation(summary = "用户头像",operationId="avatar")
+    public R<T> avatar(@RequestPart("avatarFile") MultipartFile avatarFile) {
         if (!avatarFile.isEmpty()) {
             String extension = FileUtil.extName(avatarFile.getOriginalFilename());
             if (!StringUtils.equalsAnyIgnoreCase(extension, MimeTypeUtils.IMAGE_EXTENSION)) {
                 return R.fail("文件格式不正确，请上传" + Arrays.toString(MimeTypeUtils.IMAGE_EXTENSION) + "格式");
             }
             userService.editAvatar(avatarFile);
+            return R.ok();
         }
         return R.fail("上传图片异常，请联系管理员");
     }

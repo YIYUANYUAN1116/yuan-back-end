@@ -229,7 +229,7 @@ public class SysUserServiceImpl implements SysUserService {
             FileObjectKey object = ossClient.putObject(scope, file);
             String objectKey = object.getObjectKey();
             baseMapper.update(Wrappers.<SysUser>lambdaUpdate()
-                    .eq(SysUser::getUserId, LoginHelper.getTenantId())
+                    .eq(SysUser::getUserId, LoginHelper.getUserId())
                     .set(SysUser::getAvatar, objectKey));
             return ossClient.presignGet(object);
         } catch (IOException e) {

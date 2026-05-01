@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Data
 public class ChatRequest {
@@ -44,4 +45,9 @@ public class ChatRequest {
     private String sceneCode;
     private String bizType;
     private Long bizId;
+
+    private List<Long> kbIds;
+    private Integer retrievalTopK;
+    private BigDecimal retrievalMinScore;
+    private Long retrievalEmbeddingModelId;
 }

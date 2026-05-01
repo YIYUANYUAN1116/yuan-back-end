@@ -8,6 +8,7 @@ import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 import com.yuan.common.idempotent.annotation.RepeatSubmit;
 import com.yuan.common.log.annotation.Log;
 import com.yuan.common.web.core.BaseController;
@@ -24,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.domain.bo.KbDocumentBo;
 import com.yuan.ai.service.KbDocumentService;
+import com.yuan.ai.service.KbPipelineService;
 import com.yuan.core.page.TableDataInfo;
 
 /**
@@ -40,6 +42,7 @@ import com.yuan.core.page.TableDataInfo;
 public class KbDocumentController extends BaseController {
 
     private final KbDocumentService kbDocumentService;
+    private final KbPipelineService kbPipelineService;
 
 /**
  * 查询知识库文档表列表
@@ -86,6 +89,16 @@ public class KbDocumentController extends BaseController {
     @Operation(summary = "新增知识库文档表",operationId = "KbDocument_add")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody KbDocumentBo bo) {
         return toAjax(kbDocumentService.insertByBo(bo));
+    }
+
+    @SaCheckPermission("ai:kbDocument:add")
+    @Log(title = "Knowledge base document upload", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/upload")
+    @Operation(summary = "Upload and index knowledge base document", operationId = "KbDocument_upload")
+    public R<KbDocumentVo> upload(@RequestParam("kbId") Long kbId,
+                                  @RequestPart("file") MultipartFile file) {
+        return R.ok(kbPipelineService.uploadAndIndex(kbId, file));
     }
 
     /**

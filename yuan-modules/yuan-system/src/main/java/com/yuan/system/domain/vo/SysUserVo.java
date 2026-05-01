@@ -188,4 +188,6 @@ public class SysUserVo implements Serializable {
 
     private Boolean isPrimaryPost;
     private Long primaryPostId;
+
+    private String avatarUrl;
 }
