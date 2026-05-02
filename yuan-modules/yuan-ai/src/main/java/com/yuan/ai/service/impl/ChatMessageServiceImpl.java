@@ -4,9 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.ai.domain.ChatMessage;
+import com.yuan.ai.domain.KbRetrievalHit;
+import com.yuan.ai.domain.KbRetrievalLog;
 import com.yuan.ai.domain.bo.ChatMessageBo;
 import com.yuan.ai.domain.vo.ChatMessageVo;
+import com.yuan.ai.domain.vo.KbChunkVo;
+import com.yuan.ai.domain.vo.KbRetrievalHitVo;
 import com.yuan.ai.mapper.ChatMessageMapper;
+import com.yuan.ai.mapper.KbChunkMapper;
+import com.yuan.ai.mapper.KbRetrievalHitMapper;
+import com.yuan.ai.mapper.KbRetrievalLogMapper;
 import com.yuan.ai.service.ChatMessageService;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -16,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * chat_messageService业务层处理
@@ -30,6 +37,9 @@ import java.util.List;
 public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageMapper baseMapper;
+    private final KbRetrievalLogMapper kbRetrievalLogMapper;
+    private final KbRetrievalHitMapper kbRetrievalHitMapper;
+    private final KbChunkMapper kbChunkMapper;
 
     /**
      * 查询chat_message
@@ -46,8 +56,65 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         public TableDataInfo<ChatMessageVo> queryPageList(ChatMessageBo bo, PageQuery pageQuery) {
             LambdaQueryWrapper<ChatMessage> lqw = buildQueryWrapper(bo);
             Page<ChatMessageVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            fillRetrievalHits(result.getRecords());
             return TableDataInfo.build(result);
         }
+
+    private void fillRetrievalHits(List<ChatMessageVo> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        Set<Long> invocationIds = records.stream()
+            .filter(item -> "assistant".equals(item.getRole()))
+            .map(ChatMessageVo::getInvocationId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+        if (invocationIds.isEmpty()) {
+            return;
+        }
+
+        List<KbRetrievalLog> logs = kbRetrievalLogMapper.selectList(Wrappers.<KbRetrievalLog>lambdaQuery()
+            .in(KbRetrievalLog::getInvocationId, invocationIds));
+        if (logs == null || logs.isEmpty()) {
+            return;
+        }
+
+        Map<Long, List<Long>> logIdsByInvocationId = logs.stream()
+            .filter(log -> log.getInvocationId() != null && log.getLogId() != null)
+            .collect(Collectors.groupingBy(KbRetrievalLog::getInvocationId,
+                Collectors.mapping(KbRetrievalLog::getLogId, Collectors.toList())));
+        List<Long> logIds = logs.stream()
+            .map(KbRetrievalLog::getLogId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        if (logIds.isEmpty()) {
+            return;
+        }
+
+        List<KbRetrievalHitVo> hits = kbRetrievalHitMapper.selectVoList(Wrappers.<KbRetrievalHit>lambdaQuery()
+            .in(KbRetrievalHit::getLogId, logIds)
+            .orderByAsc(KbRetrievalHit::getLogId)
+            .orderByAsc(KbRetrievalHit::getRankNo));
+        Map<Long, List<KbRetrievalHitVo>> hitsByLogId = hits.stream()
+            .filter(hit -> hit.getLogId() != null)
+                .peek(hit->{
+                    KbChunkVo kbChunkVo = kbChunkMapper.selectVoById(hit.getChunkId());
+                    if (kbChunkVo != null) {
+                        hit.setCompleteContent(kbChunkVo.getContent());
+                    }
+                })
+            .collect(Collectors.groupingBy(KbRetrievalHitVo::getLogId));
+
+        records.stream()
+            .filter(item -> "assistant".equals(item.getRole()))
+            .filter(item -> item.getInvocationId() != null)
+            .forEach(item -> {
+                List<Long> relatedLogIds = logIdsByInvocationId.getOrDefault(item.getInvocationId(), Collections.emptyList());
+                List<KbRetrievalHitVo> retrievalHits = new ArrayList<>();
+                relatedLogIds.forEach(logId -> retrievalHits.addAll(hitsByLogId.getOrDefault(logId, Collections.emptyList())));
+                item.setRetrievalHits(retrievalHits);
+            });
+    }
 
     /**
      * 查询chat_message列表

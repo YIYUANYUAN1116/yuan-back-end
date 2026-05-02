@@ -97,7 +97,7 @@ public class KbDocumentController extends BaseController {
     @Log(title = "Knowledge base document upload", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/upload")
-    @Operation(summary = "Upload and index knowledge base document", operationId = "KbDocument_upload")
+    @Operation(summary = "Upload and index knowledge base document", operationId = "KbDocument_upload2")
     public R<KbDocumentVo> upload(@RequestParam("kbId") Long kbId,
                                   @RequestPart("file") MultipartFile file) {
         return R.ok(kbPipelineService.uploadAndIndex(kbId, file));

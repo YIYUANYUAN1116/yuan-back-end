@@ -83,7 +83,7 @@ public class KbEmbedding implements Serializable {
     private String embedVersion;
 
     /**
-     * 状态：SUCCESS-成功，FAILED-失败，DISABLED-禁用
+     * 状态：0-成功，1-失败，2-禁用
      */
     private String status;
 

@@ -33,7 +33,7 @@ import java.util.Set;
 public class DefaultKbRetrievalService implements KbRetrievalService {
 
     private static final String DEL_NOT_DELETED = "0";
-    private static final int DEFAULT_TOP_K = 5;
+    private static final int DEFAULT_TOP_K = 3;
     private static final BigDecimal DEFAULT_MIN_SCORE = new BigDecimal("0.2");
 
     private final KbBaseMapper kbBaseMapper;

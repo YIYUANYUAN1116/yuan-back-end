@@ -250,7 +250,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
         embedding.setVectorDim(vector == null ? 0 : vector.length);
         embedding.setContentHash(chunk.getContentHash());
         embedding.setEmbedVersion("1.0");
-        embedding.setStatus("SUCCESS");
+        embedding.setStatus("0");
         embedding.setCreateBy(String.valueOf(LoginHelper.getUserId()));
         embedding.setCreateTime(LocalDateTime.now());
         embedding.setUpdateTime(LocalDateTime.now());

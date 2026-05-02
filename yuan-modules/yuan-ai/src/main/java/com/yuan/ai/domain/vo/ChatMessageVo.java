@@ -10,6 +10,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -107,5 +108,10 @@ public class ChatMessageVo implements Serializable {
      */
     @ExcelProperty(value = "updateTime")
     private LocalDateTime updateTime;
+
+    /**
+     * 知识库检索命中条目
+     */
+    private List<KbRetrievalHitVo> retrievalHits;
 
 }
