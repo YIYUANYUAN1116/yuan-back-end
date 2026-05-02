@@ -11,6 +11,7 @@ import com.yuan.ai.provider.builder.ChatMessageBuilder;
 import com.yuan.ai.provider.invoker.InvokerRegistry;
 import com.yuan.ai.provider.invoker.ProviderInvoker;
 import com.yuan.ai.service.ChatMessageService;
+import com.yuan.ai.service.KbRetrievalService;
 import com.yuan.ai.service.LlmInvocationService;
 import com.yuan.ai.support.SseHelper;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class UnifiedChatProvider implements ChatProvider {
     private final SseHelper sse;
     private final ChatMessageService messageService;
     private final LlmInvocationService invocationService;
+    private final KbRetrievalService kbRetrievalService;
     private final ChatMessageBuilder messageBuilder;
     private final InvokerRegistry invokerRegistry;
     private final LlmProviderMapper providerMapper;
@@ -66,6 +68,7 @@ public class UnifiedChatProvider implements ChatProvider {
                     }}
             );
             messageService.bindInvocation(assistantMsgId, invId);
+            kbRetrievalService.bindInvocation(ctx.getKbRetrievalLogId(), invId);
 
             try {
                 ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
@@ -144,6 +147,7 @@ public class UnifiedChatProvider implements ChatProvider {
         if (assistantMsgId != null) {
             messageService.bindInvocation(assistantMsgId, invId);
         }
+        kbRetrievalService.bindInvocation(ctx.getKbRetrievalLogId(), invId);
 
         try {
             LlmProviderVo llmProviderVo = providerMapper.selectVoById(providerId);

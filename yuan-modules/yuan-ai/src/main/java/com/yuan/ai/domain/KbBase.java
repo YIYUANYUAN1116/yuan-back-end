@@ -19,7 +19,7 @@ public class KbBase implements Serializable {
     /**
      * 知识库ID
      */
-        @TableId(value = "kbId", type = IdType.AUTO)
+        @TableId(value = "kb_id", type = IdType.AUTO)
     private Long kbId;
 
     /**

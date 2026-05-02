@@ -2,7 +2,8 @@ package com.yuan.ai.service;
 
 import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.domain.bo.KbDocumentBo;
-    import com.yuan.core.page.TableDataInfo;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.core.page.TableDataInfo;
     import com.yuan.core.page.PageQuery;
 
 import java.util.Collection;
@@ -45,4 +46,6 @@ public interface KbDocumentService {
      * 校验并批量删除知识库文档表信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    List<SelectModel> selectKbDocument(Long kbId);
 }

@@ -4,4 +4,97 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.ai.mapper.KbDocumentMapper">
 
+    <select id="selectKbDocument" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select doc_id as value,
+               file_name as label
+        from kb_document
+        where del_flag = '0'
+        <if test="kbId != null">
+            AND kb_id = #{kbId}
+        </if>
+    </select>
+
+    <select id="selectKbDocumentVoPage" resultType="com.yuan.ai.domain.vo.KbDocumentVo">
+        SELECT
+            d.*,
+            b.kb_name AS kb_name
+        FROM kb_document d
+        LEFT JOIN kb_base b ON d.kb_id = b.kb_id AND b.del_flag = '0'
+        WHERE d.del_flag = '0'
+        <if test="bo.docId != null">
+            AND d.doc_id = #{bo.docId}
+        </if>
+        <if test="bo.tenantId != null and bo.tenantId != ''">
+            AND d.tenant_id = #{bo.tenantId}
+        </if>
+        <if test="bo.kbId != null">
+            AND d.kb_id = #{bo.kbId}
+        </if>
+        <if test="bo.kbName != null and bo.kbName != ''">
+            AND b.kb_name LIKE CONCAT('%', #{bo.kbName}, '%')
+        </if>
+        <if test="bo.fileId != null">
+            AND d.file_id = #{bo.fileId}
+        </if>
+        <if test="bo.fileName != null and bo.fileName != ''">
+            AND d.file_name LIKE CONCAT('%', #{bo.fileName}, '%')
+        </if>
+        <if test="bo.fileType != null and bo.fileType != ''">
+            AND d.file_type = #{bo.fileType}
+        </if>
+        <if test="bo.fileSize != null">
+            AND d.file_size = #{bo.fileSize}
+        </if>
+        <if test="bo.fileUrl != null and bo.fileUrl != ''">
+            AND d.file_url LIKE CONCAT('%', #{bo.fileUrl}, '%')
+        </if>
+        <if test="bo.objectKey != null and bo.objectKey != ''">
+            AND d.object_key = #{bo.objectKey}
+        </if>
+        <if test="bo.title != null and bo.title != ''">
+            AND d.title LIKE CONCAT('%', #{bo.title}, '%')
+        </if>
+        <if test="bo.sourceType != null and bo.sourceType != ''">
+            AND d.source_type = #{bo.sourceType}
+        </if>
+        <if test="bo.sourceUrl != null and bo.sourceUrl != ''">
+            AND d.source_url LIKE CONCAT('%', #{bo.sourceUrl}, '%')
+        </if>
+        <if test="bo.parseStatus != null and bo.parseStatus != ''">
+            AND d.parse_status = #{bo.parseStatus}
+        </if>
+        <if test="bo.embedStatus != null and bo.embedStatus != ''">
+            AND d.embed_status = #{bo.embedStatus}
+        </if>
+        <if test="bo.chunkCount != null">
+            AND d.chunk_count = #{bo.chunkCount}
+        </if>
+        <if test="bo.tokenCount != null">
+            AND d.token_count = #{bo.tokenCount}
+        </if>
+        <if test="bo.charCount != null">
+            AND d.char_count = #{bo.charCount}
+        </if>
+        <if test="bo.contentHash != null and bo.contentHash != ''">
+            AND d.content_hash = #{bo.contentHash}
+        </if>
+        <if test="bo.errorMessage != null and bo.errorMessage != ''">
+            AND d.error_message LIKE CONCAT('%', #{bo.errorMessage}, '%')
+        </if>
+        <if test="bo.status != null and bo.status != ''">
+            AND d.status = #{bo.status}
+        </if>
+        <if test="bo.createBy != null and bo.createBy != ''">
+            AND d.create_by = #{bo.createBy}
+        </if>
+        <if test="bo.createTime != null">
+            AND d.create_time = #{bo.createTime}
+        </if>
+        <if test="bo.updateBy != null and bo.updateBy != ''">
+            AND d.update_by = #{bo.updateBy}
+        </if>
+        <if test="bo.updateTime != null">
+            AND d.update_time = #{bo.updateTime}
+        </if>
+    </select>
 </mapper>

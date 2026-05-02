@@ -19,7 +19,7 @@ public class KbChunk implements Serializable {
     /**
      * 切片ID
      */
-        @TableId(value = "chunkId", type = IdType.AUTO)
+        @TableId(value = "chunk_id", type = IdType.AUTO)
     private Long chunkId;
 
     /**
@@ -98,7 +98,7 @@ public class KbChunk implements Serializable {
     private Long embeddingId;
 
     /**
-     * 状态：ENABLED-启用，DISABLED-禁用
+     * 状态：0-启用，1-禁用
      */
     private String status;
 

@@ -1,19 +1,14 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.KbBase;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * 知识库主表业务对象 kb_base
@@ -59,6 +54,7 @@ public class KbBaseBo implements Serializable {
      * 默认向量模型ID，对应 llm_model.model_id
      */
     private Long embeddingModelId;
+    private String embeddingModel;
     /**
      * 默认切分策略
      */
@@ -74,7 +70,7 @@ public class KbBaseBo implements Serializable {
     /**
      * 状态：ENABLED-启用，DISABLED-禁用
      */
-    @NotBlank(message = "状态：ENABLED-启用，DISABLED-禁用不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "状态：ENABLED-启用，DISABLED-禁用不能为空", groups = {EditGroup.class })
     private String status;
     /**
      * 创建人
@@ -83,7 +79,7 @@ public class KbBaseBo implements Serializable {
     /**
      * 创建时间
      */
-    @NotNull(message = "创建时间不能为空", groups = { AddGroup.class, EditGroup.class })
+
     private LocalDateTime createTime;
     /**
      * 更新人
@@ -96,7 +92,7 @@ public class KbBaseBo implements Serializable {
     /**
      * 逻辑删除：0-未删除，2-已删除
      */
-    @NotBlank(message = "逻辑删除：0-未删除，2-已删除不能为空", groups = { AddGroup.class, EditGroup.class })
+
     private String delFlag;
 
 }

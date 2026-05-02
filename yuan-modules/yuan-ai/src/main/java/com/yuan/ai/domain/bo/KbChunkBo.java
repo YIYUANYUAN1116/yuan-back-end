@@ -37,11 +37,13 @@ public class KbChunkBo implements Serializable {
      */
     @NotNull(message = "知识库ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long kbId;
+    private String kbName;
     /**
      * 文档ID
      */
     @NotNull(message = "文档ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long docId;
+    private String docName;
     /**
      * 文档内切片序号
      */

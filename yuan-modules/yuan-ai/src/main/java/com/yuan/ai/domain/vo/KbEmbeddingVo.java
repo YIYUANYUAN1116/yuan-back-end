@@ -1,14 +1,13 @@
 package com.yuan.ai.domain.vo;
 
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.KbEmbedding;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.KbEmbedding;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -33,11 +32,13 @@ public class KbEmbeddingVo implements Serializable {
      */
     @ExcelProperty(value = "知识库ID")
     private Long kbId;
+    private String kbName;
     /**
      * 文档ID
      */
     @ExcelProperty(value = "文档ID")
     private Long docId;
+    private String docName;
     /**
      * 切片ID
      */
@@ -53,6 +54,8 @@ public class KbEmbeddingVo implements Serializable {
      */
     @ExcelProperty(value = "向量模型编码")
     private String modelCode;
+
+    private String modelName;
     /**
      * 向量库类型：QDRANT/MILVUS/ELASTICSEARCH/PGVECTOR
      */

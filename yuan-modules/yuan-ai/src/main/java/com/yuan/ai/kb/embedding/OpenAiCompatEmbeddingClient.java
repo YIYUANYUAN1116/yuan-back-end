@@ -32,6 +32,11 @@ public class OpenAiCompatEmbeddingClient implements KbEmbeddingClient {
     private final ConcurrentHashMap<String, OpenAiEmbeddingModel> cache = new ConcurrentHashMap<>();
 
     @Override
+    public boolean supports(String providerCode) {
+        return false;
+    }
+
+    @Override
     public float[] embed(LlmEndpoint endpoint, LlmModel model, String text) {
         return getOrCreate(endpoint, model).embed(text);
     }

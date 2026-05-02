@@ -1,23 +1,16 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.KbRetrievalLog;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * 知识库检索日志表业务对象 kb_retrieval_log
@@ -44,10 +37,6 @@ public class KbRetrievalLogBo implements Serializable {
      * 知识库ID列表，多知识库检索时使用，逗号分隔
      */
     private String kbIds;
-    /**
-     * 聊天会话ID
-     */
-    private Long sessionId;
     /**
      * 对话ID
      */

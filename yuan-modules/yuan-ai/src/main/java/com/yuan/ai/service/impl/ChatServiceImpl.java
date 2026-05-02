@@ -27,8 +27,8 @@ public class ChatServiceImpl implements ChatService {
         SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
         sse.init(emitter);
         try {
-            enrichWithKnowledgeBase(req);
             ChatPrepareContext ctx = chatPrepareService.prepare(req);
+            enrichWithKnowledgeBase(req, ctx);
             return chatProvider.stream(req, ctx, emitter);
         } catch (Exception e) {
             sse.error(emitter, e);
@@ -36,18 +36,21 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private void enrichWithKnowledgeBase(ChatRequest req) {
+    private void enrichWithKnowledgeBase(ChatRequest req, ChatPrepareContext ctx) {
         if (req.getKbIds() == null || req.getKbIds().isEmpty() || StringUtils.isBlank(req.getPrompt())) {
             return;
         }
         KbRetrievalRequest retrievalRequest = new KbRetrievalRequest();
+        retrievalRequest.setTenantId(ctx.getTenantId());
         retrievalRequest.setKbIds(req.getKbIds());
         retrievalRequest.setQuery(req.getPrompt());
         retrievalRequest.setTopK(req.getRetrievalTopK());
         retrievalRequest.setMinScore(req.getRetrievalMinScore());
         retrievalRequest.setEmbeddingModelId(req.getRetrievalEmbeddingModelId());
-        retrievalRequest.setConversationId(req.getConversationId());
+        retrievalRequest.setConversationId(ctx.getConversationId());
+        retrievalRequest.setMessageId(ctx.getUserMsgId());
         KbRetrievalResponse response = kbRetrievalService.retrieve(retrievalRequest);
+        ctx.setKbRetrievalLogId(response.getLogId());
         String context = kbRetrievalService.buildPromptContext(response);
         if (StringUtils.isBlank(context)) {
             return;

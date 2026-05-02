@@ -46,6 +46,7 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
         boolean persistChatMessage = req.getPersistChatMessage() == null || req.getPersistChatMessage();
 
         Long conversationId = null;
+        Long userMsgId = null;
         Long assistantMsgId = null;
 
         if (persistChatMessage) {
@@ -63,9 +64,10 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
 //                    ? ""
 //                    : req.getMessages().get(req.getMessages().size() - 1).getContent();
 
-            messageService.insertUserMsg(tenantId, conv.getId(), req.getUserId(), model.getId(), req.getPrompt());
+            userMsgId = messageService.insertUserMsg(tenantId, conv.getId(), req.getUserId(), model.getId(), req.getPrompt());
             assistantMsgId = messageService.insertAssistantPlaceholder(tenantId, conv.getId(), req.getUserId(), model.getId());
             conversationId = conv.getId();
+            req.setConversationId(conversationId);
         }
 
         return ChatPrepareContext.builder()
@@ -73,6 +75,7 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
                 .endpoint(ep)
                 .model(model)
                 .conversationId(conversationId)
+                .userMsgId(userMsgId)
                 .assistantMsgId(assistantMsgId)
                 .build();
     }

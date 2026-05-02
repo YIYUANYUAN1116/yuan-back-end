@@ -44,8 +44,7 @@ public class KbChunkServiceImpl implements KbChunkService {
          */
         @Override
         public TableDataInfo<KbChunkVo> queryPageList(KbChunkBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<KbChunk> lqw = buildQueryWrapper(bo);
-            Page<KbChunkVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            Page<KbChunkVo> result = baseMapper.selectKbChunkVoPage(bo, pageQuery.build());
             return TableDataInfo.build(result);
         }
 

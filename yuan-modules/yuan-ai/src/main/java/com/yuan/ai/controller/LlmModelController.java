@@ -127,8 +127,15 @@ public class LlmModelController extends BaseController {
 
     @SaCheckPermission("ai:llmModel:query")
     @GetMapping("/selectModel")
-    @Operation(summary = "获取供应商选择框列表",operationId = "selectModel")
+    @Operation(summary = "获取对话模型选择",operationId = "selectModel")
     public R<List<SelectModel>> selectModel() {
-        return R.ok(llmModelMapper.selectModel());
+        return R.ok(llmModelMapper.selectChatModel());
+    }
+
+    @SaCheckPermission("ai:llmModel:query")
+    @GetMapping("/selectEmbeddingModel")
+    @Operation(summary = "获取模型选择",operationId = "selectEmbeddingModel")
+    public R<List<SelectModel>> selectEmbeddingModel() {
+        return R.ok(llmModelMapper.selectEmbeddingModel());
     }
 }

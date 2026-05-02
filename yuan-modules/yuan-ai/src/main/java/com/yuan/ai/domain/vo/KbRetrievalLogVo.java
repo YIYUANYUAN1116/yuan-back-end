@@ -39,11 +39,7 @@ public class KbRetrievalLogVo implements Serializable {
      */
     @ExcelProperty(value = "知识库ID列表，多知识库检索时使用，逗号分隔")
     private String kbIds;
-    /**
-     * 聊天会话ID
-     */
-    @ExcelProperty(value = "聊天会话ID")
-    private Long sessionId;
+
     /**
      * 对话ID
      */

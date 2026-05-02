@@ -5,6 +5,7 @@ import com.yuan.ai.domain.bo.KbBaseBo;
 import com.yuan.ai.domain.vo.KbBaseVo;
 import com.yuan.ai.service.KbBaseService;
 import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
 import com.yuan.common.core.validate.EditGroup;
 import com.yuan.common.doc.annotation.PathId;
@@ -113,5 +114,13 @@ public class KbBaseController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] kbIds) {
         return toAjax(kbBaseService.deleteWithValidByIds(List.of(kbIds), true));
+    }
+
+
+
+    @GetMapping("/select")
+    @Operation(summary = "知识库下拉选择",operationId = "KbBase_select")
+    public R<List<SelectModel>> selectKb() {
+        return R.ok(kbBaseService.selectKb());
     }
 }

@@ -1,23 +1,15 @@
 package com.yuan.ai.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.yuan.ai.domain.KbBase;
-import com.yuan.ai.domain.KbChunk;
-import com.yuan.ai.domain.KbRetrievalHit;
-import com.yuan.ai.domain.KbRetrievalLog;
-import com.yuan.ai.domain.LlmEndpoint;
-import com.yuan.ai.domain.LlmModel;
+import com.yuan.ai.domain.*;
 import com.yuan.ai.domain.dto.KbRetrievalHitDto;
 import com.yuan.ai.domain.dto.KbRetrievalRequest;
 import com.yuan.ai.domain.dto.KbRetrievalResponse;
+import com.yuan.ai.kb.embedding.EmbeddingInvokerRegistry;
 import com.yuan.ai.kb.embedding.KbEmbeddingClient;
 import com.yuan.ai.kb.vector.KbVectorSearchHit;
 import com.yuan.ai.kb.vector.KbVectorStore;
-import com.yuan.ai.mapper.KbBaseMapper;
-import com.yuan.ai.mapper.KbChunkMapper;
-import com.yuan.ai.mapper.KbRetrievalHitMapper;
-import com.yuan.ai.mapper.KbRetrievalLogMapper;
-import com.yuan.ai.mapper.LlmEndpointMapper;
+import com.yuan.ai.mapper.*;
 import com.yuan.ai.service.KbRetrievalService;
 import com.yuan.ai.service.LlmModelService;
 import com.yuan.common.core.exception.ServiceException;
@@ -50,8 +42,9 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
     private final KbRetrievalHitMapper hitMapper;
     private final LlmModelService modelService;
     private final LlmEndpointMapper endpointMapper;
-    private final KbEmbeddingClient embeddingClient;
+    private final LlmProviderMapper providerMapper;
     private final KbVectorStore vectorStore;
+    private final EmbeddingInvokerRegistry embeddingInvokerRegistry;
 
     @Override
     public KbRetrievalResponse retrieve(KbRetrievalRequest request) {
@@ -75,7 +68,7 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
             retrievalLog.setHitCount(hits.size());
             retrievalLog.setUsedCount(hits.size());
             retrievalLog.setLatencyMs((int) (System.currentTimeMillis() - start));
-            retrievalLog.setStatus("SUCCESS");
+            retrievalLog.setStatus("0");
             retrievalLog.setUpdateTime(LocalDateTime.now());
             logMapper.updateById(retrievalLog);
             return KbRetrievalResponse.builder()
@@ -87,12 +80,24 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         } catch (Exception e) {
             log.error("[DefaultKbRetrievalService][retrieve] retrieval failed", e);
             retrievalLog.setLatencyMs((int) (System.currentTimeMillis() - start));
-            retrievalLog.setStatus("FAILED");
+            retrievalLog.setStatus("2");
             retrievalLog.setErrorMessage(truncate(e.getMessage(), 2000));
             retrievalLog.setUpdateTime(LocalDateTime.now());
             logMapper.updateById(retrievalLog);
             throw e;
         }
+    }
+
+    @Override
+    public void bindInvocation(Long logId, Long invocationId) {
+        if (logId == null || invocationId == null) {
+            return;
+        }
+        KbRetrievalLog update = new KbRetrievalLog();
+        update.setLogId(logId);
+        update.setInvocationId(invocationId);
+        update.setUpdateTime(LocalDateTime.now());
+        logMapper.updateById(update);
     }
 
     @Override
@@ -129,6 +134,11 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         if (endpoint == null) {
             throw new ServiceException("Embedding endpoint not found: " + model.getEndpointId());
         }
+        LlmProvider llmProvider = providerMapper.selectById(model.getProviderId());
+        if (llmProvider == null) {
+            throw new ServiceException("Embedding provider not found: " + model.getProviderId());
+        }
+        KbEmbeddingClient embeddingClient = embeddingInvokerRegistry.resolve(llmProvider.getProviderCode());
         float[] queryVector = embeddingClient.embed(endpoint, model, query);
         List<KbVectorSearchHit> hits = vectorStore.search(tenantId, kbIds, queryVector, topK, minScore.doubleValue());
         List<KbRetrievalHitDto> result = new ArrayList<>();
@@ -151,7 +161,7 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         List<KbChunk> chunks = chunkMapper.selectList(Wrappers.<KbChunk>lambdaQuery()
                 .eq(KbChunk::getTenantId, tenantId)
                 .in(KbChunk::getKbId, kbIds)
-                .eq(KbChunk::getStatus, "ENABLED")
+                .eq(KbChunk::getStatus, "0")
                 .last("limit 200"));
         Set<String> terms = new LinkedHashSet<>();
         for (String part : StringUtils.defaultString(query).toLowerCase().split("[\\s,.;:!?()\\[\\]{}\"'`|/\\\\-]+")) {
@@ -205,7 +215,7 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
             hit.setScore(dto.getScore());
             hit.setUsedInPrompt(1);
             hit.setContentPreview(dto.getContentPreview());
-            hit.setStatus("SUCCESS");
+            hit.setStatus("1");
             hit.setCreateBy(String.valueOf(LoginHelper.getUserId()));
             hit.setCreateTime(LocalDateTime.now());
             hit.setUpdateTime(LocalDateTime.now());
@@ -220,7 +230,6 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         log.setTenantId(tenantId);
         log.setKbId(kbIds.size() == 1 ? kbIds.get(0) : null);
         log.setKbIds(StringUtils.join(kbIds, ","));
-        log.setSessionId(request.getSessionId());
         log.setConversationId(request.getConversationId());
         log.setMessageId(request.getMessageId());
         log.setInvocationId(request.getInvocationId());
@@ -230,7 +239,7 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         log.setMinScore(minScore);
         log.setHitCount(0);
         log.setUsedCount(0);
-        log.setStatus("PENDING");
+        log.setStatus("1");
         log.setCreateBy(String.valueOf(LoginHelper.getUserId()));
         log.setCreateTime(now);
         log.setUpdateTime(now);

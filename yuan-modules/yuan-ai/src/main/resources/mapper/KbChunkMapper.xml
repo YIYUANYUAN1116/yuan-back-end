@@ -4,4 +4,83 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.ai.mapper.KbChunkMapper">
 
+    <select id="selectKbChunkVoPage" resultType="com.yuan.ai.domain.vo.KbChunkVo">
+        SELECT
+            c.*,
+            b.kb_name AS kb_name,
+            d.file_name AS doc_name
+        FROM kb_chunk c
+        LEFT JOIN kb_base b ON c.kb_id = b.kb_id AND b.del_flag = '0'
+        LEFT JOIN kb_document d ON c.doc_id = d.doc_id AND d.del_flag = '0'
+        WHERE c.del_flag = '0'
+        <if test="bo.chunkId != null">
+            AND c.chunk_id = #{bo.chunkId}
+        </if>
+        <if test="bo.tenantId != null and bo.tenantId != ''">
+            AND c.tenant_id = #{bo.tenantId}
+        </if>
+        <if test="bo.kbId != null">
+            AND c.kb_id = #{bo.kbId}
+        </if>
+        <if test="bo.kbName != null and bo.kbName != ''">
+            AND b.kb_name LIKE CONCAT('%', #{bo.kbName}, '%')
+        </if>
+        <if test="bo.docId != null">
+            AND c.doc_id = #{bo.docId}
+        </if>
+        <if test="bo.docName != null and bo.docName != ''">
+            AND d.file_name LIKE CONCAT('%', #{bo.docName}, '%')
+        </if>
+        <if test="bo.chunkNo != null">
+            AND c.chunk_no = #{bo.chunkNo}
+        </if>
+        <if test="bo.chunkTitle != null and bo.chunkTitle != ''">
+            AND c.chunk_title LIKE CONCAT('%', #{bo.chunkTitle}, '%')
+        </if>
+        <if test="bo.content != null and bo.content != ''">
+            AND c.content LIKE CONCAT('%', #{bo.content}, '%')
+        </if>
+        <if test="bo.contentHash != null and bo.contentHash != ''">
+            AND c.content_hash = #{bo.contentHash}
+        </if>
+        <if test="bo.tokenCount != null">
+            AND c.token_count = #{bo.tokenCount}
+        </if>
+        <if test="bo.charCount != null">
+            AND c.char_count = #{bo.charCount}
+        </if>
+        <if test="bo.pageNo != null">
+            AND c.page_no = #{bo.pageNo}
+        </if>
+        <if test="bo.sectionTitle != null and bo.sectionTitle != ''">
+            AND c.section_title LIKE CONCAT('%', #{bo.sectionTitle}, '%')
+        </if>
+        <if test="bo.startOffset != null">
+            AND c.start_offset = #{bo.startOffset}
+        </if>
+        <if test="bo.endOffset != null">
+            AND c.end_offset = #{bo.endOffset}
+        </if>
+        <if test="bo.embeddingStatus != null and bo.embeddingStatus != ''">
+            AND c.embedding_status = #{bo.embeddingStatus}
+        </if>
+        <if test="bo.embeddingId != null">
+            AND c.embedding_id = #{bo.embeddingId}
+        </if>
+        <if test="bo.status != null and bo.status != ''">
+            AND c.status = #{bo.status}
+        </if>
+        <if test="bo.createBy != null and bo.createBy != ''">
+            AND c.create_by = #{bo.createBy}
+        </if>
+        <if test="bo.createTime != null">
+            AND c.create_time = #{bo.createTime}
+        </if>
+        <if test="bo.updateBy != null and bo.updateBy != ''">
+            AND c.update_by = #{bo.updateBy}
+        </if>
+        <if test="bo.updateTime != null">
+            AND c.update_time = #{bo.updateTime}
+        </if>
+    </select>
 </mapper>

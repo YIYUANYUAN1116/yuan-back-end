@@ -1,23 +1,22 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbRetrievalLog;
 import com.yuan.ai.domain.bo.KbRetrievalLogBo;
 import com.yuan.ai.domain.vo.KbRetrievalLogVo;
-import com.yuan.ai.domain.KbRetrievalLog;
 import com.yuan.ai.mapper.KbRetrievalLogMapper;
 import com.yuan.ai.service.KbRetrievalLogService;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库检索日志表Service业务层处理
@@ -64,7 +63,6 @@ public class KbRetrievalLogServiceImpl implements KbRetrievalLogService {
                     lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), KbRetrievalLog::getTenantId, bo.getTenantId());
                     lqw.eq(bo.getKbId() != null, KbRetrievalLog::getKbId, bo.getKbId());
                     lqw.eq(StringUtils.isNotBlank(bo.getKbIds()), KbRetrievalLog::getKbIds, bo.getKbIds());
-                    lqw.eq(bo.getSessionId() != null, KbRetrievalLog::getSessionId, bo.getSessionId());
                     lqw.eq(bo.getConversationId() != null, KbRetrievalLog::getConversationId, bo.getConversationId());
                     lqw.eq(bo.getMessageId() != null, KbRetrievalLog::getMessageId, bo.getMessageId());
                     lqw.eq(bo.getInvocationId() != null, KbRetrievalLog::getInvocationId, bo.getInvocationId());

@@ -1,23 +1,23 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbBase;
 import com.yuan.ai.domain.bo.KbBaseBo;
 import com.yuan.ai.domain.vo.KbBaseVo;
-import com.yuan.ai.domain.KbBase;
 import com.yuan.ai.mapper.KbBaseMapper;
 import com.yuan.ai.service.KbBaseService;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库主表Service业务层处理
@@ -44,8 +44,7 @@ public class KbBaseServiceImpl implements KbBaseService {
          */
         @Override
         public TableDataInfo<KbBaseVo> queryPageList(KbBaseBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<KbBase> lqw = buildQueryWrapper(bo);
-            Page<KbBaseVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            Page<KbBaseVo> result = baseMapper.selectKbBaseVoPage(bo, pageQuery.build());
             return TableDataInfo.build(result);
         }
 
@@ -72,11 +71,7 @@ public class KbBaseServiceImpl implements KbBaseService {
                     lqw.eq(bo.getChunkSize() != null, KbBase::getChunkSize, bo.getChunkSize());
                     lqw.eq(bo.getChunkOverlap() != null, KbBase::getChunkOverlap, bo.getChunkOverlap());
                     lqw.eq(StringUtils.isNotBlank(bo.getStatus()), KbBase::getStatus, bo.getStatus());
-                    lqw.eq(StringUtils.isNotBlank(bo.getCreateBy()), KbBase::getCreateBy, bo.getCreateBy());
-                    lqw.eq(bo.getCreateTime() != null, KbBase::getCreateTime, bo.getCreateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getUpdateBy()), KbBase::getUpdateBy, bo.getUpdateBy());
-                    lqw.eq(bo.getUpdateTime() != null, KbBase::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), KbBase::getDelFlag, bo.getDelFlag());
+
         return lqw;
     }
 
@@ -120,5 +115,10 @@ public class KbBaseServiceImpl implements KbBaseService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public List<SelectModel> selectKb() {
+        return baseMapper.selectKb();
     }
 }

@@ -1,14 +1,13 @@
 package com.yuan.ai.domain.vo;
 
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.KbDocument;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.KbDocument;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -33,6 +32,8 @@ public class KbDocumentVo implements Serializable {
      */
     @ExcelProperty(value = "知识库ID")
     private Long kbId;
+
+    private String kbName;
     /**
      * 统一文件表ID，如有
      */

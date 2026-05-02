@@ -19,7 +19,7 @@ public class KbEmbedding implements Serializable {
     /**
      * 向量记录ID
      */
-        @TableId(value = "embeddingId", type = IdType.AUTO)
+        @TableId(value = "embedding_id", type = IdType.AUTO)
     private Long embeddingId;
 
     /**

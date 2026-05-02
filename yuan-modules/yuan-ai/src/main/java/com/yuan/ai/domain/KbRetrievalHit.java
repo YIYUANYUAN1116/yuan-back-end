@@ -20,7 +20,7 @@ public class KbRetrievalHit implements Serializable {
     /**
      * 命中记录ID
      */
-        @TableId(value = "hitId", type = IdType.AUTO)
+        @TableId(value = "hit_id", type = IdType.AUTO)
     private Long hitId;
 
     /**

@@ -1,28 +1,18 @@
 package com.yuan.ai.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.yuan.ai.domain.KbBase;
-import com.yuan.ai.domain.KbChunk;
-import com.yuan.ai.domain.KbDocument;
-import com.yuan.ai.domain.KbDocumentText;
-import com.yuan.ai.domain.KbEmbedding;
-import com.yuan.ai.domain.LlmEndpoint;
-import com.yuan.ai.domain.LlmModel;
+import com.yuan.ai.domain.*;
 import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.kb.chunk.KbTextChunk;
 import com.yuan.ai.kb.chunk.KbTextChunker;
+import com.yuan.ai.kb.embedding.EmbeddingInvokerRegistry;
 import com.yuan.ai.kb.embedding.KbEmbeddingClient;
 import com.yuan.ai.kb.parser.KbDocumentParser;
 import com.yuan.ai.kb.parser.KbDocumentParserRegistry;
 import com.yuan.ai.kb.parser.KbParsedDocument;
 import com.yuan.ai.kb.vector.KbVectorItem;
 import com.yuan.ai.kb.vector.KbVectorStore;
-import com.yuan.ai.mapper.KbBaseMapper;
-import com.yuan.ai.mapper.KbChunkMapper;
-import com.yuan.ai.mapper.KbDocumentMapper;
-import com.yuan.ai.mapper.KbDocumentTextMapper;
-import com.yuan.ai.mapper.KbEmbeddingMapper;
-import com.yuan.ai.mapper.LlmEndpointMapper;
+import com.yuan.ai.mapper.*;
 import com.yuan.ai.service.KbPipelineService;
 import com.yuan.ai.service.LlmModelService;
 import com.yuan.common.core.bizno.BizNoPrefixEnum;
@@ -36,6 +26,7 @@ import com.yuan.common.satoken.utils.LoginHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -50,7 +41,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultKbPipelineService implements KbPipelineService {
 
-    private static final String STATUS_ENABLED = "ENABLED";
+    private static final String STATUS_ENABLED = "0";
     private static final String DEL_NOT_DELETED = "0";
 
     private final OssClient ossClient;
@@ -61,12 +52,14 @@ public class DefaultKbPipelineService implements KbPipelineService {
     private final KbEmbeddingMapper embeddingMapper;
     private final LlmModelService modelService;
     private final LlmEndpointMapper endpointMapper;
+    private final LlmProviderMapper providerMapper;
     private final KbDocumentParserRegistry parserRegistry;
     private final KbTextChunker chunker;
-    private final KbEmbeddingClient embeddingClient;
     private final KbVectorStore vectorStore;
+    private final EmbeddingInvokerRegistry invokerRegistry;
 
     @Override
+    @Transactional
     public KbDocumentVo uploadAndIndex(Long kbId, MultipartFile file) {
         if (kbId == null) {
             throw new ServiceException("Knowledge base id is required");
@@ -223,11 +216,15 @@ public class DefaultKbPipelineService implements KbPipelineService {
         if (endpoint == null) {
             throw new ServiceException("Embedding endpoint not found: " + model.getEndpointId());
         }
+        LlmProvider llmProvider = providerMapper.selectById(model.getProviderId());
+        if (llmProvider == null) {
+            throw new ServiceException("Embedding provider not found: " + model.getProviderId());
+        }
 
         chunk.setEmbeddingStatus("EMBEDDING");
         chunk.setUpdateTime(LocalDateTime.now());
         chunkMapper.updateById(chunk);
-
+        KbEmbeddingClient embeddingClient = invokerRegistry.resolve(llmProvider.getProviderCode());
         float[] vector = embeddingClient.embed(endpoint, model, chunk.getContent());
         String vectorId = "kb_" + doc.getKbId() + "_doc_" + doc.getDocId() + "_chunk_" + chunk.getChunkId();
         vectorStore.upsert(KbVectorItem.builder()

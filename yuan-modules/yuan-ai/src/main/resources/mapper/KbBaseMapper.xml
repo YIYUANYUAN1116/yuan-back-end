@@ -4,4 +4,70 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuan.ai.mapper.KbBaseMapper">
 
+    <select id="selectKb" resultType="com.yuan.common.core.domain.model.SelectModel">
+        select kb_name as label,
+                kb_id as value
+        from kb_base
+        where del_flag = '0'
+    </select>
+
+    <select id="selectKbBaseVoPage" resultType="com.yuan.ai.domain.vo.KbBaseVo">
+        SELECT
+            b.*,
+            m.display_name AS embedding_model
+        FROM kb_base b
+        LEFT JOIN llm_model m ON b.embedding_model_id = m.id AND m.del_flag = 0
+        WHERE b.del_flag = '0'
+        <if test="bo.kbId != null">
+            AND b.kb_id = #{bo.kbId}
+        </if>
+        <if test="bo.tenantId != null and bo.tenantId != ''">
+            AND b.tenant_id = #{bo.tenantId}
+        </if>
+        <if test="bo.kbCode != null and bo.kbCode != ''">
+            AND b.kb_code LIKE CONCAT('%', #{bo.kbCode}, '%')
+        </if>
+        <if test="bo.kbName != null and bo.kbName != ''">
+            AND b.kb_name LIKE CONCAT('%', #{bo.kbName}, '%')
+        </if>
+        <if test="bo.description != null and bo.description != ''">
+            AND b.description LIKE CONCAT('%', #{bo.description}, '%')
+        </if>
+        <if test="bo.visibility != null and bo.visibility != ''">
+            AND b.visibility = #{bo.visibility}
+        </if>
+        <if test="bo.ownerId != null and bo.ownerId != ''">
+            AND b.owner_id = #{bo.ownerId}
+        </if>
+        <if test="bo.embeddingModelId != null">
+            AND b.embedding_model_id = #{bo.embeddingModelId}
+        </if>
+        <if test="bo.embeddingModel != null and bo.embeddingModel != ''">
+            AND m.display_name LIKE CONCAT('%', #{bo.embeddingModel}, '%')
+        </if>
+        <if test="bo.chunkStrategy != null and bo.chunkStrategy != ''">
+            AND b.chunk_strategy = #{bo.chunkStrategy}
+        </if>
+        <if test="bo.chunkSize != null">
+            AND b.chunk_size = #{bo.chunkSize}
+        </if>
+        <if test="bo.chunkOverlap != null">
+            AND b.chunk_overlap = #{bo.chunkOverlap}
+        </if>
+        <if test="bo.status != null and bo.status != ''">
+            AND b.status = #{bo.status}
+        </if>
+        <if test="bo.createBy != null and bo.createBy != ''">
+            AND b.create_by = #{bo.createBy}
+        </if>
+        <if test="bo.createTime != null">
+            AND b.create_time = #{bo.createTime}
+        </if>
+        <if test="bo.updateBy != null and bo.updateBy != ''">
+            AND b.update_by = #{bo.updateBy}
+        </if>
+        <if test="bo.updateTime != null">
+            AND b.update_time = #{bo.updateTime}
+        </if>
+    </select>
 </mapper>

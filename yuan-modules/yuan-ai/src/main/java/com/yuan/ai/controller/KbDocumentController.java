@@ -1,32 +1,34 @@
 package com.yuan.ai.controller;
 
-import java.util.List;
-
-import lombok.RequiredArgsConstructor;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
-import com.yuan.common.idempotent.annotation.RepeatSubmit;
-import com.yuan.common.log.annotation.Log;
-import com.yuan.common.web.core.BaseController;
-import com.yuan.core.page.PageQuery;
-import com.yuan.common.core.domain.R;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import com.yuan.common.log.enums.BusinessType;
-import com.yuan.common.excel.utils.ExcelUtil;
-import com.yuan.common.doc.annotation.PathId;
-import com.yuan.common.doc.annotation.PathIds;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.domain.bo.KbDocumentBo;
+import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.service.KbDocumentService;
 import com.yuan.ai.service.KbPipelineService;
+import com.yuan.common.core.domain.R;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
+import com.yuan.common.doc.annotation.PathId;
+import com.yuan.common.doc.annotation.PathIds;
+import com.yuan.common.excel.utils.ExcelUtil;
+import com.yuan.common.idempotent.annotation.RepeatSubmit;
+import com.yuan.common.log.annotation.Log;
+import com.yuan.common.log.enums.BusinessType;
+import com.yuan.common.web.core.BaseController;
+import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 知识库文档表
@@ -125,5 +127,11 @@ public class KbDocumentController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable @PathIds Long[] docIds) {
         return toAjax(kbDocumentService.deleteWithValidByIds(List.of(docIds), true));
+    }
+
+    @GetMapping("/select/{kbId}")
+    @Operation(summary = "文档下拉选择",operationId = "KbDocument_select")
+    public R<List<SelectModel>> selectKbDocument(@PathVariable(required = false)@PathId Long kbId) {
+        return R.ok(kbDocumentService.selectKbDocument(kbId));
     }
 }

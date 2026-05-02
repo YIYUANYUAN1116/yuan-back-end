@@ -19,7 +19,7 @@ public class KbBaseAuth implements Serializable {
     /**
      * 授权ID
      */
-        @TableId(value = "authId", type = IdType.AUTO)
+        @TableId(value = "auth_id", type = IdType.AUTO)
     private Long authId;
 
     /**

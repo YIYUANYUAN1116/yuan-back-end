@@ -20,7 +20,7 @@ public class KbRetrievalLog implements Serializable {
     /**
      * 检索日志ID
      */
-        @TableId(value = "logId", type = IdType.AUTO)
+        @TableId(value = "log_id", type = IdType.AUTO)
     private Long logId;
 
     /**
@@ -38,10 +38,6 @@ public class KbRetrievalLog implements Serializable {
      */
     private String kbIds;
 
-    /**
-     * 聊天会话ID
-     */
-    private Long sessionId;
 
     /**
      * 对话ID

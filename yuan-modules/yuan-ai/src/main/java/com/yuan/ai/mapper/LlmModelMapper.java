@@ -22,7 +22,9 @@ public interface LlmModelMapper extends BaseMapperPlus<LlmModel, LlmModelVo> {
 
     List<SelectModel> selectModelByEndpoint(@Param("endpointId") Long endpointId);
 
-    List<SelectModel> selectModel();
+    List<SelectModel> selectChatModel();
 
     Page<LlmModelVo> selectModelVoPage(@Param("bo") LlmModelBo bo, @Param("page") Page<LlmModel> pageQuery);
+
+    List<SelectModel> selectEmbeddingModel();
 }

@@ -13,5 +13,7 @@ public class ChatPrepareContext {
     private LlmEndpoint endpoint;
     private LlmModel model;
     private Long conversationId;
+    private Long userMsgId;
     private Long assistantMsgId;
+    private Long kbRetrievalLogId;
 }

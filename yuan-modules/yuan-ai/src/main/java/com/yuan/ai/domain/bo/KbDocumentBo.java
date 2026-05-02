@@ -37,6 +37,7 @@ public class KbDocumentBo implements Serializable {
      */
     @NotNull(message = "知识库ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long kbId;
+    private String kbName;
     /**
      * 统一文件表ID，如有
      */

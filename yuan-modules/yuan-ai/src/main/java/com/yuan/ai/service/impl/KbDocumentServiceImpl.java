@@ -1,23 +1,23 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbDocument;
 import com.yuan.ai.domain.bo.KbDocumentBo;
 import com.yuan.ai.domain.vo.KbDocumentVo;
-import com.yuan.ai.domain.KbDocument;
 import com.yuan.ai.mapper.KbDocumentMapper;
 import com.yuan.ai.service.KbDocumentService;
+import com.yuan.common.core.domain.model.SelectModel;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库文档表Service业务层处理
@@ -30,6 +30,7 @@ import java.util.Collection;
 public class KbDocumentServiceImpl implements KbDocumentService {
 
     private final KbDocumentMapper baseMapper;
+
 
     /**
      * 查询知识库文档表
@@ -44,8 +45,7 @@ public class KbDocumentServiceImpl implements KbDocumentService {
          */
         @Override
         public TableDataInfo<KbDocumentVo> queryPageList(KbDocumentBo bo, PageQuery pageQuery) {
-            LambdaQueryWrapper<KbDocument> lqw = buildQueryWrapper(bo);
-            Page<KbDocumentVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            Page<KbDocumentVo> result = baseMapper.selectKbDocumentVoPage(bo, pageQuery.build());
             return TableDataInfo.build(result);
         }
 
@@ -128,5 +128,10 @@ public class KbDocumentServiceImpl implements KbDocumentService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public List<SelectModel> selectKbDocument(Long kbId) {
+        return baseMapper.selectKbDocument(kbId);
     }
 }

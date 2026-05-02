@@ -19,7 +19,7 @@ public class KbDocument implements Serializable {
     /**
      * 文档ID
      */
-        @TableId(value = "docId", type = IdType.AUTO)
+        @TableId(value = "doc_id", type = IdType.AUTO)
     private Long docId;
 
     /**
