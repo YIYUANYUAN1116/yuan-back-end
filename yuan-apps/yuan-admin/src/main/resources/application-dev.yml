@@ -10,7 +10,7 @@ spring:
         master:
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/yuan?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+          url: jdbc:mysql://192.168.21.128:3306/yuan?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
           username: root
           password: yzd2021
 
@@ -31,12 +31,17 @@ spring:
         connectionTestQuery: SELECT 1
         # 多久检查一次连接的活性
         keepaliveTime: 30000
-
+  rabbitmq:
+    host: 192.168.21.128
+    port: 5672
+    username: admin
+    password: yzd2021
+    virtual-host: /
 --- # redis 单机配置(单机与集群只能开启一个另一个需要注释掉)
 spring.data:
   redis:
     # 地址
-    host: localhost
+    host: 192.168.21.128
     # 端口，默认为6379
     port: 6379
     # 数据库索引
@@ -51,8 +56,8 @@ oss:
   bucket: yuan
   presign-expire-seconds: 600
   s3:
-    endpoint: http://minio:9000   # 换成 ceph/aws 就改这里
-    access-key: xxx
-    secret-key: xxx
+    endpoint: http://192.168.21.128:9000   # 换成 ceph/aws 就改这里
+    access-key: admin
+    secret-key: yzd202122
     region: us-east-1
     path-style-access: true       # minio: true / aws: false(通常)

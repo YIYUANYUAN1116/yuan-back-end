@@ -10,14 +10,13 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.yuan.mq</groupId>
     <artifactId>yuan-common-mq</artifactId>
 
-   <dependencies>
-       <dependency>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-amqp</artifactId>
-       </dependency>
-   </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
