@@ -119,7 +119,7 @@ public class KbEmbeddingVo implements Serializable {
     /**
      * 逻辑删除：0-未删除，2-已删除
      */
-    @ExcelProperty(value = "逻辑删除：0-未删除，2-已删除")
-    private String delFlag;
+//    @ExcelProperty(value = "逻辑删除：0-未删除，2-已删除")
+//    private String delFlag;
 
 }

@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yuan.ai.domain.bo.KbBaseBo;
 import com.yuan.ai.domain.vo.KbBaseVo;
 import com.yuan.ai.service.KbBaseService;
+import com.yuan.ai.service.KbPipelineService;
 import com.yuan.common.core.domain.R;
 import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.validate.AddGroup;
@@ -42,6 +43,7 @@ import java.util.List;
 public class KbBaseController extends BaseController {
 
     private final KbBaseService kbBaseService;
+    private final KbPipelineService kbPipelineService;
 
 /**
  * 查询知识库主表列表
@@ -100,6 +102,16 @@ public class KbBaseController extends BaseController {
     @Operation(summary = "修改知识库主表",operationId = "KbBase_edit")
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody KbBaseBo bo) {
         return toAjax(kbBaseService.updateByBo(bo));
+    }
+
+    @SaCheckPermission("ai:kbBase:edit")
+    @Log(title = "Rebuild knowledge base index", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/{kbId}/rebuildIndex")
+    @Operation(summary = "Rebuild knowledge base index", operationId = "KbBase_rebuildIndex")
+    public R<Integer> rebuildIndex(@NotNull(message = "知识库ID不能为空")
+                                   @PathId @PathVariable Long kbId) {
+        return R.ok(kbPipelineService.rebuildKnowledgeBaseIndex(kbId));
     }
 
     /**

@@ -14,6 +14,7 @@ import com.yuan.ai.service.ChatMessageService;
 import com.yuan.ai.service.KbRetrievalService;
 import com.yuan.ai.service.LlmInvocationService;
 import com.yuan.ai.support.SseHelper;
+import com.yuan.ai.support.TokenUsageEstimator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.Message;
@@ -73,6 +74,7 @@ public class UnifiedChatProvider implements ChatProvider {
             try {
                 ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
                 List<Message> messages = messageBuilder.build(req);
+                int tokenIn = TokenUsageEstimator.estimateMessages(messages);
                 sse.send(emitter,"conversationId",ctx.getConversationId());
                 boolean stream = req.getStream() == null || req.getStream();
 
@@ -93,15 +95,18 @@ public class UnifiedChatProvider implements ChatProvider {
                                 sse.error(emitter, e);
                             })
                             .doOnComplete(() -> {
-                                messageService.finishAssistant(assistantMsgId, full.toString());
-                                invocationService.success(invId, full.toString(), (int) (System.currentTimeMillis() - t0));
+                                String content = full.toString();
+                                messageService.finishAssistant(assistantMsgId, content);
+                                invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0),
+                                    tokenIn, TokenUsageEstimator.estimateText(content));
                                 sse.done(emitter);
                             })
                             .subscribe();
                 } else {
                     String content = Objects.toString(invoker.call(req, ep, model, messages), "");
                     messageService.finishAssistant(assistantMsgId, content);
-                    invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0));
+                    invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0),
+                        tokenIn, TokenUsageEstimator.estimateText(content));
                     sse.send(emitter, "message", content);
                     sse.done(emitter);
                 }
@@ -154,6 +159,7 @@ public class UnifiedChatProvider implements ChatProvider {
             String providerCode = llmProviderVo.getProviderCode();
             ProviderInvoker invoker = invokerRegistry.resolve(providerCode);
             List<Message> messages = messageBuilder.build(req);
+            int tokenIn = TokenUsageEstimator.estimateMessages(messages);
 
             String content = Objects.toString(invoker.call(req, ep, model, messages), "");
 
@@ -161,13 +167,16 @@ public class UnifiedChatProvider implements ChatProvider {
                 messageService.finishAssistant(assistantMsgId, content);
             }
 
-            invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0));
+            invocationService.success(invId, content, (int) (System.currentTimeMillis() - t0),
+                tokenIn, TokenUsageEstimator.estimateText(content));
 
             return ChatExecuteResult.builder()
                     .success(true)
                     .content(content)
                     .invocationId(invId)
                     .modelName(modelName)
+                    .tokenIn(tokenIn)
+                    .tokenOut(TokenUsageEstimator.estimateText(content))
                     .latencyMs((int) (System.currentTimeMillis() - t0))
                     .build();
 

@@ -97,10 +97,20 @@ public class KbDocumentController extends BaseController {
     @Log(title = "Knowledge base document upload", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/upload")
-    @Operation(summary = "Upload and index knowledge base document", operationId = "KbDocument_upload2")
+    @Operation(summary = "Upload and index knowledge base document", operationId = "KbDocument_upload")
     public R<KbDocumentVo> upload(@RequestParam("kbId") Long kbId,
                                   @RequestPart("file") MultipartFile file) {
         return R.ok(kbPipelineService.uploadAndIndex(kbId, file));
+    }
+
+    @SaCheckPermission("ai:kbDocument:edit")
+    @Log(title = "Rebuild knowledge base document index", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/{docId}/rebuildIndex")
+    @Operation(summary = "Rebuild knowledge base document index", operationId = "KbDocument_rebuildIndex")
+    public R<KbDocumentVo> rebuildIndex(@NotNull(message = "主键不能为空")
+                                        @PathId @PathVariable Long docId) {
+        return R.ok(kbPipelineService.rebuildDocumentIndex(docId));
     }
 
     /**

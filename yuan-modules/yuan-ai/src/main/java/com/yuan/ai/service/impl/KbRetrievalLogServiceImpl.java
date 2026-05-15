@@ -3,9 +3,12 @@ package com.yuan.ai.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbRetrievalHit;
 import com.yuan.ai.domain.KbRetrievalLog;
 import com.yuan.ai.domain.bo.KbRetrievalLogBo;
+import com.yuan.ai.domain.vo.KbRetrievalHitVo;
 import com.yuan.ai.domain.vo.KbRetrievalLogVo;
+import com.yuan.ai.mapper.KbRetrievalHitMapper;
 import com.yuan.ai.mapper.KbRetrievalLogMapper;
 import com.yuan.ai.service.KbRetrievalLogService;
 import com.yuan.common.core.utils.MapstructUtils;
@@ -29,13 +32,17 @@ import java.util.List;
 public class KbRetrievalLogServiceImpl implements KbRetrievalLogService {
 
     private final KbRetrievalLogMapper baseMapper;
+    private final KbRetrievalHitMapper retrievalHitMapper;
 
     /**
      * 查询知识库检索日志表
      */
     @Override
     public KbRetrievalLogVo queryById(Long logId) {
-        return baseMapper.selectVoById(logId);
+        KbRetrievalLogVo kbRetrievalLogVo = baseMapper.selectVoById(logId);
+        List<KbRetrievalHitVo> hitVoList =  retrievalHitMapper.selectVoList(Wrappers.<KbRetrievalHit>lambdaQuery().eq(KbRetrievalHit::getLogId, logId));
+        kbRetrievalLogVo.setHitVoList(hitVoList);
+        return kbRetrievalLogVo;
     }
 
         /**

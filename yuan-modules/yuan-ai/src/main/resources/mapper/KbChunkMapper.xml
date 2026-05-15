@@ -12,7 +12,7 @@
         FROM kb_chunk c
         LEFT JOIN kb_base b ON c.kb_id = b.kb_id AND b.del_flag = '0'
         LEFT JOIN kb_document d ON c.doc_id = d.doc_id AND d.del_flag = '0'
-        WHERE c.del_flag = '0'
+        WHERE 1=1
         <if test="bo.chunkId != null">
             AND c.chunk_id = #{bo.chunkId}
         </if>

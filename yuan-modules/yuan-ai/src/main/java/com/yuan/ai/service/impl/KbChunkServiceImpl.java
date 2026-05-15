@@ -1,23 +1,22 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbChunk;
 import com.yuan.ai.domain.bo.KbChunkBo;
 import com.yuan.ai.domain.vo.KbChunkVo;
-import com.yuan.ai.domain.KbChunk;
 import com.yuan.ai.mapper.KbChunkMapper;
 import com.yuan.ai.service.KbChunkService;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库文档切片表Service业务层处理
@@ -80,7 +79,7 @@ public class KbChunkServiceImpl implements KbChunkService {
                     lqw.eq(bo.getCreateTime() != null, KbChunk::getCreateTime, bo.getCreateTime());
                     lqw.eq(StringUtils.isNotBlank(bo.getUpdateBy()), KbChunk::getUpdateBy, bo.getUpdateBy());
                     lqw.eq(bo.getUpdateTime() != null, KbChunk::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), KbChunk::getDelFlag, bo.getDelFlag());
+
         return lqw;
     }
 

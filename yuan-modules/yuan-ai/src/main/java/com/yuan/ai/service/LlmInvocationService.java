@@ -50,7 +50,7 @@ public interface LlmInvocationService {
     long begin(String tenantId, String traceId, Long endpointId, Long providerId, String modelName,
                Long conversationId, Long assistantMsgId, Map<String, Object> reqJson);
 
-    void success(long id, String responseText, int latencyMs);
+    void success(long id, String responseText, int latencyMs, Integer tokenIn, Integer tokenOut);
 
     void fail(long id, String errorMsg, int latencyMs);
 }

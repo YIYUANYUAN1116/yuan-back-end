@@ -133,6 +133,87 @@ public class DefaultKbPipelineService implements KbPipelineService {
         }
     }
 
+    @Override
+    @Transactional
+    public KbDocumentVo rebuildDocumentIndex(Long docId) {
+        KbDocument doc = documentMapper.selectById(docId);
+        if (doc == null) {
+            throw new ServiceException("Document not found: " + docId);
+        }
+        KbBase kb = kbBaseMapper.selectById(doc.getKbId());
+        if (kb == null) {
+            throw new ServiceException("Knowledge base not found: " + doc.getKbId());
+        }
+        KbDocumentText text = documentTextMapper.selectOne(Wrappers.<KbDocumentText>lambdaQuery()
+                .eq(KbDocumentText::getDocId, docId));
+        if (text == null || StringUtils.isBlank(text.getCleanText())) {
+            throw new ServiceException("Document parsed text not found, please upload and parse again: " + docId);
+        }
+        return rebuildDocumentIndex(doc, kb, text.getCleanText());
+    }
+
+    @Override
+    @Transactional
+    public int rebuildKnowledgeBaseIndex(Long kbId) {
+        if (kbId == null) {
+            throw new ServiceException("Knowledge base id is required");
+        }
+        KbBase kb = kbBaseMapper.selectById(kbId);
+        if (kb == null) {
+            throw new ServiceException("Knowledge base not found: " + kbId);
+        }
+        List<KbDocument> documents = documentMapper.selectList(Wrappers.<KbDocument>lambdaQuery()
+                .eq(KbDocument::getKbId, kbId)
+                .eq(KbDocument::getStatus, STATUS_ENABLED));
+        for (KbDocument doc : documents) {
+            KbDocumentText text = documentTextMapper.selectOne(Wrappers.<KbDocumentText>lambdaQuery()
+                    .eq(KbDocumentText::getDocId, doc.getDocId()));
+            if (text == null || StringUtils.isBlank(text.getCleanText())) {
+                throw new ServiceException("Document parsed text not found, please upload and parse again: " + doc.getDocId());
+            }
+            rebuildDocumentIndex(doc, kb, text.getCleanText());
+        }
+        return documents.size();
+    }
+
+    @Override
+    @Transactional
+    public void deleteDocumentIndex(Long docId) {
+        KbDocument doc = documentMapper.selectById(docId);
+        if (doc == null) {
+            return;
+        }
+        clearVectorIndex(doc);
+    }
+
+    private KbDocumentVo rebuildDocumentIndex(KbDocument doc, KbBase kb, String cleanText) {
+        markDocument(doc, doc.getParseStatus(), "EMBEDDING", null);
+        try {
+            clearVectorIndex(doc);
+            List<KbTextChunk> chunks = chunker.split(cleanText, doc.getTitle(), kb.getChunkSize(), kb.getChunkOverlap());
+            for (KbTextChunk textChunk : chunks) {
+                KbChunk chunk = buildChunk(doc, textChunk);
+                chunkMapper.insert(chunk);
+                embedChunk(kb, doc, chunk);
+            }
+
+            doc.setParseStatus("SUCCESS");
+            doc.setEmbedStatus("SUCCESS");
+            doc.setChunkCount(chunks.size());
+            doc.setTokenCount(estimateTokens(cleanText));
+            doc.setCharCount(cleanText.length());
+            doc.setContentHash(sha256(cleanText));
+            doc.setErrorMessage(null);
+            doc.setUpdateTime(LocalDateTime.now());
+            documentMapper.updateById(doc);
+            return documentMapper.selectVoById(doc.getDocId());
+        } catch (Exception e) {
+            log.error("[DefaultKbPipelineService][rebuildDocumentIndex] rebuild document index error docId={}", doc.getDocId(), e);
+            markDocument(doc, doc.getParseStatus(), "FAILED", e.getMessage());
+            throw e;
+        }
+    }
+
     private KbDocument newDocument(Long kbId, String fileName, String contentType, long size, FileObjectKey key) {
         String tenantId = LoginHelper.getTenantId();
         LocalDateTime now = LocalDateTime.now();
@@ -199,7 +280,6 @@ public class DefaultKbPipelineService implements KbPipelineService {
         chunk.setCreateBy(String.valueOf(LoginHelper.getUserId()));
         chunk.setCreateTime(now);
         chunk.setUpdateTime(now);
-        chunk.setDelFlag(DEL_NOT_DELETED);
         return chunk;
     }
 
@@ -254,7 +334,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
         embedding.setCreateBy(String.valueOf(LoginHelper.getUserId()));
         embedding.setCreateTime(LocalDateTime.now());
         embedding.setUpdateTime(LocalDateTime.now());
-        embedding.setDelFlag(DEL_NOT_DELETED);
+
         embeddingMapper.insert(embedding);
 
         chunk.setEmbeddingId(embedding.getEmbeddingId());
@@ -264,10 +344,14 @@ public class DefaultKbPipelineService implements KbPipelineService {
     }
 
     private void clearPreviousIndex(KbDocument doc) {
+        clearVectorIndex(doc);
+        documentTextMapper.delete(Wrappers.<KbDocumentText>lambdaQuery().eq(KbDocumentText::getDocId, doc.getDocId()));
+    }
+
+    private void clearVectorIndex(KbDocument doc) {
         vectorStore.deleteByDocument(doc.getTenantId(), doc.getDocId());
         embeddingMapper.delete(Wrappers.<KbEmbedding>lambdaQuery().eq(KbEmbedding::getDocId, doc.getDocId()));
         chunkMapper.delete(Wrappers.<KbChunk>lambdaQuery().eq(KbChunk::getDocId, doc.getDocId()));
-        documentTextMapper.delete(Wrappers.<KbDocumentText>lambdaQuery().eq(KbDocumentText::getDocId, doc.getDocId()));
     }
 
     private void markDocument(KbDocument doc, String parseStatus, String embedStatus, String errorMessage) {

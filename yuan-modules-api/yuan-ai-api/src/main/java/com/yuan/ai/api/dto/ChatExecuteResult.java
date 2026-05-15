@@ -19,6 +19,10 @@ public class ChatExecuteResult {
 
     private String modelName;
 
+    private Integer tokenIn;
+
+    private Integer tokenOut;
+
     private Integer latencyMs;
 
     private String errorMessage;

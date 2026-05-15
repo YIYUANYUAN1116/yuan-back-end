@@ -1,19 +1,15 @@
 package com.yuan.ai.domain.bo;
 
 import com.yuan.ai.domain.KbEmbedding;
-import com.yuan.core.domain.BaseEntity;
+import com.yuan.common.core.validate.AddGroup;
+import com.yuan.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
-import java.io.Serializable;
-import java.io.Serializable;
-import com.yuan.common.core.validate.AddGroup;
-import com.yuan.common.core.validate.EditGroup;
 
 /**
  * 知识库向量元数据表业务对象 kb_embedding
@@ -113,7 +109,7 @@ public class KbEmbeddingBo implements Serializable {
     /**
      * 逻辑删除：0-未删除，2-已删除
      */
-    @NotBlank(message = "逻辑删除：0-未删除，2-已删除不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String delFlag;
+//    @NotBlank(message = "逻辑删除：0-未删除，2-已删除不能为空", groups = { AddGroup.class, EditGroup.class })
+//    private String delFlag;
 
 }

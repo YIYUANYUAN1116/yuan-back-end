@@ -1,23 +1,22 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbEmbedding;
 import com.yuan.ai.domain.bo.KbEmbeddingBo;
 import com.yuan.ai.domain.vo.KbEmbeddingVo;
-import com.yuan.ai.domain.KbEmbedding;
 import com.yuan.ai.mapper.KbEmbeddingMapper;
 import com.yuan.ai.service.KbEmbeddingService;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库向量元数据表Service业务层处理
@@ -79,7 +78,7 @@ public class KbEmbeddingServiceImpl implements KbEmbeddingService {
                     lqw.eq(bo.getCreateTime() != null, KbEmbedding::getCreateTime, bo.getCreateTime());
                     lqw.eq(StringUtils.isNotBlank(bo.getUpdateBy()), KbEmbedding::getUpdateBy, bo.getUpdateBy());
                     lqw.eq(bo.getUpdateTime() != null, KbEmbedding::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), KbEmbedding::getDelFlag, bo.getDelFlag());
+//                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), KbEmbedding::getDelFlag, bo.getDelFlag());
         return lqw;
     }
 

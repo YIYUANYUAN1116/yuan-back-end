@@ -8,6 +8,7 @@ import com.yuan.ai.domain.bo.KbDocumentBo;
 import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.mapper.KbDocumentMapper;
 import com.yuan.ai.service.KbDocumentService;
+import com.yuan.ai.service.KbPipelineService;
 import com.yuan.common.core.domain.model.SelectModel;
 import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
@@ -15,6 +16,7 @@ import com.yuan.core.page.PageQuery;
 import com.yuan.core.page.TableDataInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.List;
 public class KbDocumentServiceImpl implements KbDocumentService {
 
     private final KbDocumentMapper baseMapper;
+    private final KbPipelineService kbPipelineService;
 
 
     /**
@@ -123,10 +126,12 @@ public class KbDocumentServiceImpl implements KbDocumentService {
      * 批量删除知识库文档表
      */
     @Override
+    @Transactional
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
+        ids.forEach(kbPipelineService::deleteDocumentIndex);
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 

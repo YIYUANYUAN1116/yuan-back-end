@@ -1,15 +1,15 @@
 package com.yuan.ai.domain.vo;
 
-    import java.math.BigDecimal;
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.KbRetrievalLog;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.KbRetrievalLog;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -131,4 +131,7 @@ public class KbRetrievalLogVo implements Serializable {
     @ExcelProperty(value = "逻辑删除：0-未删除，2-已删除")
     private String delFlag;
 
+
+    /****************helper***************/
+    private List<KbRetrievalHitVo> hitVoList;
 }

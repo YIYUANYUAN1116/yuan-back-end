@@ -125,8 +125,8 @@ public class KbChunk implements Serializable {
     /**
      * 逻辑删除：0-未删除，2-已删除
      */
-        @TableLogic
-    private String delFlag;
+//        @TableLogic
+//    private String delFlag;
 
 
 }

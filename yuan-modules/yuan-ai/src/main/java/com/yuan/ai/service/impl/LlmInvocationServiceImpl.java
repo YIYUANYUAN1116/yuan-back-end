@@ -146,10 +146,12 @@ public class LlmInvocationServiceImpl implements LlmInvocationService {
         }
     }
     @Override
-    public void success(long id, String responseText, int latencyMs) {
+    public void success(long id, String responseText, int latencyMs, Integer tokenIn, Integer tokenOut) {
         LlmInvocation upd = new LlmInvocation();
         upd.setId(id);
         upd.setResponseText(responseText);
+        upd.setTokenIn(tokenIn);
+        upd.setTokenOut(tokenOut);
         upd.setLatencyMs(latencyMs);
         upd.setStatus("SUCCESS");
         baseMapper.updateById(upd);
