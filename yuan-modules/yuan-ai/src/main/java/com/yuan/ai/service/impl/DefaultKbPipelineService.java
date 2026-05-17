@@ -3,16 +3,19 @@ package com.yuan.ai.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yuan.ai.domain.*;
 import com.yuan.ai.domain.vo.KbDocumentVo;
-import com.yuan.ai.kb.chunk.KbTextChunk;
-import com.yuan.ai.kb.chunk.KbTextChunker;
-import com.yuan.ai.kb.embedding.EmbeddingInvokerRegistry;
-import com.yuan.ai.kb.embedding.KbEmbeddingClient;
-import com.yuan.ai.kb.parser.KbDocumentParser;
-import com.yuan.ai.kb.parser.KbDocumentParserRegistry;
-import com.yuan.ai.kb.parser.KbParsedDocument;
-import com.yuan.ai.kb.vector.KbVectorItem;
-import com.yuan.ai.kb.vector.KbVectorStore;
+import com.yuan.ai.core.kb.chunk.KbTextChunk;
+import com.yuan.ai.core.kb.chunk.KbTextChunker;
+import com.yuan.ai.core.kb.embedding.EmbeddingInvokerRegistry;
+import com.yuan.ai.core.kb.embedding.KbEmbeddingClient;
+import com.yuan.ai.core.kb.parser.KbDocumentParser;
+import com.yuan.ai.core.kb.parser.KbDocumentParserRegistry;
+import com.yuan.ai.core.kb.parser.KbParsedDocument;
+import com.yuan.ai.core.kb.vector.KbVectorItem;
+import com.yuan.ai.core.kb.vector.KbVectorStore;
 import com.yuan.ai.mapper.*;
+import com.yuan.ai.mq.KbIndexTaskProducer;
+import com.yuan.ai.mq.task.DocumentIndexTask;
+import com.yuan.ai.mq.task.EmbeddingTask;
 import com.yuan.ai.service.KbPipelineService;
 import com.yuan.ai.service.LlmModelService;
 import com.yuan.common.core.bizno.BizNoPrefixEnum;
@@ -57,6 +60,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
     private final KbTextChunker chunker;
     private final KbVectorStore vectorStore;
     private final EmbeddingInvokerRegistry invokerRegistry;
+    private final KbIndexTaskProducer taskProducer;
 
     @Override
     @Transactional
@@ -67,10 +71,8 @@ public class DefaultKbPipelineService implements KbPipelineService {
         if (file == null || file.isEmpty()) {
             throw new ServiceException("Please choose a document to upload");
         }
-        byte[] bytes;
         FileObjectKey key;
         try {
-            bytes = file.getBytes();
             OssScope scope = OssScope.builder()
                     .tenantId(LoginHelper.getTenantId())
                     .namespace(NameSpace.FORMAL)
@@ -83,10 +85,12 @@ public class DefaultKbPipelineService implements KbPipelineService {
 
         KbDocument doc = newDocument(kbId, file.getOriginalFilename(), file.getContentType(), file.getSize(), key);
         documentMapper.insert(doc);
-        return parseAndIndex(doc.getDocId(), file.getOriginalFilename(), file.getContentType(), bytes);
+        taskProducer.sendDocumentIndexTask(toDocumentIndexTask(doc, file.getOriginalFilename(), file.getContentType()));
+        return documentMapper.selectVoById(doc.getDocId());
     }
 
     @Override
+    @Transactional
     public KbDocumentVo parseAndIndex(Long docId, String fileName, String contentType, byte[] bytes) {
         KbDocument doc = documentMapper.selectById(docId);
         if (doc == null) {
@@ -96,7 +100,11 @@ public class DefaultKbPipelineService implements KbPipelineService {
         if (kb == null) {
             throw new ServiceException("Knowledge base not found: " + doc.getKbId());
         }
+        parseDocumentAndEnqueueEmbedding(doc, kb, fileName, contentType, bytes);
+        return documentMapper.selectVoById(docId);
+    }
 
+    private void parseDocumentAndEnqueueEmbedding(KbDocument doc, KbBase kb, String fileName, String contentType, byte[] bytes) {
         markDocument(doc, "PARSING", "PENDING", null);
         try {
             KbDocumentParser parser = parserRegistry.resolve(fileName, contentType);
@@ -112,12 +120,11 @@ public class DefaultKbPipelineService implements KbPipelineService {
             for (KbTextChunk textChunk : chunks) {
                 KbChunk chunk = buildChunk(doc, textChunk);
                 chunkMapper.insert(chunk);
-                embedChunk(kb, doc, chunk);
             }
 
             doc.setTitle(StringUtils.defaultIfBlank(doc.getTitle(), parsed.getTitle()));
             doc.setParseStatus("SUCCESS");
-            doc.setEmbedStatus("SUCCESS");
+            doc.setEmbedStatus("PENDING");
             doc.setChunkCount(chunks.size());
             doc.setTokenCount(estimateTokens(cleanText));
             doc.setCharCount(cleanText.length());
@@ -125,9 +132,9 @@ public class DefaultKbPipelineService implements KbPipelineService {
             doc.setErrorMessage(null);
             doc.setUpdateTime(LocalDateTime.now());
             documentMapper.updateById(doc);
-            return documentMapper.selectVoById(docId);
+            taskProducer.sendEmbeddingTask(toEmbeddingTask(doc));
         } catch (Exception e) {
-            log.error("[DefaultKbPipelineService][parseAndIndex] index document error docId={}", docId, e);
+            log.error("[DefaultKbPipelineService][parseAndIndex] index document error docId={}", doc.getDocId(), e);
             markDocument(doc, "FAILED", "FAILED", e.getMessage());
             throw e;
         }
@@ -144,12 +151,9 @@ public class DefaultKbPipelineService implements KbPipelineService {
         if (kb == null) {
             throw new ServiceException("Knowledge base not found: " + doc.getKbId());
         }
-        KbDocumentText text = documentTextMapper.selectOne(Wrappers.<KbDocumentText>lambdaQuery()
-                .eq(KbDocumentText::getDocId, docId));
-        if (text == null || StringUtils.isBlank(text.getCleanText())) {
-            throw new ServiceException("Document parsed text not found, please upload and parse again: " + docId);
-        }
-        return rebuildDocumentIndex(doc, kb, text.getCleanText());
+        markDocument(doc, "PENDING", "PENDING", null);
+        taskProducer.sendDocumentIndexTask(toDocumentIndexTask(doc, doc.getFileName(), doc.getFileType()));
+        return documentMapper.selectVoById(docId);
     }
 
     @Override
@@ -166,12 +170,8 @@ public class DefaultKbPipelineService implements KbPipelineService {
                 .eq(KbDocument::getKbId, kbId)
                 .eq(KbDocument::getStatus, STATUS_ENABLED));
         for (KbDocument doc : documents) {
-            KbDocumentText text = documentTextMapper.selectOne(Wrappers.<KbDocumentText>lambdaQuery()
-                    .eq(KbDocumentText::getDocId, doc.getDocId()));
-            if (text == null || StringUtils.isBlank(text.getCleanText())) {
-                throw new ServiceException("Document parsed text not found, please upload and parse again: " + doc.getDocId());
-            }
-            rebuildDocumentIndex(doc, kb, text.getCleanText());
+            markDocument(doc, "PENDING", "PENDING", null);
+            taskProducer.sendDocumentIndexTask(toDocumentIndexTask(doc, doc.getFileName(), doc.getFileType()));
         }
         return documents.size();
     }
@@ -186,31 +186,81 @@ public class DefaultKbPipelineService implements KbPipelineService {
         clearVectorIndex(doc);
     }
 
-    private KbDocumentVo rebuildDocumentIndex(KbDocument doc, KbBase kb, String cleanText) {
-        markDocument(doc, doc.getParseStatus(), "EMBEDDING", null);
+    @Override
+    @Transactional
+    public void processDocumentIndexTask(DocumentIndexTask task) {
+        if (task == null || task.getDocId() == null) {
+            log.warn("[DefaultKbPipelineService][processDocumentIndexTask] empty task");
+            return;
+        }
+        KbDocument doc = documentMapper.selectById(task.getDocId());
+        if (doc == null) {
+            log.warn("[DefaultKbPipelineService][processDocumentIndexTask] document not found docId={}", task.getDocId());
+            return;
+        }
+        KbBase kb = kbBaseMapper.selectById(doc.getKbId());
+        if (kb == null) {
+            markDocument(doc, "FAILED", "FAILED", "Knowledge base not found: " + doc.getKbId());
+            return;
+        }
+        if (StringUtils.isBlank(doc.getObjectKey())) {
+            markDocument(doc, "FAILED", "FAILED", "Document objectKey is empty");
+            return;
+        }
         try {
-            clearVectorIndex(doc);
-            List<KbTextChunk> chunks = chunker.split(cleanText, doc.getTitle(), kb.getChunkSize(), kb.getChunkOverlap());
-            for (KbTextChunk textChunk : chunks) {
-                KbChunk chunk = buildChunk(doc, textChunk);
-                chunkMapper.insert(chunk);
-                embedChunk(kb, doc, chunk);
-            }
+            byte[] bytes = ossClient.getObject(doc.getObjectKey());
+            parseDocumentAndEnqueueEmbedding(doc, kb,
+                    StringUtils.defaultIfBlank(task.getFileName(), doc.getFileName()),
+                    StringUtils.defaultIfBlank(task.getContentType(), doc.getFileType()),
+                    bytes);
+        } catch (Exception e) {
+            log.error("[DefaultKbPipelineService][processDocumentIndexTask] process document index error docId={}", doc.getDocId(), e);
+            markDocument(doc, "FAILED", "FAILED", e.getMessage());
+        }
+    }
 
-            doc.setParseStatus("SUCCESS");
+    @Override
+    @Transactional
+    public void processEmbeddingTask(EmbeddingTask task) {
+        if (task == null || task.getDocId() == null) {
+            log.warn("[DefaultKbPipelineService][processEmbeddingTask] empty task");
+            return;
+        }
+        KbDocument doc = documentMapper.selectById(task.getDocId());
+        if (doc == null) {
+            log.warn("[DefaultKbPipelineService][processEmbeddingTask] document not found docId={}", task.getDocId());
+            return;
+        }
+        KbBase kb = kbBaseMapper.selectById(doc.getKbId());
+        if (kb == null) {
+            markDocument(doc, doc.getParseStatus(), "FAILED", "Knowledge base not found: " + doc.getKbId());
+            return;
+        }
+        try {
+            embedDocumentChunks(doc, kb);
             doc.setEmbedStatus("SUCCESS");
-            doc.setChunkCount(chunks.size());
-            doc.setTokenCount(estimateTokens(cleanText));
-            doc.setCharCount(cleanText.length());
-            doc.setContentHash(sha256(cleanText));
             doc.setErrorMessage(null);
             doc.setUpdateTime(LocalDateTime.now());
             documentMapper.updateById(doc);
-            return documentMapper.selectVoById(doc.getDocId());
         } catch (Exception e) {
-            log.error("[DefaultKbPipelineService][rebuildDocumentIndex] rebuild document index error docId={}", doc.getDocId(), e);
+            log.error("[DefaultKbPipelineService][processEmbeddingTask] embed document error docId={}", doc.getDocId(), e);
             markDocument(doc, doc.getParseStatus(), "FAILED", e.getMessage());
-            throw e;
+        }
+    }
+
+    private void embedDocumentChunks(KbDocument doc, KbBase kb) {
+        markDocument(doc, doc.getParseStatus(), "EMBEDDING", null);
+        clearEmbeddingIndex(doc);
+        List<KbChunk> chunks = chunkMapper.selectList(Wrappers.<KbChunk>lambdaQuery()
+                .eq(KbChunk::getDocId, doc.getDocId())
+                .eq(KbChunk::getStatus, STATUS_ENABLED)
+                .orderByAsc(KbChunk::getChunkNo));
+        for (KbChunk chunk : chunks) {
+            chunk.setEmbeddingStatus("PENDING");
+            chunk.setEmbeddingId(null);
+            chunk.setUpdateTime(LocalDateTime.now());
+            chunkMapper.updateById(chunk);
+            embedChunk(kb, doc, chunk);
         }
     }
 
@@ -253,7 +303,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
         text.setCharCount(cleanText.length());
         text.setTokenCount(estimateTokens(cleanText));
         text.setStatus(STATUS_ENABLED);
-        text.setCreateBy(String.valueOf(LoginHelper.getUserId()));
+        text.setCreateBy(resolveOperator(doc));
         text.setCreateTime(now);
         text.setUpdateTime(now);
         text.setDelFlag(DEL_NOT_DELETED);
@@ -277,7 +327,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
         chunk.setEndOffset(textChunk.getEndOffset());
         chunk.setEmbeddingStatus("PENDING");
         chunk.setStatus(STATUS_ENABLED);
-        chunk.setCreateBy(String.valueOf(LoginHelper.getUserId()));
+        chunk.setCreateBy(resolveOperator(doc));
         chunk.setCreateTime(now);
         chunk.setUpdateTime(now);
         return chunk;
@@ -301,46 +351,53 @@ public class DefaultKbPipelineService implements KbPipelineService {
             throw new ServiceException("Embedding provider not found: " + model.getProviderId());
         }
 
-        chunk.setEmbeddingStatus("EMBEDDING");
-        chunk.setUpdateTime(LocalDateTime.now());
-        chunkMapper.updateById(chunk);
-        KbEmbeddingClient embeddingClient = invokerRegistry.resolve(llmProvider.getProviderCode());
-        float[] vector = embeddingClient.embed(endpoint, model, chunk.getContent());
-        String vectorId = "kb_" + doc.getKbId() + "_doc_" + doc.getDocId() + "_chunk_" + chunk.getChunkId();
-        vectorStore.upsert(KbVectorItem.builder()
-                .vectorId(vectorId)
-                .tenantId(doc.getTenantId())
-                .kbId(doc.getKbId())
-                .docId(doc.getDocId())
-                .chunkId(chunk.getChunkId())
-                .content(chunk.getContent())
-                .vector(vector)
-                .build());
+        try {
+            chunk.setEmbeddingStatus("EMBEDDING");
+            chunk.setUpdateTime(LocalDateTime.now());
+            chunkMapper.updateById(chunk);
+            KbEmbeddingClient embeddingClient = invokerRegistry.resolve(llmProvider.getProviderCode());
+            float[] vector = embeddingClient.embed(endpoint, model, chunk.getContent());
+            String vectorId = "kb_" + doc.getKbId() + "_doc_" + doc.getDocId() + "_chunk_" + chunk.getChunkId();
+            vectorStore.upsert(KbVectorItem.builder()
+                    .vectorId(vectorId)
+                    .tenantId(doc.getTenantId())
+                    .kbId(doc.getKbId())
+                    .docId(doc.getDocId())
+                    .chunkId(chunk.getChunkId())
+                    .content(chunk.getContent())
+                    .vector(vector)
+                    .build());
 
-        KbEmbedding embedding = new KbEmbedding();
-        embedding.setTenantId(doc.getTenantId());
-        embedding.setKbId(doc.getKbId());
-        embedding.setDocId(doc.getDocId());
-        embedding.setChunkId(chunk.getChunkId());
-        embedding.setModelId(model.getId());
-        embedding.setModelCode(model.getModelName());
-        embedding.setVectorStore(vectorStore.storeType());
-        embedding.setCollectionName("kb_" + doc.getKbId());
-        embedding.setVectorId(vectorId);
-        embedding.setVectorDim(vector == null ? 0 : vector.length);
-        embedding.setContentHash(chunk.getContentHash());
-        embedding.setEmbedVersion("1.0");
-        embedding.setStatus("0");
-        embedding.setCreateBy(String.valueOf(LoginHelper.getUserId()));
-        embedding.setCreateTime(LocalDateTime.now());
-        embedding.setUpdateTime(LocalDateTime.now());
+            KbEmbedding embedding = new KbEmbedding();
+            embedding.setTenantId(doc.getTenantId());
+            embedding.setKbId(doc.getKbId());
+            embedding.setDocId(doc.getDocId());
+            embedding.setChunkId(chunk.getChunkId());
+            embedding.setModelId(model.getId());
+            embedding.setModelCode(model.getModelName());
+            embedding.setVectorStore(vectorStore.storeType());
+            embedding.setCollectionName("kb_" + doc.getKbId());
+            embedding.setVectorId(vectorId);
+            embedding.setVectorDim(vector == null ? 0 : vector.length);
+            embedding.setContentHash(chunk.getContentHash());
+            embedding.setEmbedVersion("1.0");
+            embedding.setStatus("0");
+            embedding.setCreateBy(resolveOperator(doc));
+            embedding.setCreateTime(LocalDateTime.now());
+            embedding.setUpdateTime(LocalDateTime.now());
 
-        embeddingMapper.insert(embedding);
+            embeddingMapper.insert(embedding);
 
-        chunk.setEmbeddingId(embedding.getEmbeddingId());
-        chunk.setEmbeddingStatus("SUCCESS");
-        chunk.setUpdateTime(LocalDateTime.now());
-        chunkMapper.updateById(chunk);
+            chunk.setEmbeddingId(embedding.getEmbeddingId());
+            chunk.setEmbeddingStatus("SUCCESS");
+            chunk.setUpdateTime(LocalDateTime.now());
+            chunkMapper.updateById(chunk);
+        } catch (Exception e) {
+            chunk.setEmbeddingStatus("FAILED");
+            chunk.setUpdateTime(LocalDateTime.now());
+            chunkMapper.updateById(chunk);
+            throw e;
+        }
     }
 
     private void clearPreviousIndex(KbDocument doc) {
@@ -354,10 +411,39 @@ public class DefaultKbPipelineService implements KbPipelineService {
         chunkMapper.delete(Wrappers.<KbChunk>lambdaQuery().eq(KbChunk::getDocId, doc.getDocId()));
     }
 
+    private void clearEmbeddingIndex(KbDocument doc) {
+        vectorStore.deleteByDocument(doc.getTenantId(), doc.getDocId());
+        embeddingMapper.delete(Wrappers.<KbEmbedding>lambdaQuery().eq(KbEmbedding::getDocId, doc.getDocId()));
+    }
+
+    private DocumentIndexTask toDocumentIndexTask(KbDocument doc, String fileName, String contentType) {
+        DocumentIndexTask task = new DocumentIndexTask();
+        task.setDocId(doc.getDocId());
+        task.setKbId(doc.getKbId());
+        task.setTenantId(doc.getTenantId());
+        task.setFileName(StringUtils.defaultIfBlank(fileName, doc.getFileName()));
+        task.setContentType(contentType);
+        task.setObjectKey(doc.getObjectKey());
+        return task;
+    }
+
+    private EmbeddingTask toEmbeddingTask(KbDocument doc) {
+        EmbeddingTask task = new EmbeddingTask();
+        task.setDocId(doc.getDocId());
+        task.setKbId(doc.getKbId());
+        task.setTenantId(doc.getTenantId());
+        return task;
+    }
+
+    private String resolveOperator(KbDocument doc) {
+        return StringUtils.defaultIfBlank(doc.getUpdateBy(), StringUtils.defaultIfBlank(doc.getCreateBy(), "system"));
+    }
+
     private void markDocument(KbDocument doc, String parseStatus, String embedStatus, String errorMessage) {
         doc.setParseStatus(parseStatus);
         doc.setEmbedStatus(embedStatus);
         doc.setErrorMessage(errorMessage);
+        doc.setUpdateBy(resolveOperator(doc));
         doc.setUpdateTime(LocalDateTime.now());
         documentMapper.updateById(doc);
     }

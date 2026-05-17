@@ -8,7 +8,7 @@ import com.yuan.ai.api.dto.ChatExecuteResult;
 import com.yuan.ai.domain.dto.ChatMsg;
 import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
-import com.yuan.ai.provider.ChatProvider;
+import com.yuan.ai.core.provider.ChatProvider;
 import com.yuan.ai.service.AiTemplateService;
 import com.yuan.ai.service.ChatPrepareService;
 import com.yuan.ai.service.ChatService;

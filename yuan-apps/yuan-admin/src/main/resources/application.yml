@@ -44,6 +44,29 @@ spring:
           servers-configuration: classpath:mcp-server.json
         request-timeout: 300s
 
+yuan:
+  mq:
+    enabled: true
+    type: rabbit
+    rabbit:
+      default-exchange: yuan.ai.kb.exchange
+      exchanges:
+        - name: yuan.ai.kb.exchange
+          type: TOPIC
+          durable: true
+      queues:
+        - name: yuan.ai.kb.document.index.queue
+          durable: true
+        - name: yuan.ai.kb.embedding.queue
+          durable: true
+      bindings:
+        - queue: yuan.ai.kb.document.index.queue
+          exchange: yuan.ai.kb.exchange
+          routing-key: yuan.ai.kb.document.index
+        - queue: yuan.ai.kb.embedding.queue
+          exchange: yuan.ai.kb.exchange
+          routing-key: yuan.ai.kb.embedding
+
 # Sa-Token配置
 sa-token:
   # token名称 (同时也是cookie名称)
