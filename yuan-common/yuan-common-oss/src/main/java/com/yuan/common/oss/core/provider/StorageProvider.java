@@ -10,6 +10,8 @@ public interface StorageProvider {
 
     PutResult putObject(String bucket, String objectKey, String contentType, byte[] bytes);
 
+    byte[] getObject(String bucket, String objectKey);
+
     MultipartInitResult initMultipart(String bucket, String objectKey, String contentType);
 
     String presignUploadPartUrl(String bucket, String objectKey, String uploadId, int partNumber, int expireSeconds);

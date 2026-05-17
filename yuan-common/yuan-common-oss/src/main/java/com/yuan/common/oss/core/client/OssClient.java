@@ -42,6 +42,14 @@ public class OssClient {
                 .build();
     }
 
+    public byte[] getObject(String objectKey) {
+        return router.current().getObject(props.getBucket(), objectKey);
+    }
+
+    public byte[] getObject(FileObjectKey key) {
+        return router.current().getObject(key.getBucket(), key.getObjectKey());
+    }
+
 
     public MultipartSession initMultipart(OssScope scope, String filename, String contentType, long sizeBytes) {
         String objectKey = keyGen.generate(scope, filename);

@@ -43,6 +43,15 @@ public class S3CompatibleStorageProvider implements StorageProvider {
     }
 
     @Override
+    public byte[] getObject(String bucket, String objectKey) {
+        GetObjectRequest req = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(objectKey)
+                .build();
+        return s3.getObjectAsBytes(req).asByteArray();
+    }
+
+    @Override
     public MultipartInitResult initMultipart(String bucket, String objectKey, String contentType) {
         CreateMultipartUploadResponse resp = s3.createMultipartUpload(b -> b
                 .bucket(bucket)
