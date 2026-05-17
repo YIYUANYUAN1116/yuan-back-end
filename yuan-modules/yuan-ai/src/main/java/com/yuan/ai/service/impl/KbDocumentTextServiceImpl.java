@@ -1,23 +1,22 @@
 package com.yuan.ai.service.impl;
 
-import com.yuan.common.core.utils.MapstructUtils;
-    import com.yuan.core.page.TableDataInfo;
-    import com.yuan.core.page.PageQuery;
-    import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yuan.ai.domain.KbDocumentText;
 import com.yuan.ai.domain.bo.KbDocumentTextBo;
 import com.yuan.ai.domain.vo.KbDocumentTextVo;
-import com.yuan.ai.domain.KbDocumentText;
 import com.yuan.ai.mapper.KbDocumentTextMapper;
 import com.yuan.ai.service.KbDocumentTextService;
+import com.yuan.common.core.utils.MapstructUtils;
 import com.yuan.common.core.utils.StringUtils;
+import com.yuan.core.page.PageQuery;
+import com.yuan.core.page.TableDataInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 知识库文档解析文本表Service业务层处理
@@ -75,7 +74,7 @@ public class KbDocumentTextServiceImpl implements KbDocumentTextService {
                     lqw.eq(bo.getCreateTime() != null, KbDocumentText::getCreateTime, bo.getCreateTime());
                     lqw.eq(StringUtils.isNotBlank(bo.getUpdateBy()), KbDocumentText::getUpdateBy, bo.getUpdateBy());
                     lqw.eq(bo.getUpdateTime() != null, KbDocumentText::getUpdateTime, bo.getUpdateTime());
-                    lqw.eq(StringUtils.isNotBlank(bo.getDelFlag()), KbDocumentText::getDelFlag, bo.getDelFlag());
+
         return lqw;
     }
 

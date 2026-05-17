@@ -103,7 +103,7 @@ public class ChatServiceImpl implements ChatService {
     private void streamToEmitter(ChatRequest req, ChatPrepareContext ctx, SseEmitter emitter) {
         long t0 = System.currentTimeMillis();
         int tokenIn = estimateTokenIn(req);
-        Long invId = beginInvocation(req, ctx, true);
+        long invId = beginInvocation(req, ctx, true);
         bindInvocation(ctx, invId);
 
         try {

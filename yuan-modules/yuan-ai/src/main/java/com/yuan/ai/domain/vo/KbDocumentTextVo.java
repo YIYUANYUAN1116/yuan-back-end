@@ -1,14 +1,13 @@
 package com.yuan.ai.domain.vo;
 
-    import java.time.LocalDateTime;
-    import java.io.Serializable;
-import com.yuan.ai.domain.KbDocumentText;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.yuan.ai.domain.KbDocumentText;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -96,7 +95,7 @@ public class KbDocumentTextVo implements Serializable {
     /**
      * 逻辑删除：0-未删除，2-已删除
      */
-    @ExcelProperty(value = "逻辑删除：0-未删除，2-已删除")
-    private String delFlag;
+//    @ExcelProperty(value = "逻辑删除：0-未删除，2-已删除")
+//    private String delFlag;
 
 }

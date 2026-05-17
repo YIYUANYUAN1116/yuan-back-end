@@ -307,7 +307,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
         text.setCreateBy(resolveOperator(doc));
         text.setCreateTime(now);
         text.setUpdateTime(now);
-        text.setDelFlag(DEL_NOT_DELETED);
+
         return text;
     }
 

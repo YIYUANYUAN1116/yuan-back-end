@@ -20,13 +20,15 @@ public class KbIndexTaskListener {
 
     @RabbitListener(queues = KbMqConstants.DOCUMENT_INDEX_QUEUE)
     public void handleDocumentIndexTask(DocumentIndexTask task) {
-        log.info("[KbIndexTaskListener][handleDocumentIndexTask] receive task docId={}", task.getDocId());
+        log.info("[KbIndexTaskListener][handleDocumentIndexTask] receive task start docId={} ", task.getDocId());
         kbPipelineService.processDocumentIndexTask(task);
+        log.info("[KbIndexTaskListener][handleDocumentIndexTask] receive task end docId={} ", task.getDocId());
     }
 
     @RabbitListener(queues = KbMqConstants.EMBEDDING_QUEUE)
     public void handleEmbeddingTask(EmbeddingTask task) {
-        log.info("[KbIndexTaskListener][handleEmbeddingTask] receive task docId={}", task.getDocId());
+        log.info("[KbIndexTaskListener][handleEmbeddingTask] receive task start docId={} ", task.getDocId());
         kbPipelineService.processEmbeddingTask(task);
+        log.info("[KbIndexTaskListener][handleEmbeddingTask] receive task end docId={} ", task.getDocId());
     }
 }
