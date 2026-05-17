@@ -16,6 +16,7 @@ public enum BizNoPrefixEnum {
     CON("CON", "合同"),
     PUR("PUR", "采购单"),
     AI("AI", "AI模块"),
+    KB("KB", "知识库模块"),
     WF("WF", "流程实例");
 
     private final String prefix;

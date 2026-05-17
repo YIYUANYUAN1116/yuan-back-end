@@ -73,6 +73,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             return;
         }
 
+
         List<KbRetrievalLog> logs = kbRetrievalLogMapper.selectList(Wrappers.<KbRetrievalLog>lambdaQuery()
             .in(KbRetrievalLog::getInvocationId, invocationIds));
         if (logs == null || logs.isEmpty()) {

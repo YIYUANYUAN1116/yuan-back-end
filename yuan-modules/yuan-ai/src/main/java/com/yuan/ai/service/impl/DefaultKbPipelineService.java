@@ -74,7 +74,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
             OssScope scope = OssScope.builder()
                     .tenantId(LoginHelper.getTenantId())
                     .namespace(NameSpace.FORMAL)
-                    .prefix(BizNoPrefixEnum.AI)
+                    .prefix(BizNoPrefixEnum.KB)
                     .build();
             key = ossClient.putObject(scope, file);
         } catch (IOException e) {
