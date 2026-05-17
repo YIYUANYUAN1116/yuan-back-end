@@ -6,11 +6,8 @@ import com.yuan.ai.api.dto.AiTemplateExecuteRequest;
 import com.yuan.ai.api.dto.AiTemplateExecuteResult;
 import com.yuan.ai.api.dto.ChatExecuteResult;
 import com.yuan.ai.domain.dto.ChatMsg;
-import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
-import com.yuan.ai.core.provider.ChatProvider;
 import com.yuan.ai.service.AiTemplateService;
-import com.yuan.ai.service.ChatPrepareService;
 import com.yuan.ai.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +24,6 @@ public class DefaultAiTemplateExecuteApi implements AiTemplateExecuteApi {
 
     private final AiTemplateService aiTemplateService;
     private final ChatService chatService;
-    private final ChatPrepareService chatPrepareService;
-    private final ChatProvider chatProvider;
 
     @Override
     public AiTemplateExecuteResult execute(AiTemplateExecuteRequest request) {
@@ -49,14 +44,8 @@ public class DefaultAiTemplateExecuteApi implements AiTemplateExecuteApi {
             // 3. 构造 ChatRequest
             ChatRequest chatRequest = buildChatRequest(request, finalPrompt);
 
-            // 4. 统一准备上下文（选 endpoint/model，可选 conversation/message）
-            ChatPrepareContext ctx = chatPrepareService.prepare(chatRequest);
-
-            // 5. 执行同步 AI 调用
-            ChatExecuteResult executeResult = chatProvider.call(
-                    chatRequest,
-                    ctx
-            );
+            // 4. 执行同步 AI 调用
+            ChatExecuteResult executeResult = chatService.execute(chatRequest);
 
             return AiTemplateExecuteResult.builder()
                     .success(Boolean.TRUE.equals(executeResult.getSuccess()))

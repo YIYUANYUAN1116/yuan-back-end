@@ -1,12 +1,15 @@
 package com.yuan.ai.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.yuan.ai.core.common.AiModelRuntime;
 import com.yuan.ai.domain.ChatConversation;
 import com.yuan.ai.domain.LlmEndpoint;
 import com.yuan.ai.domain.LlmModel;
+import com.yuan.ai.domain.LlmProvider;
 import com.yuan.ai.domain.dto.ChatPrepareContext;
 import com.yuan.ai.domain.dto.ChatRequest;
 import com.yuan.ai.mapper.LlmEndpointMapper;
+import com.yuan.ai.mapper.LlmProviderMapper;
 import com.yuan.ai.service.*;
 import com.yuan.common.core.constant.SystemConstants;
 import com.yuan.common.core.utils.StringUtils;
@@ -26,6 +29,7 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
     private final ChatConversationService conversationService;
     private final ChatMessageService messageService;
     private final LlmEndpointMapper endpointMapper;
+    private final LlmProviderMapper providerMapper;
 
     @Override
     public ChatPrepareContext prepare(ChatRequest req) {
@@ -38,10 +42,23 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
         }
         Long modelId = req.getModelId();
         LlmModel model = modelService.getById(modelId);
-        LlmEndpoint ep = endpointMapper.selectById(model.getEndpointId());
         if (model == null || model.getStatus() == null || !model.getStatus().equals(SystemConstants.NORMAL)) {
-            throw new IllegalArgumentException("Model disabled or not found: " + ep.getDefaultModelId());
+            throw new IllegalArgumentException("Model disabled or not found: " + modelId);
         }
+        LlmEndpoint ep = endpointMapper.selectById(model.getEndpointId());
+        if (ep == null) {
+            throw new IllegalArgumentException("Endpoint not found: " + model.getEndpointId());
+        }
+        LlmProvider provider = providerMapper.selectById(model.getProviderId());
+        if (provider == null) {
+            throw new IllegalArgumentException("Provider not found: " + model.getProviderId());
+        }
+        AiModelRuntime runtime = AiModelRuntime.builder()
+                .tenantId(tenantId)
+                .providerCode(provider.getProviderCode())
+                .endpoint(ep)
+                .model(model)
+                .build();
 
         boolean persistChatMessage = req.getPersistChatMessage() == null || req.getPersistChatMessage();
 
@@ -72,6 +89,8 @@ public class ChatPrepareServiceImpl implements ChatPrepareService {
 
         return ChatPrepareContext.builder()
                 .tenantId(tenantId)
+                .traceId(req.getTraceId())
+                .runtime(runtime)
                 .endpoint(ep)
                 .model(model)
                 .conversationId(conversationId)

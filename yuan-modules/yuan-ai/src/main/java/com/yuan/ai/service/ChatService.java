@@ -1,6 +1,7 @@
 package com.yuan.ai.service;
 
 
+import com.yuan.ai.api.dto.ChatExecuteResult;
 import com.yuan.ai.domain.dto.ChatRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -11,4 +12,6 @@ public interface ChatService {
      * @return
      */
     SseEmitter chat(ChatRequest req);
+
+    ChatExecuteResult execute(ChatRequest req);
 }

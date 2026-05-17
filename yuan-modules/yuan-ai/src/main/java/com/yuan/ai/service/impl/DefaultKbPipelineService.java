@@ -5,7 +5,8 @@ import com.yuan.ai.domain.*;
 import com.yuan.ai.domain.vo.KbDocumentVo;
 import com.yuan.ai.core.kb.chunk.KbTextChunk;
 import com.yuan.ai.core.kb.chunk.KbTextChunker;
-import com.yuan.ai.core.kb.embedding.EmbeddingInvokerRegistry;
+import com.yuan.ai.core.common.AiModelRuntime;
+import com.yuan.ai.core.kb.embedding.EmbeddingClientRegistry;
 import com.yuan.ai.core.kb.embedding.KbEmbeddingClient;
 import com.yuan.ai.core.kb.parser.KbDocumentParser;
 import com.yuan.ai.core.kb.parser.KbDocumentParserRegistry;
@@ -59,7 +60,7 @@ public class DefaultKbPipelineService implements KbPipelineService {
     private final KbDocumentParserRegistry parserRegistry;
     private final KbTextChunker chunker;
     private final KbVectorStore vectorStore;
-    private final EmbeddingInvokerRegistry invokerRegistry;
+    private final EmbeddingClientRegistry embeddingClientRegistry;
     private final KbIndexTaskProducer taskProducer;
 
     @Override
@@ -355,8 +356,14 @@ public class DefaultKbPipelineService implements KbPipelineService {
             chunk.setEmbeddingStatus("EMBEDDING");
             chunk.setUpdateTime(LocalDateTime.now());
             chunkMapper.updateById(chunk);
-            KbEmbeddingClient embeddingClient = invokerRegistry.resolve(llmProvider.getProviderCode());
-            float[] vector = embeddingClient.embed(endpoint, model, chunk.getContent());
+            AiModelRuntime runtime = AiModelRuntime.builder()
+                    .tenantId(doc.getTenantId())
+                    .providerCode(llmProvider.getProviderCode())
+                    .endpoint(endpoint)
+                    .model(model)
+                    .build();
+            KbEmbeddingClient embeddingClient = embeddingClientRegistry.resolve(runtime.getProviderCode());
+            float[] vector = embeddingClient.embed(runtime, chunk.getContent());
             String vectorId = "kb_" + doc.getKbId() + "_doc_" + doc.getDocId() + "_chunk_" + chunk.getChunkId();
             vectorStore.upsert(KbVectorItem.builder()
                     .vectorId(vectorId)

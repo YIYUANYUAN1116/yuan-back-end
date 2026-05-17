@@ -1,11 +1,12 @@
 package com.yuan.ai.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yuan.ai.core.common.AiModelRuntime;
 import com.yuan.ai.domain.*;
 import com.yuan.ai.domain.dto.KbRetrievalHitDto;
 import com.yuan.ai.domain.dto.KbRetrievalRequest;
 import com.yuan.ai.domain.dto.KbRetrievalResponse;
-import com.yuan.ai.core.kb.embedding.EmbeddingInvokerRegistry;
+import com.yuan.ai.core.kb.embedding.EmbeddingClientRegistry;
 import com.yuan.ai.core.kb.embedding.KbEmbeddingClient;
 import com.yuan.ai.core.kb.vector.KbVectorSearchHit;
 import com.yuan.ai.core.kb.vector.KbVectorStore;
@@ -44,7 +45,7 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
     private final LlmEndpointMapper endpointMapper;
     private final LlmProviderMapper providerMapper;
     private final KbVectorStore vectorStore;
-    private final EmbeddingInvokerRegistry embeddingInvokerRegistry;
+    private final EmbeddingClientRegistry embeddingClientRegistry;
 
     @Override
     public KbRetrievalResponse retrieve(KbRetrievalRequest request) {
@@ -138,8 +139,14 @@ public class DefaultKbRetrievalService implements KbRetrievalService {
         if (llmProvider == null) {
             throw new ServiceException("Embedding provider not found: " + model.getProviderId());
         }
-        KbEmbeddingClient embeddingClient = embeddingInvokerRegistry.resolve(llmProvider.getProviderCode());
-        float[] queryVector = embeddingClient.embed(endpoint, model, query);
+        AiModelRuntime runtime = AiModelRuntime.builder()
+                .tenantId(tenantId)
+                .providerCode(llmProvider.getProviderCode())
+                .endpoint(endpoint)
+                .model(model)
+                .build();
+        KbEmbeddingClient embeddingClient = embeddingClientRegistry.resolve(runtime.getProviderCode());
+        float[] queryVector = embeddingClient.embed(runtime, query);
         List<KbVectorSearchHit> hits = vectorStore.search(tenantId, kbIds, queryVector, topK, minScore.doubleValue());
         List<KbRetrievalHitDto> result = new ArrayList<>();
         int rank = 1;
